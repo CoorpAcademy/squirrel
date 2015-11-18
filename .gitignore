@@ -1,0 +1,10 @@
+.idea
+.DS_Store
+node_modules/
+*.log
+*.pid
+*.sublime-project
+*.sublime-workspace
+
+# scratch files
+*~

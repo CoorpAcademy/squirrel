@@ -1,0 +1,17 @@
+sudo: false
+language: node_js
+node_js:
+    - '5'
+    - '4'
+    - '0.12'
+services:
+    - docker
+before_install:
+    - docker-compose up -d
+deploy:
+    provider: npm
+    email: dev@coorpacademy.com
+    api_key:
+        secure: SZEfspD/FbqHPbH6udfxyeLRAheYw6jwwuEWfPQoVPp9AshExbYagHLGvG2AFiEBwXHtY1FpjSaOmy7n1uG9A9TbZ8KFdfEuE4UuxfVvnCnQVoWQKeGsyAcNejSdp/J+UHLdZV4g62U8tNKQwdjrY/e/4Gb1AeNyqZvGUro+m77OIxxva7vFwbyfFhDZ0BX+criPSm0wCkaE3jIWJ+qQq+YCgx9+aeEIPuYA2sjZPtJ0+s6buk0gwb8raihBAECvHI52iwGhBVVwVoz6SVNtmpPDs/HiyAm6mV7i5smb8Nw8EOxzww0B1FJWOCn8mggKPrvVZGkXm5Bac5PsI0ukPrphTOBy2nGu3TtxVEb8jcWEnh2vE7Xn2PPhuEHVMSz0ry+oVuLdvnsItYs61wJdcntEe/UCVnzuZ8Ye9I/lzOwZ8qJMdyBelfOW7iMGyZ93pSrOerfTYiAkVExoZbLaQh8KUb8q7dRmxmanEYOf804sG7SYNbMbLpKd0sFyD7InbLMD4Nv9l5hmcqLg6m7WOFBlvScWgHCFBg6oBwaXa+uIkX+6O7UkVYAcM3qWeVTB7/In/mvNof9UmoR9R8mNutLVTo2dTtqOrGFkuSjlhY/wmlJMJmK/gW215hmb8kvDIel065sF1z4eDUZ9RjZbAXj65+WX7xKrLV76lpn3OcE=
+    on:
+        tags: true

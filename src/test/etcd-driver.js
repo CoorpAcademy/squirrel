@@ -1,0 +1,95 @@
+'use strict';
+
+var path = require('path');
+var Promise = require('bluebird');
+var test = require('ava');
+var createEtcdDriver = require('../etcd-driver');
+
+var generatePath = function() {
+    return path.join(
+        '/test',
+        Date.now().toString(),
+        Math.random().toString().slice(2),
+        'folder'
+    );
+};
+
+test('should create etcd driver', function(t) {
+    var driver = createEtcdDriver({
+        cwd: generatePath()
+    });
+
+    return driver.list().then(function(node) {
+        t.same(node.nodes, []);
+    });
+});
+
+test('should fetch folder content', function(t) {
+    var driver = createEtcdDriver({
+        cwd: generatePath()
+    });
+
+    return driver.set('foo', {
+        foo: 'foo'
+    }).then(function() {
+        return driver.list();
+    }).then(function(node) {
+        return node.nodes.map(function(node) {
+            return node.value;
+        });
+    }).then(function(nodes) {
+        t.same(nodes, [{
+            foo: 'foo'
+        }]);
+    });
+});
+
+test('should clean folder', function(t) {
+    var driver = createEtcdDriver({
+        cwd: generatePath()
+    });
+
+    return driver.clean().then(function() {
+        return driver.list();
+    }).then(function(node) {
+        t.same(node.nodes, []);
+    });
+});
+
+test('should watch set', function(t) {
+    var driver = createEtcdDriver({
+        cwd: generatePath()
+    });
+
+    return Promise.fromCallback(function(cb) {
+        driver.watch({
+            set: function(err, node) {
+                t.same(node.key, 'foo');
+                t.same(node.value, 'bar');
+                cb();
+            }
+        });
+
+        driver.set('foo', 'bar');
+    });
+});
+
+test('should watch delete', function(t) {
+    var driver = createEtcdDriver({
+        cwd: generatePath()
+    });
+
+    return Promise.fromCallback(function(cb) {
+        driver.watch({
+            delete: function(err, node) {
+                t.same(node.key, 'foo');
+                t.same(node.value);
+                cb();
+            }
+        });
+
+        driver.set('foo', 'bar').then(function() {
+            return driver.del('foo', 'bar');
+        });
+    });
+});
