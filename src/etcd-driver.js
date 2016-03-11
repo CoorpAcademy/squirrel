@@ -27,7 +27,7 @@ var getNode = _.partialRight(_.get, 'node');
 function createEtcdSync(options) {
     options = _.assign({
         cwd: '/',
-        hosts: 'localhost:4001',
+        hosts: 'localhost:2379',
         auth: null,
         ca: null,
         key: null,
@@ -149,10 +149,7 @@ function createEtcdSync(options) {
         return watcher;
     }
 
-    nodes$ = mkdir(options.cwd).catch(function(err) {
-        console.error(err, err);
-        throw err;
-    });
+    nodes$ = mkdir(options.cwd);
 
     return {
         get: get,
