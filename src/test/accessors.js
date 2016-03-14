@@ -14,18 +14,24 @@ var generatePath = function() {
 };
 
 var brandFoo = {
-    'host': 'foo.coorpacademy.com',
-    'name': 'foo',
-    'meta': {
-        'foo': 'bar'
+    'key': 'foo',
+    'value': {
+        'host': 'foo.coorpacademy.com',
+        'name': 'foo',
+        'meta': {
+            'foo': 'bar'
+        }
     }
 };
 
 var brandBar = {
-    'host': 'bar.coorpacademy.com',
-    'name': 'bar',
-    'meta': {
-        'foo': 'baz'
+    'key': 'bar',
+    'value': {
+        'host': 'bar.coorpacademy.com',
+        'name': 'bar',
+        'meta': {
+            'foo': 'baz'
+        }
     }
 };
 
@@ -37,8 +43,8 @@ test('should find by name', function(t) {
         indexes: ['name']
     });
 
-    t.same(squirrel.getBy('name', 'foo'), brandFoo);
-    t.same(squirrel.getBy('name', 'bar'), brandBar);
+    t.same(squirrel.getBy('name', 'foo'), brandFoo.value);
+    t.same(squirrel.getBy('name', 'bar'), brandBar.value);
     t.same(squirrel.getBy('name', 'baz'), null);
 });
 
@@ -50,8 +56,8 @@ test('should find by host', function(t) {
         indexes: ['host']
     });
 
-    t.same(squirrel.getBy('host', 'foo.coorpacademy.com'), brandFoo);
-    t.same(squirrel.getBy('host', 'bar.coorpacademy.com'), brandBar);
+    t.same(squirrel.getBy('host', 'foo.coorpacademy.com'), brandFoo.value);
+    t.same(squirrel.getBy('host', 'bar.coorpacademy.com'), brandBar.value);
     t.same(squirrel.getBy('host', 'baz.coorpacademy.com'), null);
 });
 

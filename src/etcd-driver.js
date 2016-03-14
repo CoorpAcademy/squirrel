@@ -6,11 +6,11 @@ var _ = require('lodash/fp');
 var Etcd = require('node-etcd');
 
 var parse = function(node) {
-    if(node.dir)
+    if (node.dir)
         return _.set('nodes', (node.nodes || []).map(parse), node);
-    try{
+    try {
         return _.set('value', JSON.parse(node.value), node);
-    } catch(err) {
+    } catch (err) {
         return node;
     }
 };

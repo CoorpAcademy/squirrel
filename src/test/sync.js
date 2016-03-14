@@ -10,7 +10,7 @@ var createEtcdDriver = require('../etcd-driver');
 var retryOptions = {
     max_tries: -1,
     interval: 10,
-    timeout: 30000
+    timeout: 2000
 };
 
 var generatePath = function() {
@@ -35,47 +35,54 @@ test('should sync squirrel', function(t) {
     });
 
     var brand = {
-        name: 'foo',
-        host: 'foo.bar.baz'
+        key: 'foo',
+        value: {
+            name: 'foo',
+            host: 'foo.bar.baz'
+        }
     };
 
-    t.same(squirrel.getBy('name', brand.name), null);
-    return syncer.set(brand.name, brand).then(function() {
+    t.same(squirrel.getBy('name', brand.value.name), null);
+    return syncer.set(brand.key, brand.value).then(function() {
         return retry(function() {
-            if (!squirrel.getBy('name', brand.name))
+            if (!squirrel.getBy('name', brand.value.name))
                 return Promise.reject(new Error('retry'));
             return Promise.resolve();
         }, retryOptions);
     }).then(function() {
-        t.same(squirrel.getBy('name', brand.name), brand);
-        return syncer.del(brand.name);
+        t.same(squirrel.getBy('name', brand.value.name), brand.value);
+        return syncer.del(brand.value.name);
     }).then(function() {
         return retry(function() {
-            if (squirrel.getBy('name', brand.name))
+            if (squirrel.getBy('name', brand.value.name))
                 return Promise.reject(new Error('retry'));
             return Promise.resolve();
         }, retryOptions);
     }).then(function() {
-        t.same(squirrel.getBy('name', brand.name), null);
+        t.same(squirrel.getBy('name', brand.value.name), null);
     });
 });
 
 test('should override mock', function(t) {
     var cwd = generatePath();
 
-    var mock = [{foo: 'bar'}];
+    var foo = {
+        key: 'foo',
+        value: {
+            foo: 'bar'
+        }
+    };
 
     var squirrel = createSquirrel({
         cwd: cwd,
-        mock: [{foo: 'bar'}]
+        mock: [foo]
     });
-
-    t.same(squirrel.getStore(), mock);
+    t.same(squirrel.getStore(), {foo: foo.value});
     return retry(function() {
-        if (squirrel.getStore().length > 0)
+        if (Object.keys(squirrel.getStore()).length > 0)
             return Promise.reject(new Error('retry'));
         return Promise.resolve();
     }, retryOptions).then(function() {
-        t.same(squirrel.getStore(), []);
+        t.same(squirrel.getStore(), {});
     });
 });

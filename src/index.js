@@ -11,14 +11,15 @@ function createSquirrel(options) {
         fetch: true
     }, options);
 
-    var store = [];
+    var store = {};
     var indexes = updateIndexes(store);
     function addNode(node) {
-        store = store.concat([node]);
+        store = _.clone(store);
+        store[node.key] = node.value;
         indexes = updateIndexes(store);
     }
     function removeNode(node) {
-        store = _.without(store, _.find(node, store));
+        store = _.omit([node.key], store);
         indexes = updateIndexes(store);
     }
 
@@ -29,26 +30,26 @@ function createSquirrel(options) {
     }
 
     function buildIndex(index, store) {
-        return _.zipObject(_.map(function(node) {
-            return _.get(index, node);
-        }, store), store);
+        return _.mapKeys(function(key) {
+            return _.get(index, store[key]);
+        }, store);
     }
 
 
     var syncer = createEtcdDriver(options);
     syncer.watch({
         set: function(err, node) {
-            addNode(node.value);
+            addNode(node);
         },
         delete: function(err, node, prevNode) {
-            removeNode(prevNode.value);
+            removeNode(prevNode);
         }
     });
 
     options.mock.forEach(addNode);
     if (options.fetch)
         syncer.list().then(function(node) {
-            store = [];
+            store = {};
             node.nodes.forEach(addNode);
         });
 

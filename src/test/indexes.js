@@ -14,9 +14,12 @@ var generatePath = function() {
 };
 
 var foo = {
-    'foo': 'foo',
-    'bar': {
-        'baz': 'baz'
+    key: 'foo',
+    value: {
+        'foo': 'foo',
+        'bar': {
+            'baz': 'baz'
+        }
     }
 };
 
@@ -28,7 +31,7 @@ test('should index by first level field', function(t) {
         indexes: ['foo']
     });
 
-    t.same(squirrel.getBy('foo', 'foo'), foo);
+    t.same(squirrel.getBy('foo', 'foo'), foo.value);
     t.same(squirrel.getBy('foo', 'baz'), null);
 });
 
@@ -40,6 +43,6 @@ test('should index by deeper level field', function(t) {
         indexes: ['bar.baz']
     });
 
-    t.same(squirrel.getBy('bar.baz', 'baz'), foo);
+    t.same(squirrel.getBy('bar.baz', 'baz'), foo.value);
     t.same(squirrel.getBy('bar.baz', 'foo'), null);
 });
