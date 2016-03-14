@@ -2,27 +2,22 @@
 
 var path = require('path');
 var Promise = require('bluebird');
-var _ = require('lodash');
+var _ = require('lodash/fp');
 var Etcd = require('node-etcd');
 
 var parse = function(node) {
-    if (node.dir)
-        node = _.assign({}, node, {
-            nodes: (node.nodes || []).map(parse)
-        });
-
-    try {
-        return _.assign({}, node, {
-            value: JSON.parse(node.value)
-        });
-    } catch (err) {
+    if(node.dir)
+        return _.set('nodes', (node.nodes || []).map(parse), node);
+    try{
+        return _.set('value', JSON.parse(node.value), node);
+    } catch(err) {
         return node;
     }
 };
 
 var stringify = JSON.stringify;
 
-var getNode = _.partialRight(_.get, 'node');
+var getNode = _.get('node');
 
 function createEtcdSync(options) {
     options = _.assign({
@@ -34,7 +29,7 @@ function createEtcdSync(options) {
         cert: null
     }, options);
 
-    var etcd = new Etcd(options.hosts, _.pick(options, 'auth', 'ca', 'key', 'cert'));
+    var etcd = new Etcd(options.hosts, _.pick(['auth', 'ca', 'key', 'cert'], options));
     var nodes$ = Promise.resolve();
 
     function get(key, cb) {
@@ -129,12 +124,8 @@ function createEtcdSync(options) {
             if (res.node.dir) return;
             hook(
                 null,
-                parse(_.assign({}, res.node, {
-                    key: path.relative(options.cwd, res.node.key)
-                })),
-                res.prevNode ? parse(_.assign({}, res.prevNode, {
-                    key: path.relative(options.cwd, res.prevNode.key)
-                })) : null
+                parse(_.set('key', path.relative(options.cwd, res.node.key), res.node)),
+                res.prevNode ? parse(_.set('key', path.relative(options.cwd, res.prevNode.key), res.prevNode)) : null
             );
         };
     }
@@ -142,9 +133,9 @@ function createEtcdSync(options) {
     function watch(hooks) {
         var watcher = etcd.watcher(options.cwd, null, {recursive: true});
 
-        _.mapValues(hooks, function(hook, event) {
+        _.forEach(function(hook, event) {
             watcher.on(event, wrapHook(hook));
-        });
+        }, hooks);
 
         return watcher;
     }

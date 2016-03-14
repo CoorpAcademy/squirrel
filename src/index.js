@@ -1,6 +1,6 @@
 'use strict';
 
-var _ = require('lodash');
+var _ = require('lodash/fp');
 var createEtcdDriver = require('./etcd-driver');
 
 function createSquirrel(options) {
@@ -18,18 +18,20 @@ function createSquirrel(options) {
         indexes = updateIndexes(store);
     }
     function removeNode(node) {
-        store = _.without(store, _.find(store, node));
+        store = _.without(store, _.find(node, store));
         indexes = updateIndexes(store);
     }
 
     function updateIndexes(store) {
-        return _.chain(options.indexes).mapKeys(function(indexName) {
-            return indexName;
-        }).mapValues(function(indexName) {
-            return _.mapKeys(store, function(node) {
-                return _.get(node, indexName);
-            });
-        }).value();
+        return _.zipObject(options.indexes, _.map(function(index) {
+            return buildIndex(index, store);
+        }, options.indexes));
+    }
+
+    function buildIndex(index, store) {
+        return _.zipObject(_.map(function(node) {
+            return _.get(index, node);
+        }, store), store);
     }
 
 
@@ -51,7 +53,7 @@ function createSquirrel(options) {
         });
 
     function getBy(index, key) {
-        return _.get(indexes[index], key, null);
+        return _.has(key, indexes[index]) ? _.get(key, indexes[index]) : null;
     }
 
     function getAll(index) {
