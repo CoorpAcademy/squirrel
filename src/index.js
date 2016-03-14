@@ -44,7 +44,7 @@ function createSquirrel(options) {
     });
 
     options.mock.forEach(addNode);
-    if(options.fetch)
+    if (options.fetch)
         syncer.list().then(function(node) {
             store = [];
             node.nodes.forEach(addNode);

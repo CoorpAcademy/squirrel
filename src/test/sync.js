@@ -42,7 +42,7 @@ test('should sync squirrel', function(t) {
     t.same(squirrel.getBy('name', brand.name), null);
     return syncer.set(brand.name, brand).then(function() {
         return retry(function() {
-            if(!squirrel.getBy('name', brand.name))
+            if (!squirrel.getBy('name', brand.name))
                 return Promise.reject(new Error('retry'));
             return Promise.resolve();
         }, retryOptions);
@@ -51,7 +51,7 @@ test('should sync squirrel', function(t) {
         return syncer.del(brand.name);
     }).then(function() {
         return retry(function() {
-            if(squirrel.getBy('name', brand.name))
+            if (squirrel.getBy('name', brand.name))
                 return Promise.reject(new Error('retry'));
             return Promise.resolve();
         }, retryOptions);
@@ -72,7 +72,7 @@ test('should override mock', function(t) {
 
     t.same(squirrel.getStore(), mock);
     return retry(function() {
-        if(squirrel.getStore().length > 0)
+        if (squirrel.getStore().length > 0)
             return Promise.reject(new Error('retry'));
         return Promise.resolve();
     }, retryOptions).then(function() {

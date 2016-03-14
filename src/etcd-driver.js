@@ -6,16 +6,16 @@ var _ = require('lodash');
 var Etcd = require('node-etcd');
 
 var parse = function(node) {
-    if(node.dir)
+    if (node.dir)
         node = _.assign({}, node, {
             nodes: (node.nodes || []).map(parse)
         });
 
-    try{
+    try {
         return _.assign({}, node, {
             value: JSON.parse(node.value)
         });
-    } catch(err) {
+    } catch (err) {
         return node;
     }
 };
@@ -101,9 +101,9 @@ function createEtcdSync(options) {
                 );
             });
         }).catch(function(err) {
-            if(err.errorCode === 102)
+            if (err.errorCode === 102)
                 return [];
-            if(err.errorCode === 107)
+            if (err.errorCode === 107)
                 return [];
             throw err;
         }).asCallback(cb);
@@ -122,7 +122,7 @@ function createEtcdSync(options) {
 
     function wrapHook(hook) {
         return function(res) {
-            if(res.node.dir) return;
+            if (res.node.dir) return;
             hook(
                 null,
                 parse(_.assign({}, res.node, {
