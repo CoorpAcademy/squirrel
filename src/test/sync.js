@@ -29,7 +29,7 @@ test('should sync squirrel', function(t) {
         cwd: cwd,
         indexes: ['name']
     });
-    var syncer = createEtcdDriver({
+    var driver = createEtcdDriver({
         cwd: cwd,
         indexes: ['name']
     });
@@ -43,7 +43,7 @@ test('should sync squirrel', function(t) {
     };
 
     t.same(squirrel.getBy('name', brand.value.name), null);
-    return syncer.set(brand.key, brand.value).then(function() {
+    return driver.set(brand.key, brand.value).then(function() {
         return retry(function() {
             if (!squirrel.getBy('name', brand.value.name))
                 return Promise.reject(new Error('retry'));
@@ -51,7 +51,7 @@ test('should sync squirrel', function(t) {
         }, retryOptions);
     }).then(function() {
         t.same(squirrel.getBy('name', brand.value.name), brand.value);
-        return syncer.del(brand.value.name);
+        return driver.del(brand.value.name);
     }).then(function() {
         return retry(function() {
             if (squirrel.getBy('name', brand.value.name))

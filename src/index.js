@@ -36,8 +36,8 @@ function createSquirrel(options) {
     }
 
 
-    var syncer = createEtcdDriver(options);
-    syncer.watch({
+    var driver = createEtcdDriver(options);
+    driver.watch({
         set: function(err, node) {
             addNode(node);
         },
@@ -48,7 +48,7 @@ function createSquirrel(options) {
 
     options.mock.forEach(addNode);
     if (options.fetch)
-        syncer.list().then(function(node) {
+        driver.list().then(function(node) {
             store = {};
             node.nodes.forEach(addNode);
         });
