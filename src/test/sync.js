@@ -22,14 +22,6 @@ function generatePath() {
     );
 }
 
-function generateMock(cwd, values) {
-    return {
-        key: cwd,
-        dir: true,
-        nodes: values
-    };
-}
-
 test('should sync squirrel', function(t) {
     var cwd = generatePath();
 
@@ -49,100 +41,64 @@ test('should sync squirrel', function(t) {
         }
     };
 
-    t.same(squirrel.getBy('name', brand.value.name), null);
-    return retry(function() {
-        if (!squirrel.getStore().nodes)
-            return Promise.reject(new Error('retry'));
-        return Promise.resolve();
-    }, retryOptions).then(function() {
+    return squirrel.getBy('name', brand.value.name).then(function(value) {
+        t.same(value, null);
+
+        return retry(function() {
+            return squirrel.getStore().then(function(node) {
+                if (node.nodes.length > 0)
+                    return Promise.reject(new Error('retry'));
+                return Promise.resolve();
+            })
+        }, retryOptions);
+    }).then(function() {
         return driver.set(brand.key, brand.value);
     }).then(function() {
         return retry(function() {
-            if (!squirrel.getBy('name', brand.value.name))
-                return Promise.reject(new Error('retry'));
-            return Promise.resolve();
+            return squirrel.getBy('name', brand.value.name).then(function(value) {
+                if (!value)
+                    return Promise.reject(new Error('retry'));
+                return Promise.resolve();
+            });
         }, retryOptions);
     }).then(function() {
-        t.same(squirrel.getBy('name', brand.value.name), brand.value);
-        return driver.del(brand.value.name);
-    }).then(function() {
-        return retry(function() {
-            if (squirrel.getBy('name', brand.value.name))
-                return Promise.reject(new Error('retry'));
-            return Promise.resolve();
-        }, retryOptions);
-    }).then(function() {
-        t.same(squirrel.getBy('name', brand.value.name), null);
-    });
-});
-
-test('should deep sync squirrel', function(t) {
-    var cwd = generatePath();
-
-    var squirrel = createSquirrel({
-        cwd: cwd,
-        indexes: ['name']
-    });
-    var driver = createEtcdDriver({
-        cwd: cwd
-    });
-
-    var brand = {
-        key: 'foo/bar',
-        value: {
-            name: 'foo',
-            host: 'foo.bar.baz'
-        }
-    };
-
-    t.same(squirrel.getBy('name', brand.value.name), null);
-    return retry(function() {
-        if (!squirrel.getStore().nodes)
-            return Promise.reject(new Error('retry'));
-        return Promise.resolve();
-    }, retryOptions).then(function() {
-        return driver.set(brand.key, brand.value);
-    }).then(function() {
-        return retry(function() {
-            if (!squirrel.getBy('name', brand.value.name))
-                return Promise.reject(new Error('retry'));
-            return Promise.resolve();
-        }, retryOptions);
-    }).then(function() {
-        t.same(squirrel.getBy('name', brand.value.name), brand.value);
+        return squirrel.getBy('name', brand.value.name);
+    }).then(function(value) {
+        t.same(value, brand.value);
         return driver.del(brand.key);
     }).then(function() {
         return retry(function() {
-            if (squirrel.getBy('name', brand.value.name))
-                return Promise.reject(new Error('retry'));
-            return Promise.resolve();
+            return squirrel.getBy('name', brand.value.name).then(function(value) {
+                if (value && value.name)
+                    return Promise.reject(new Error('retry'));
+                return Promise.resolve();
+            });
         }, retryOptions);
     }).then(function() {
-        t.same(squirrel.getBy('name', brand.value.name), null);
+        return squirrel.getBy('name', brand.value.name);
+    }).then(function(value) {
+        t.same(value, null);
     });
 });
 
-test('should override mock', function(t) {
-    var foo = {
-        key: 'foo',
-        value: {
-            foo: 'bar'
-        }
-    };
-
-    var cwd = generatePath();
-    var mock = generateMock(cwd, [foo]);
+test('should override fallback', function(t) {
+    var overridedsquirrel = createSquirrel({
+        cwd: generatePath(),
+        fallback: path.join(__dirname, './sync.json')
+    });
 
     var squirrel = createSquirrel({
-        cwd: cwd,
-        mock: mock
+        cwd: generatePath(),
+        fallback: path.join(__dirname, './sync.json'),
+        fetch: false
     });
-    t.is(squirrel.getStore(), mock);
-    return retry(function() {
-        if (squirrel.getStore() === mock)
-            return Promise.reject(new Error('retry'));
-        return Promise.resolve();
-    }, retryOptions).then(function() {
-        t.not(squirrel.getStore(), mock);
-    });
+
+    return Promise.all([
+        overridedsquirrel.getStore().then(function(node) {
+            t.same(node.nodes, []);
+        }),
+        squirrel.getStore().then(function(node) {
+            t.is(node.nodes.length, 2);
+        })
+    ]);
 });

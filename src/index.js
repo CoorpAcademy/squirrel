@@ -2,8 +2,9 @@
 
 var _ = require('lodash/fp');
 var path = require('path');
+var Promise = require('bluebird');
+var fs = require('fs');
 var createEtcdDriver = require('./etcd-driver');
-
 
 function addNode(node, prevNode, store) {
     if (node.key === store.key) return node;
@@ -56,15 +57,23 @@ function createSquirrel(options) {
         mock: null,
         cwd: '/',
         indexes: ['name', 'host'],
+        fallback: null,
+        save: false,
         fetch: true
     }, options);
 
-    var store;
-    var indexes;
-    updateStore(options.mock || {});
-    function updateStore(_store) {
-        store = _store || {};
-        indexes = updateIndexes(store);
+    function updateStore(store) {
+        store = store || {};
+        var indexes = updateIndexes(store)
+
+        return Promise.fromCallback(function(cb) {
+            if (options.fallback && options.save)
+                return fs.writeFile(options.fallback, JSON.stringify(store, null, 4), cb);
+            cb();
+        }).return({
+            store: store,
+            indexes: indexes
+        });
     }
 
     function updateIndexes(store) {
@@ -85,32 +94,51 @@ function createSquirrel(options) {
         )(node.dir && node.nodes || []);
     }
 
+    var state$ = Promise.resolve();
 
     var driver = createEtcdDriver(options);
     driver.watch({
         set: function(err, node, prevNode) {
-            updateStore(addNode(node, prevNode, store));
+            state$ = state$.then(_.get('store')).then(function(store) {
+                return addNode(node, prevNode, store);
+            }).then(updateStore).catch(_.constant(state$));
         },
         delete: function(err, node, prevNode) {
-            updateStore(removeNode(node, prevNode, store));
+            state$ = state$.then(_.get('store')).then(function(store) {
+                return removeNode(node, prevNode, store);
+            }).then(updateStore).catch(_.constant(state$));
         }
     });
 
-    if (options.fetch)
-        driver.list().then(function(node) {
-            updateStore(node);
-        });
+
+    if (options.fallback)
+        state$ = state$.then(function() {
+            return Promise.try(function() {
+                return updateStore(require(options.fallback));
+            });
+        }).catch(_.constant(state$));
+    if (options.fetch) {
+        state$ = state$.then(function() {
+            return driver.list();
+        }).then(function(node) {
+            return updateStore(node);
+        }).catch(_.constant(state$));
+    }
 
     function getBy(index, key) {
-        return _.has(key, indexes[index]) ? _.get(key, indexes[index]).value : null;
+        return state$.then(_.get('indexes')).then(function(indexes) {
+            return _.has(key, indexes[index]) ? _.get(key, indexes[index]).value : null;
+        });
     }
 
     function getAll(index) {
-        return _.keys(indexes[index]);
+        return state$.then(_.get('indexes')).then(function(indexes) {
+            return _.keys(indexes && indexes[index]);
+        });
     }
 
     function getStore() {
-        return store;
+        return state$.then(_.get('store'));
     }
 
     return {

@@ -2,6 +2,7 @@
 
 var path = require('path');
 var test = require('ava');
+
 var createSquirrel = require('..');
 
 function generatePath() {
@@ -13,98 +14,111 @@ function generatePath() {
     );
 }
 
-function generateMock(cwd) {
-    return {
-        key: cwd,
-        dir: true,
-        nodes: [brandFoo, brandBar]
-    };
-}
-
-var brandFoo = {
-    'key': 'foo',
-    'value': {
-        'host': 'foo.coorpacademy.com',
-        'name': 'foo',
-        'meta': {
-            'foo': 'bar'
-        }
-    }
-};
-
-var brandBar = {
-    'key': 'bar',
-    'value': {
-        'host': 'bar.coorpacademy.com',
-        'name': 'bar',
-        'meta': {
-            'foo': 'baz'
-        }
-    }
-};
-
 test('should find by name', function(t) {
-    var cwd = generatePath();
-    var mock = generateMock(cwd);
     var squirrel = createSquirrel({
-        cwd: cwd,
-        mock: mock,
+        cwd: generatePath(),
+        fallback: path.join(__dirname, './accessors.json'),
         fetch: false,
         indexes: ['name']
     });
 
-    t.same(squirrel.getBy('name', 'foo'), brandFoo.value);
-    t.same(squirrel.getBy('name', 'bar'), brandBar.value);
-    t.same(squirrel.getBy('name', 'baz'), null);
+    return Promise.all([
+        squirrel.getBy('name', 'foo').then(function(value) {
+            t.same(value.name, 'foo');
+        }),
+        squirrel.getBy('name', 'bar').then(function(value) {
+            t.same(value.name, 'bar');
+        }),
+        squirrel.getBy('name', 'baz').then(function(value) {
+            t.same(value, null);
+        })
+    ]);
 });
 
 test('should find by host', function(t) {
-    var cwd = generatePath();
-    var mock = generateMock(cwd);
     var squirrel = createSquirrel({
-        cwd: cwd,
-        mock: mock,
+        cwd: generatePath(),
+        fallback: path.join(__dirname, './accessors.json'),
         fetch: false,
         indexes: ['host']
     });
 
-    t.same(squirrel.getBy('host', 'foo.coorpacademy.com'), brandFoo.value);
-    t.same(squirrel.getBy('host', 'bar.coorpacademy.com'), brandBar.value);
-    t.same(squirrel.getBy('host', 'baz.coorpacademy.com'), null);
+    return Promise.all([
+        squirrel.getBy('host', 'foo.coorpacademy.com').then(function(value) {
+            t.same(value.host, 'foo.coorpacademy.com');
+        }),
+        squirrel.getBy('host', 'bar.coorpacademy.com').then(function(value) {
+            t.same(value.host, 'bar.coorpacademy.com');
+        }),
+        squirrel.getBy('host', 'baz.coorpacademy.com').then(function(value) {
+            t.same(value, null);
+        })
+    ]);
 });
 
-test('should get all names', function(t) {
-    var cwd = generatePath();
-    var mock = generateMock(cwd);
+test('should find by meta.foo', function(t) {
     var squirrel = createSquirrel({
-        cwd: cwd,
-        mock: mock,
-        fetch: false,
-        indexes: ['name']
-    });
-
-    t.same(squirrel.getAll('name'), ['foo', 'bar']);
-
-    var emptySquirrel = createSquirrel({
-        cwd: generatePath()
-    });
-    t.same(emptySquirrel.getAll('name'), []);
-});
-
-test('should get all meta.foo', function(t) {
-    var cwd = generatePath();
-    var mock = generateMock(cwd);
-    var squirrel = createSquirrel({
-        cwd: cwd,
-        mock: mock,
+        cwd: generatePath(),
+        fallback: path.join(__dirname, './accessors.json'),
         fetch: false,
         indexes: ['meta.foo']
     });
 
-    t.same(squirrel.getAll('meta.foo'), ['bar', 'baz']);
+    return Promise.all([
+        squirrel.getBy('meta.foo', 'foo').then(function(value) {
+            t.same(value.meta.foo, 'foo');
+        }),
+        squirrel.getBy('meta.foo', 'bar').then(function(value) {
+            t.same(value.meta.foo, 'bar');
+        }),
+        squirrel.getBy('meta.foo', 'baz').then(function(value) {
+            t.same(value, null);
+        })
+    ]);
+});
+
+test('should get all names', function(t) {
+    var squirrel = createSquirrel({
+        cwd: generatePath(),
+        fallback: path.join(__dirname, './accessors.json'),
+        fetch: false,
+        indexes: ['name']
+    });
 
     var emptySquirrel = createSquirrel({
-        cwd: generatePath()
+        cwd: generatePath(),
+        fetch: false
     });
-    t.same(emptySquirrel.getAll('meta.foo'), []);
+
+    return Promise.all([
+        squirrel.getAll('name').then(function(values) {
+            t.same(values, ['foo', 'bar']);
+        }),
+        emptySquirrel.getAll('name').then(function(values) {
+            t.same(values, []);
+        })
+    ]);
+});
+
+test('should get all meta.foo', function(t) {
+    var squirrel = createSquirrel({
+        cwd: generatePath(),
+        fallback: path.join(__dirname, './accessors.json'),
+        fetch: false,
+        indexes: ['meta.foo']
+    });
+
+    var emptySquirrel = createSquirrel({
+        cwd: generatePath(),
+        fetch: false
+    });
+
+    return Promise.all([
+        squirrel.getAll('meta.foo').then(function(values) {
+            t.same(values, ['foo', 'bar']);
+        }),
+        emptySquirrel.getAll('meta.foo').then(function(values) {
+            t.same(values, []);
+        })
+    ]);
 });

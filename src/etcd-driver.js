@@ -94,7 +94,7 @@ function createEtcdSync(options) {
         return nodes$.then(function() {
             return Promise.fromCallback(function(cb) {
                 etcd.mkdir(
-                    key,
+                    path.join(options.cwd, key),
                     { recursive: true, maxRetries: Infinity },
                     cb
                 );
@@ -152,13 +152,14 @@ function createEtcdSync(options) {
         return watcher;
     }
 
-    nodes$ = mkdir(options.cwd);
+    nodes$ = mkdir('');
 
     return {
         get: get,
         set: set,
         del: del,
         list: list,
+        mkdir: mkdir,
         rmdir: rmdir,
         clean: clean,
         watch: watch
