@@ -13,14 +13,22 @@ var retryOptions = {
     timeout: 2000
 };
 
-var generatePath = function() {
+function generatePath() {
     return path.join(
         '/test',
         Date.now().toString(),
         Math.random().toString().slice(2),
         'folder'
     );
-};
+}
+
+function generateMock(cwd, values) {
+    return {
+        key: cwd,
+        dir: true,
+        nodes: values
+    };
+}
 
 test('should sync squirrel', function(t) {
     var cwd = generatePath();
@@ -30,8 +38,7 @@ test('should sync squirrel', function(t) {
         indexes: ['name']
     });
     var driver = createEtcdDriver({
-        cwd: cwd,
-        indexes: ['name']
+        cwd: cwd
     });
 
     var brand = {
@@ -43,7 +50,13 @@ test('should sync squirrel', function(t) {
     };
 
     t.same(squirrel.getBy('name', brand.value.name), null);
-    return driver.set(brand.key, brand.value).then(function() {
+    return retry(function() {
+        if (!squirrel.getStore().nodes)
+            return Promise.reject(new Error('retry'));
+        return Promise.resolve();
+    }, retryOptions).then(function() {
+        return driver.set(brand.key, brand.value);
+    }).then(function() {
         return retry(function() {
             if (!squirrel.getBy('name', brand.value.name))
                 return Promise.reject(new Error('retry'));
@@ -63,9 +76,53 @@ test('should sync squirrel', function(t) {
     });
 });
 
-test('should override mock', function(t) {
+test('should deep sync squirrel', function(t) {
     var cwd = generatePath();
 
+    var squirrel = createSquirrel({
+        cwd: cwd,
+        indexes: ['name']
+    });
+    var driver = createEtcdDriver({
+        cwd: cwd
+    });
+
+    var brand = {
+        key: 'foo/bar',
+        value: {
+            name: 'foo',
+            host: 'foo.bar.baz'
+        }
+    };
+
+    t.same(squirrel.getBy('name', brand.value.name), null);
+    return retry(function() {
+        if (!squirrel.getStore().nodes)
+            return Promise.reject(new Error('retry'));
+        return Promise.resolve();
+    }, retryOptions).then(function() {
+        return driver.set(brand.key, brand.value);
+    }).then(function() {
+        return retry(function() {
+            if (!squirrel.getBy('name', brand.value.name))
+                return Promise.reject(new Error('retry'));
+            return Promise.resolve();
+        }, retryOptions);
+    }).then(function() {
+        t.same(squirrel.getBy('name', brand.value.name), brand.value);
+        return driver.del(brand.key);
+    }).then(function() {
+        return retry(function() {
+            if (squirrel.getBy('name', brand.value.name))
+                return Promise.reject(new Error('retry'));
+            return Promise.resolve();
+        }, retryOptions);
+    }).then(function() {
+        t.same(squirrel.getBy('name', brand.value.name), null);
+    });
+});
+
+test('should override mock', function(t) {
     var foo = {
         key: 'foo',
         value: {
@@ -73,16 +130,19 @@ test('should override mock', function(t) {
         }
     };
 
+    var cwd = generatePath();
+    var mock = generateMock(cwd, [foo]);
+
     var squirrel = createSquirrel({
         cwd: cwd,
-        mock: [foo]
+        mock: mock
     });
-    t.same(squirrel.getStore(), {foo: foo.value});
+    t.is(squirrel.getStore(), mock);
     return retry(function() {
-        if (Object.keys(squirrel.getStore()).length > 0)
+        if (squirrel.getStore() === mock)
             return Promise.reject(new Error('retry'));
         return Promise.resolve();
     }, retryOptions).then(function() {
-        t.same(squirrel.getStore(), {});
+        t.not(squirrel.getStore(), mock);
     });
 });

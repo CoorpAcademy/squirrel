@@ -4,14 +4,22 @@ var path = require('path');
 var test = require('ava');
 var createSquirrel = require('..');
 
-var generatePath = function() {
+function generatePath() {
     return path.join(
         '/test',
         Date.now().toString(),
         Math.random().toString().slice(2),
         'folder'
     );
-};
+}
+
+function generateMock(cwd) {
+    return {
+        key: cwd,
+        dir: true,
+        nodes: [brandFoo, brandBar]
+    };
+}
 
 var brandFoo = {
     'key': 'foo',
@@ -36,9 +44,11 @@ var brandBar = {
 };
 
 test('should find by name', function(t) {
+    var cwd = generatePath();
+    var mock = generateMock(cwd);
     var squirrel = createSquirrel({
-        cwd: generatePath(),
-        mock: [brandFoo, brandBar],
+        cwd: cwd,
+        mock: mock,
         fetch: false,
         indexes: ['name']
     });
@@ -49,9 +59,11 @@ test('should find by name', function(t) {
 });
 
 test('should find by host', function(t) {
+    var cwd = generatePath();
+    var mock = generateMock(cwd);
     var squirrel = createSquirrel({
-        cwd: generatePath(),
-        mock: [brandFoo, brandBar],
+        cwd: cwd,
+        mock: mock,
         fetch: false,
         indexes: ['host']
     });
@@ -62,9 +74,11 @@ test('should find by host', function(t) {
 });
 
 test('should get all names', function(t) {
+    var cwd = generatePath();
+    var mock = generateMock(cwd);
     var squirrel = createSquirrel({
-        cwd: generatePath(),
-        mock: [brandFoo, brandBar],
+        cwd: cwd,
+        mock: mock,
         fetch: false,
         indexes: ['name']
     });
@@ -78,9 +92,11 @@ test('should get all names', function(t) {
 });
 
 test('should get all meta.foo', function(t) {
+    var cwd = generatePath();
+    var mock = generateMock(cwd);
     var squirrel = createSquirrel({
-        cwd: generatePath(),
-        mock: [brandFoo, brandBar],
+        cwd: cwd,
+        mock: mock,
         fetch: false,
         indexes: ['meta.foo']
     });

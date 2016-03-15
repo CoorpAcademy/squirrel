@@ -40,7 +40,7 @@ function createEtcdSync(options) {
                     cb
                 );
             });
-        }).then(getNode).then(parse).asCallback(cb);
+        }).then(getNode).then(parse).then(relative).asCallback(cb);
     }
 
     function list(cb) {
@@ -52,7 +52,7 @@ function createEtcdSync(options) {
                     cb
                 );
             });
-        }).then(getNode).then(parse).asCallback(cb);
+        }).then(getNode).then(parse).then(relative).asCallback(cb);
     }
 
     function set(key, value, cb) {
@@ -82,7 +82,7 @@ function createEtcdSync(options) {
         return nodes$.then(function() {
             return Promise.fromCallback(function(cb) {
                 etcd.rmdir(
-                    key,
+                    path.join(options.cwd, key),
                     { recursive: true },
                     cb
                 );
@@ -109,12 +109,7 @@ function createEtcdSync(options) {
     }
 
     function clean(cb) {
-        return list().then(function(node) {
-            return Promise.all(node.nodes.map(function(node) {
-                var key = path.relative(options.cwd, node.key);
-                return (node.dir ? rmdir : del)(key);
-            }));
-        }).then(function() {
+        return list().then(relative).then(function() {
             return true;
         }).asCallback(cb);
     }
@@ -124,10 +119,27 @@ function createEtcdSync(options) {
             if (res.node.dir) return;
             hook(
                 null,
-                parse(_.set('key', path.relative(options.cwd, res.node.key), res.node)),
-                res.prevNode ? parse(_.set('key', path.relative(options.cwd, res.prevNode.key), res.prevNode)) : null
+                parse(relative(res.node)),
+                res.prevNode ? relative(res.prevNode) : null
             );
         };
+    }
+
+    function relative(node) {
+        node = _.set(
+            'key',
+            path.relative(options.cwd, node.key),
+            node
+        );
+
+        if (node.dir && node.nodes)
+            node = _.set(
+                'nodes',
+                _.map(relative, node.nodes),
+                node
+            );
+
+        return node;
     }
 
     function watch(hooks) {
@@ -147,6 +159,7 @@ function createEtcdSync(options) {
         set: set,
         del: del,
         list: list,
+        rmdir: rmdir,
         clean: clean,
         watch: watch
     };

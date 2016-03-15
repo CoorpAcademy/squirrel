@@ -4,14 +4,22 @@ var path = require('path');
 var test = require('ava');
 var createSquirrel = require('..');
 
-var generatePath = function() {
+function generatePath() {
     return path.join(
         '/test',
         Date.now().toString(),
         Math.random().toString().slice(2),
         'folder'
     );
-};
+}
+
+function generateMock(cwd) {
+    return {
+        key: cwd,
+        dir: true,
+        nodes: [foo]
+    };
+}
 
 var foo = {
     key: 'foo',
@@ -24,9 +32,11 @@ var foo = {
 };
 
 test('should index by first level field', function(t) {
+    var cwd = generatePath();
+    var mock = generateMock(cwd);
     var squirrel = createSquirrel({
-        cwd: generatePath(),
-        mock: [foo],
+        cwd: cwd,
+        mock: mock,
         fetch: false,
         indexes: ['foo']
     });
@@ -36,9 +46,11 @@ test('should index by first level field', function(t) {
 });
 
 test('should index by deeper level field', function(t) {
+    var cwd = generatePath();
+    var mock = generateMock(cwd);
     var squirrel = createSquirrel({
-        cwd: generatePath(),
-        mock: [foo],
+        cwd: cwd,
+        mock: mock,
         fetch: false,
         indexes: ['bar.baz']
     });
