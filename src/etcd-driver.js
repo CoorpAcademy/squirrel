@@ -128,7 +128,7 @@ function createEtcdSync(options) {
     function relative(node) {
         node = _.set(
             'key',
-            path.relative(options.cwd, node.key),
+            path.relative(options.cwd, node.key || ''),
             node
         );
 

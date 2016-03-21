@@ -35,13 +35,28 @@ function syncEntry(cwd) {
                     return driver.mkdir(cwd);
                 });
             })().then(function() {
-                return Promise.fromCallback(function(cb) {
-                    fs.readdir(path.join(source, cwd), cb);
-                });
-            }).then(function(files) {
-                return Promise.all(files.map(function(file) {
-                    syncEntry(path.join(cwd, file));
-                }));
+                return Promise.all([
+                    Promise.fromCallback(function(cb) {
+                        fs.readdir(path.join(source, cwd), cb);
+                    }),
+                    driver.get(cwd)
+                ]);
+            }).then(function(results) {
+                var files = results[0];
+                var node = results[1];
+
+                return Promise.all([].concat(
+                    files.map(function(file) {
+                        return syncEntry(path.join(cwd, file));
+                    }),
+                    node.nodes.filter(function(node) {
+                        return !~files.indexOf(node.key);
+                    }).map(function(node) {
+                        if (node.dir)
+                            return driver.rmdir(path.join(cwd, node.key));
+                        return driver.del(path.join(cwd, node.key));
+                    })
+                ));
             });
         }
         else {
