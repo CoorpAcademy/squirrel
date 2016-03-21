@@ -33,6 +33,9 @@
     "eslint-config-coorpacademy": "^1.0.0",
     "eslint-plugin-ava": "^1.2.0"
   },
+  "bin": {
+    "squirrel": "bin/squirrel.js"
+  },
   "ava": {
     "files": [
       "src/**/test/**/*.js",
