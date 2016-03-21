@@ -4,12 +4,17 @@
 Watch etcd folder and keep it synchronized.
 
 ## Install
-```
-$ git clone git@github.com:/coorpacademy/squirrel.git
-$ npm install
+```shell
+$ npm install --save @coorpacademy/squirrel
 ```
 
+
 ## Usage
+### Command Line Interface
+
+```
+squirrel --hosts localhost:2379,localhost:2379 ./my-folder /etcd-folder
+```
 
 ### Retrieve a Client
 
