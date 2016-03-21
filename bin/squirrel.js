@@ -62,10 +62,10 @@ function syncEntry(cwd) {
     });
 }
 
-console.log('Copy ' + source + ' local directory to ' + destination + ' etcd directory');
+process.stdout.write('Copy ' + source + ' local directory to ' + destination + ' etcd directory \n');
 
 syncEntry('').then(function() {
-    console.log('Sync');
+    process.stdout.write('Sync\n');
 }, function(err) {
-    console.error('Error:', err.stack);
+    process.stderr.write('Error: \n' + err.stack + '\n');
 });
