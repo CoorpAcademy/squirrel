@@ -24,6 +24,7 @@ function syncEntry(cwd) {
             return Promise.resolve(null);
         })
     ]).then(function(results) {
+        process.stdout.write('sync: ' + cwd + '\n');
         var stat = results[0];
         var node = results[1];
 

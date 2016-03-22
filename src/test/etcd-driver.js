@@ -29,7 +29,7 @@ test('should fetch folder content', function(t) {
         cwd: generatePath()
     });
 
-    return driver.set('foo', {
+    return driver.set('/foo', {
         foo: 'foo'
     }).then(function() {
         return driver.list();
@@ -64,13 +64,14 @@ test('should watch set', function(t) {
     return Promise.fromCallback(function(cb) {
         driver.watch({
             set: function(err, node) {
-                t.same(node.key, 'foo');
+                if (node.dir) return;
+                t.same(node.key, '/foo');
                 t.same(node.value, 'bar');
                 cb();
             }
         });
 
-        driver.set('foo', 'bar');
+        driver.set('/foo', 'bar');
     });
 });
 
@@ -82,14 +83,14 @@ test('should watch delete', function(t) {
     return Promise.fromCallback(function(cb) {
         driver.watch({
             delete: function(err, node) {
-                t.same(node.key, 'foo');
+                t.same(node.key, '/foo');
                 t.same(node.value);
                 cb();
             }
         });
 
-        driver.set('foo', 'bar').then(function() {
-            return driver.del('foo', 'bar');
+        driver.set('/foo', 'bar').then(function() {
+            return driver.del('/foo', 'bar');
         });
     });
 });

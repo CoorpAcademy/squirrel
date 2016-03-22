@@ -7,34 +7,39 @@ var fs = require('fs');
 var createEtcdDriver = require('./etcd-driver');
 
 function addNode(node, prevNode, store) {
+    if (!_.startsWith(store.key, node.key)) return store;
     if (node.key === store.key) return node;
 
-    if (node.dir && _.startsWith(store.key, node.key))
-        return _.set(
-            'nodes', (store.nodes || []).map(function(child) {
-                return addNode(node, prevNode, child);
-            }),
-            store
-        );
+    var index = _.findIndex(function(child) {
+        return _.startsWith(child.key, node.key);
+    }, store.nodes);
 
-    if (!prevNode) {
-        var fragments = path.relative(store.key, node.key).split('/');
-        var fragment = fragments.shift();
+    if (index > -1) {
         return _.set(
             'nodes',
-            _.concat(node.nodes, [addNode(
-                node,
-                prevNode,
-                fragment ? {
-                    key: path.join(store.key, fragment),
-                    dir: true
-                } : node
-            )]),
+            _.map(function(child) {
+                return addNode(node, prevNode, child);
+            }, store.nodes),
             store
         );
     }
 
-    return store;
+    var storeKey = path.join(
+        store.key,
+        path.relative(store.key, node.key).split('/').shift()
+    );
+
+    return _.set(
+        'nodes',
+        _.concat(
+            store.nodes,
+            addNode(node, prevNode, {
+                key: storeKey,
+                dir: true
+            })
+        ),
+        store
+    );
 }
 
 function removeNode(node, prevNode, store) {
@@ -64,7 +69,7 @@ function createSquirrel(options) {
 
     function updateStore(store) {
         store = store || {};
-        var indexes = updateIndexes(store)
+        var indexes = updateIndexes(store);
 
         return Promise.fromCallback(function(cb) {
             if (options.fallback && options.save)
@@ -99,6 +104,7 @@ function createSquirrel(options) {
     var driver = createEtcdDriver(options);
     driver.watch({
         set: function(err, node, prevNode) {
+            if (node.dir && prevNode) return;
             state$ = state$.then(_.get('store')).then(function(store) {
                 return addNode(node, prevNode, store);
             }).then(updateStore).catch(_.constant(state$));
@@ -141,10 +147,26 @@ function createSquirrel(options) {
         return state$.then(_.get('store'));
     }
 
+    function get(path) {
+        return state$.then(_.get('store')).then(function(store) {
+            return _get(path, store);
+        });
+    }
+
+    function _get(_path, node) {
+        if (!node) return null;
+        if (path.relative(node.key, _path) === '') return node;
+
+        return _get(_path, _.find(function(child) {
+            return _.startsWith(child.key, _path);
+        }, node.nodes));
+    }
+
     return {
         getBy: getBy,
         getAll: getAll,
-        getStore: getStore
+        getStore: getStore,
+        get: get
     };
 }
 

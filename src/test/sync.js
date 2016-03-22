@@ -49,7 +49,7 @@ test('should sync squirrel', function(t) {
                 if (node.nodes.length > 0)
                     return Promise.reject(new Error('retry'));
                 return Promise.resolve();
-            })
+            });
         }, retryOptions);
     }).then(function() {
         return driver.set(brand.key, brand.value);

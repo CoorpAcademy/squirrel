@@ -28,6 +28,7 @@ function createEtcdSync(options) {
         key: null,
         cert: null
     }, options);
+    options.cwd = path.join('/', options.cwd);
 
     var etcd = new Etcd(options.hosts, _.pick(['auth', 'ca', 'key', 'cert'], options));
     var nodes$ = Promise.resolve();
@@ -116,7 +117,6 @@ function createEtcdSync(options) {
 
     function wrapHook(hook) {
         return function(res) {
-            if (res.node.dir) return;
             hook(
                 null,
                 parse(relative(res.node)),
@@ -128,7 +128,7 @@ function createEtcdSync(options) {
     function relative(node) {
         node = _.set(
             'key',
-            path.relative(options.cwd, node.key || ''),
+            path.join('/', path.relative(options.cwd, node.key || '')),
             node
         );
 
