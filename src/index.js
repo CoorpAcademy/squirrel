@@ -1,13 +1,16 @@
 'use strict';
 
-var _ = require('lodash/fp');
-var path = require('path');
-var Promise = require('bluebird');
 var fs = require('fs');
+var path = require('path');
+var _ = require('lodash/fp');
+var Promise = require('bluebird');
+var debug = require('debug')('squirrel');
 var createEtcdDriver = require('./etcd-driver');
 
 function addNode(node, prevNode, store) {
+    debug('addNode', node, prevNode, store);
     if (!_.startsWith(store.key, node.key)) return store;
+    if (node.dir && prevNode) return store;
     if (node.key === store.key) return node;
 
     var index = _.findIndex(function(child) {
@@ -43,6 +46,7 @@ function addNode(node, prevNode, store) {
 }
 
 function removeNode(node, prevNode, store) {
+    debug('removeNode', node, prevNode, store);
     if (node.key === store.key) return null;
 
     if (store.dir && _.startsWith(store.key, node.key))
@@ -66,8 +70,10 @@ function createSquirrel(options) {
         save: false,
         fetch: true
     }, options);
+    debug('createSquirrel', options);
 
     function updateStore(store) {
+        debug('updateStore', store);
         store = store || {};
         var indexes = updateIndexes(store);
 
@@ -82,12 +88,14 @@ function createSquirrel(options) {
     }
 
     function updateIndexes(store) {
+        debug('updateIndexes', store);
         return _.zipObject(options.indexes, _.map(function(index) {
             return buildIndex(index, store);
         }, options.indexes));
     }
 
     function buildIndex(index, node) {
+        debug('buildIndex', index, node);
         var value = _.get(index, node.value);
 
         return _.pipe(
@@ -104,7 +112,6 @@ function createSquirrel(options) {
     var driver = createEtcdDriver(options);
     driver.watch({
         set: function(err, node, prevNode) {
-            if (node.dir && prevNode) return;
             state$ = state$.then(_.get('store')).then(function(store) {
                 return addNode(node, prevNode, store);
             }).then(updateStore).catch(_.constant(state$));
@@ -132,22 +139,26 @@ function createSquirrel(options) {
     }
 
     function getBy(index, key) {
+        debug('getBy', index, key);
         return state$.then(_.get('indexes')).then(function(indexes) {
             return _.has(key, indexes[index]) ? _.get(key, indexes[index]).value : null;
         });
     }
 
     function getAll(index) {
+        debug('getAll', index);
         return state$.then(_.get('indexes')).then(function(indexes) {
             return _.keys(indexes && indexes[index]);
         });
     }
 
     function getStore() {
+        debug('getStore');
         return state$.then(_.get('store'));
     }
 
     function get(path) {
+        debug('get', path);
         return state$.then(_.get('store')).then(function(store) {
             return _get(path, store);
         });

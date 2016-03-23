@@ -44,18 +44,6 @@ test('should fetch folder content', function(t) {
     });
 });
 
-test('should clean folder', function(t) {
-    var driver = createEtcdDriver({
-        cwd: generatePath()
-    });
-
-    return driver.clean().then(function() {
-        return driver.list();
-    }).then(function(node) {
-        t.same(node.nodes, []);
-    });
-});
-
 test('should watch set', function(t) {
     var driver = createEtcdDriver({
         cwd: generatePath()

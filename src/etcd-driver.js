@@ -1,6 +1,7 @@
 'use strict';
 
 var path = require('path');
+var debug = require('debug')('squirrel:etcd');
 var Promise = require('bluebird');
 var _ = require('lodash/fp');
 var Etcd = require('node-etcd');
@@ -34,6 +35,7 @@ function createEtcdSync(options) {
     var nodes$ = Promise.resolve();
 
     function get(key, cb) {
+        debug('get', key);
         return nodes$.then(function() {
             return Promise.fromCallback(function(cb) {
                 etcd.get(
@@ -41,10 +43,12 @@ function createEtcdSync(options) {
                     cb
                 );
             });
-        }).then(getNode).then(parse).then(relative).asCallback(cb);
+        }).then(getNode).then(parse).then(relative)
+        .tap(debug.bind(null, 'get:cb', key)).asCallback(cb);
     }
 
     function list(cb) {
+        debug('list');
         return nodes$.then(function() {
             return Promise.fromCallback(function(cb) {
                 etcd.get(
@@ -53,10 +57,12 @@ function createEtcdSync(options) {
                     cb
                 );
             });
-        }).then(getNode).then(parse).then(relative).asCallback(cb);
+        }).then(getNode).then(parse).then(relative)
+        .tap(debug.bind(null, 'list:cb')).asCallback(cb);
     }
 
     function set(key, value, cb) {
+        debug('set', key, value);
         return nodes$.then(function() {
             return Promise.fromCallback(function(cb) {
                 etcd.set(
@@ -65,10 +71,11 @@ function createEtcdSync(options) {
                     cb
                 );
             });
-        }).asCallback(cb);
+        }).tap(debug.bind(null, 'set:cb', key, value)).asCallback(cb);
     }
 
     function del(key, cb) {
+        debug('del', key);
         return nodes$.then(function() {
             return Promise.fromCallback(function(cb) {
                 etcd.del(
@@ -76,10 +83,11 @@ function createEtcdSync(options) {
                     cb
                 );
             });
-        }).asCallback(cb);
+        }).tap(debug.bind(null, 'del:cb', key)).asCallback(cb);
     }
 
     function rmdir(key, cb) {
+        debug('rmdir', key);
         return nodes$.then(function() {
             return Promise.fromCallback(function(cb) {
                 etcd.rmdir(
@@ -88,10 +96,11 @@ function createEtcdSync(options) {
                     cb
                 );
             });
-        }).asCallback(cb);
+        }).tap(debug.bind(null, 'rmdir:cb', key)).asCallback(cb);
     }
 
     function mkdir(key, cb) {
+        debug('mkdir', key);
         return nodes$.then(function() {
             return Promise.fromCallback(function(cb) {
                 etcd.mkdir(
@@ -106,23 +115,7 @@ function createEtcdSync(options) {
             if (err.errorCode === 107)
                 return [];
             throw err;
-        }).asCallback(cb);
-    }
-
-    function clean(cb) {
-        return list().then(relative).then(function() {
-            return true;
-        }).asCallback(cb);
-    }
-
-    function wrapHook(hook) {
-        return function(res) {
-            hook(
-                null,
-                parse(relative(res.node)),
-                res.prevNode ? relative(res.prevNode) : null
-            );
-        };
+        }).tap(debug.bind(null, 'mkdir:cb', key)).asCallback(cb);
     }
 
     function relative(node) {
@@ -143,6 +136,7 @@ function createEtcdSync(options) {
     }
 
     function watch(hooks) {
+        debug('watch', _.keys(hooks));
         var watcher = etcd.watcher(options.cwd, null, {recursive: true});
 
         _.forEach(function(hook, event) {
@@ -152,7 +146,20 @@ function createEtcdSync(options) {
         return watcher;
     }
 
-    nodes$ = mkdir('');
+    function wrapHook(hook) {
+        return function(res) {
+            var node = parse(relative(res.node));
+            var prevNode = res.prevNode ? relative(res.prevNode) : null;
+            debug('watch:' + res.action, node, prevNode);
+            hook(
+                null,
+                node,
+                prevNode
+            );
+        };
+    }
+
+    nodes$ = mkdir('/');
 
     return {
         get: get,
@@ -161,7 +168,6 @@ function createEtcdSync(options) {
         list: list,
         mkdir: mkdir,
         rmdir: rmdir,
-        clean: clean,
         watch: watch
     };
 }
