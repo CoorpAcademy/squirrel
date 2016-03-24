@@ -8,7 +8,7 @@
     "lint": "eslint .",
     "ava": "RUNNING_UNIT_TESTS=true ava",
     "nyc": "RUNNING_UNIT_TESTS=true  nyc ava",
-    "coverage": "nyc report --reporter=text-lcov | coveralls"
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",
