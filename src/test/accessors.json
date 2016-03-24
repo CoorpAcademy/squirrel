@@ -1,9 +1,9 @@
 {
-    "key": "",
+    "key": "/",
     "dir": true,
     "nodes": [
         {
-            "key": "foo",
+            "key": "/foo",
             "value": {
                 "host": "foo.coorpacademy.com",
                 "name": "foo",
@@ -13,7 +13,7 @@
             }
         },
         {
-            "key": "bar",
+            "key": "/bar",
             "value": {
                 "host": "bar.coorpacademy.com",
                 "name": "bar",

@@ -17,7 +17,8 @@ test.beforeEach('create proxy', function(t) {
         },
         close: function() {
             proxy.close();
-        }
+        },
+        host: 'http://localhost:' + port
     };
 });
 
@@ -53,7 +54,7 @@ test('should reconnect', function(t) {
     }).then(function() {
         var driver = createEtcdDriver({
             cwd: cwd,
-            hosts: 'http://localhost:42379'
+            hosts: t.context.proxy.host
         });
 
         return Promise.fromCallback(function(cb) {

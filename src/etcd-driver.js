@@ -33,6 +33,9 @@ function createEtcdSync(options) {
 
     var etcd = new Etcd(options.hosts, _.pick(['auth', 'ca', 'key', 'cert'], options));
     var nodes$ = Promise.resolve();
+    nodes$ = mkdir('/').catch(function() {
+        return Promise.resolve();
+    });
 
     function get(key, cb) {
         debug('get', key);
@@ -105,7 +108,7 @@ function createEtcdSync(options) {
             return Promise.fromCallback(function(cb) {
                 etcd.mkdir(
                     path.join(options.cwd, key),
-                    { recursive: true, maxRetries: Infinity },
+                    { recursive: true },
                     cb
                 );
             });
@@ -158,8 +161,6 @@ function createEtcdSync(options) {
             );
         };
     }
-
-    nodes$ = mkdir('/');
 
     return {
         get: get,

@@ -123,24 +123,39 @@ function createSquirrel(options) {
                 return removeNode(node, prevNode, store);
             }).then(updateStore).catch(_.constant(state$));
         },
-        resync: function(err, node, prevNode) {
-            debug('watch:resync', arguments);
+        resync: function(err) {
+            debug('watch:resync');
+            state$ = fetch(state$);
+        },
+        reconnect: function(err) {
+            debug('watch:reconnect');
+            state$ = fetch(state$);
         }
     });
 
 
     if (options.fallback)
-        state$ = state$.then(function() {
-            return Promise.try(function() {
-                return updateStore(require(options.fallback));
-            });
-        }).catch(_.constant(state$));
+        state$ = setStore(Promise.try(function() {
+            return updateStore(require(options.fallback));
+        }), state$);
     if (options.fetch) {
-        state$ = state$.then(function() {
+        state$ = fetch(state$);
+    }
+
+    function fetch(state$) {
+        return state$.then(function() {
+            return driver.mkdir('/').catch(function() {
+                Promise.resolve();
+            });
+        }).then(function() {
             return driver.list();
         }).then(function(node) {
             return updateStore(node);
         }).catch(_.constant(state$));
+    }
+
+    function setStore(state$, init$) {
+        return state$.catch(_.constant(init$));
     }
 
     function getBy(index, key) {
