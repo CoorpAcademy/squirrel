@@ -3,24 +3,10 @@
 var path = require('path');
 var test = require('ava');
 var Promise = require('bluebird');
-var retry = require('bluebird-retry');
 var createSquirrel = require('..');
 var createEtcdDriver = require('../etcd-driver');
-
-var retryOptions = {
-    max_tries: -1,
-    interval: 10,
-    timeout: 2000
-};
-
-function generatePath() {
-    return path.join(
-        '/test',
-        Date.now().toString(),
-        Math.random().toString().slice(2),
-        'folder'
-    );
-}
+var retry = require('../util/test').retry;
+var generatePath = require('../util/test').generatePath;
 
 test('should sync squirrel', function(t) {
     var cwd = generatePath();
@@ -34,7 +20,7 @@ test('should sync squirrel', function(t) {
     });
 
     var brand = {
-        key: 'foo',
+        key: '/foo',
         value: {
             name: 'foo',
             host: 'foo.bar.baz'
@@ -43,37 +29,20 @@ test('should sync squirrel', function(t) {
 
     return squirrel.getBy('name', brand.value.name).then(function(value) {
         t.same(value, null);
-
-        return retry(function() {
-            return squirrel.getStore().then(function(node) {
-                if (node.nodes.length > 0)
-                    return Promise.reject(new Error('retry'));
-                return Promise.resolve();
-            });
-        }, retryOptions);
-    }).then(function() {
         return driver.set(brand.key, brand.value);
     }).then(function() {
-        return retry(function() {
-            return squirrel.getBy('name', brand.value.name).then(function(value) {
-                if (!value)
-                    return Promise.reject(new Error('retry'));
-                return Promise.resolve();
-            });
-        }, retryOptions);
+        return retry(squirrel, brand.key, function(node) {
+            return node.value.name === brand.value.name;
+        });
     }).then(function() {
         return squirrel.getBy('name', brand.value.name);
     }).then(function(value) {
         t.same(value, brand.value);
         return driver.del(brand.key);
     }).then(function() {
-        return retry(function() {
-            return squirrel.getBy('name', brand.value.name).then(function(value) {
-                if (value && value.name)
-                    return Promise.reject(new Error('retry'));
-                return Promise.resolve();
-            });
-        }, retryOptions);
+        return retry(squirrel, brand.key, function(node) {
+            return node === null;
+        });
     }).then(function() {
         return squirrel.getBy('name', brand.value.name);
     }).then(function(value) {

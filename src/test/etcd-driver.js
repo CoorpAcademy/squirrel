@@ -1,18 +1,9 @@
 'use strict';
 
-var path = require('path');
 var Promise = require('bluebird');
 var test = require('ava');
 var createEtcdDriver = require('../etcd-driver');
-
-var generatePath = function() {
-    return path.join(
-        '/test',
-        Date.now().toString(),
-        Math.random().toString().slice(2),
-        'folder'
-    );
-};
+var generatePath = require('../util/test').generatePath;
 
 test('should create etcd driver', function(t) {
     var driver = createEtcdDriver({

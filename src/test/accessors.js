@@ -2,17 +2,9 @@
 
 var path = require('path');
 var test = require('ava');
+var generatePath = require('../util/test').generatePath;
 
 var createSquirrel = require('..');
-
-function generatePath() {
-    return path.join(
-        '/test',
-        Date.now().toString(),
-        Math.random().toString().slice(2),
-        'folder'
-    );
-}
 
 test('should find by name', function(t) {
     var squirrel = createSquirrel({

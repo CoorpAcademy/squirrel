@@ -2,21 +2,10 @@
 
 var path = require('path');
 var test = require('ava');
-var Promise = require('bluebird');
 var createSquirrel = require('..');
 var createEtcdDriver = require('../etcd-driver');
-
-
-function generatePath() {
-    return path.join(
-        '/test',
-        Date.now().toString(),
-        Math.random().toString().slice(2),
-        'folder'
-    );
-}
-
-var TIMEOUT = 100;
+var retry = require('../util/test').retry;
+var generatePath = require('../util/test').generatePath;
 
 test('should watch set file', function(t) {
     var cwd = generatePath();
@@ -32,12 +21,12 @@ test('should watch set file', function(t) {
     });
 
     return squirrel.getStore().then(function(store) {
-        return driver.set('yolo/127', {
+        return driver.set('/yolo/127', {
             name: 'blue'
         });
     }).then(function() {
-        return new Promise(function(resolve) {
-            setTimeout(resolve, TIMEOUT);
+        return retry(squirrel, '/yolo/127', function(node) {
+            return node.value !== null;
         });
     }).then(function() {
         return squirrel.getBy('name', 'blue');
@@ -64,8 +53,8 @@ test('should watch add directory', function(t) {
     return squirrel.getStore().then(function(store) {
         return driver.mkdir('/foo/bar');
     }).then(function() {
-        return new Promise(function(resolve) {
-            setTimeout(resolve, TIMEOUT);
+        return retry(squirrel, '/foo/bar', function(node) {
+            return node !== null;
         });
     }).then(function() {
         return squirrel.get('/foo/bar');
@@ -73,7 +62,6 @@ test('should watch add directory', function(t) {
         t.same(node.nodes, []);
     });
 });
-
 
 test('should watch remove directory', function(t) {
     var cwd = generatePath();
@@ -93,8 +81,8 @@ test('should watch remove directory', function(t) {
     }).then(function() {
         return driver.rmdir('/foo');
     }).then(function() {
-        return new Promise(function(resolve) {
-            setTimeout(resolve, TIMEOUT);
+        return retry(squirrel, '/yolo/bar', function(node) {
+            return node === null;
         });
     }).then(function() {
         return squirrel.get('/foo');
@@ -102,7 +90,6 @@ test('should watch remove directory', function(t) {
         t.is(node, null);
     });
 });
-
 
 test('should watch remove file', function(t) {
     var cwd = generatePath();
@@ -122,8 +109,8 @@ test('should watch remove file', function(t) {
     }).then(function() {
         return driver.del('/foo/bar');
     }).then(function() {
-        return new Promise(function(resolve) {
-            setTimeout(resolve, TIMEOUT);
+        return retry(squirrel, '/foo/bar', function(node) {
+            return node === null;
         });
     }).then(function() {
         return squirrel.get('/foo/bar');

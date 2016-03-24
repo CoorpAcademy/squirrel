@@ -148,8 +148,8 @@ function createEtcdSync(options) {
 
     function wrapHook(hook) {
         return function(res) {
-            var node = parse(relative(res.node));
-            var prevNode = res.prevNode ? relative(res.prevNode) : null;
+            var node = res.node ? parse(relative(res.node)) : null;
+            var prevNode = res.prevNode ? parse(relative(res.prevNode)) : null;
             debug('watch:' + res.action, node, prevNode);
             hook(
                 null,

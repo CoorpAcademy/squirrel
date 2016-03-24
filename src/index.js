@@ -112,14 +112,19 @@ function createSquirrel(options) {
     var driver = createEtcdDriver(options);
     driver.watch({
         set: function(err, node, prevNode) {
+            debug('watch:set', arguments);
             state$ = state$.then(_.get('store')).then(function(store) {
                 return addNode(node, prevNode, store);
             }).then(updateStore).catch(_.constant(state$));
         },
         delete: function(err, node, prevNode) {
+            debug('watch:delete', arguments);
             state$ = state$.then(_.get('store')).then(function(store) {
                 return removeNode(node, prevNode, store);
             }).then(updateStore).catch(_.constant(state$));
+        },
+        resync: function(err, node, prevNode) {
+            debug('watch:resync', arguments);
         }
     });
 
