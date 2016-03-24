@@ -81,7 +81,7 @@ test('should watch remove directory', function(t) {
     }).then(function() {
         return driver.rmdir('/foo');
     }).then(function() {
-        return retry(squirrel, '/yolo/bar', function(node) {
+        return retry(squirrel, '/foo/bar', function(node) {
             return node === null;
         });
     }).then(function() {

@@ -87,7 +87,7 @@ test('should restore fallback if etcd is unavailable', function(t) {
     });
 });
 
-test('should restore fallback if etcd is unavailable', function(t) {
+test('should resync on reconnect', function(t) {
     var cwd = generatePath();
 
     var driver = createEtcdDriver({

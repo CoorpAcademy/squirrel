@@ -8,3 +8,5 @@ node_modules/
 
 # scratch files
 *~
+.nyc_output
+coverage
