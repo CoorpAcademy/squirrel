@@ -6,11 +6,11 @@ var Promise = require('bluebird');
 var httpProxy = require('http-proxy');
 var createEtcdDriver = require('../etcd-driver');
 var createSquirrel = require('../');
-var retry = require('../util/test').retry;
-var generatePath = require('../util/test').generatePath;
+var retry = require('./helpers/retry');
+var generateCwd = require('./helpers/generate-cwd');
 
 test('should fetch from server', function(t) {
-    var cwd = generatePath();
+    var cwd = generateCwd();
 
     var driver = createEtcdDriver({
         cwd: cwd
@@ -19,7 +19,7 @@ test('should fetch from server', function(t) {
     return driver.set('/foo', 'foo').then(function() {
         var squirrel = createSquirrel({
             cwd: cwd,
-            fallback: path.join(__dirname, './fallback.json')
+            fallback: path.join(__dirname, 'fixtures/fallback.json')
         });
 
         return squirrel.get('/foo').then(function(node) {
@@ -29,7 +29,7 @@ test('should fetch from server', function(t) {
 });
 
 test('should read fallback', function(t) {
-    var cwd = generatePath();
+    var cwd = generateCwd();
 
     var driver = createEtcdDriver({
         cwd: cwd
@@ -38,7 +38,7 @@ test('should read fallback', function(t) {
     return driver.set('/foo', 'foo').then(function() {
         var squirrel = createSquirrel({
             cwd: cwd,
-            fallback: path.join(__dirname, './fallback.json'),
+            fallback: path.join(__dirname, 'fixtures/fallback.json'),
             fetch: false
         });
 
@@ -68,7 +68,7 @@ test.afterEach('close proxy', function(t) {
 });
 
 test('should restore fallback if etcd is unavailable', function(t) {
-    var cwd = generatePath();
+    var cwd = generateCwd();
 
     var driver = createEtcdDriver({
         cwd: cwd
@@ -77,7 +77,7 @@ test('should restore fallback if etcd is unavailable', function(t) {
     return driver.set('/foo', 'foo').then(function() {
         var squirrel = createSquirrel({
             cwd: cwd,
-            fallback: path.join(__dirname, './fallback.json'),
+            fallback: path.join(__dirname, 'fixtures/fallback.json'),
             hosts: t.context.proxy.host
         });
 
@@ -88,7 +88,7 @@ test('should restore fallback if etcd is unavailable', function(t) {
 });
 
 test('should resync on reconnect', function(t) {
-    var cwd = generatePath();
+    var cwd = generateCwd();
 
     var driver = createEtcdDriver({
         cwd: cwd
@@ -97,7 +97,7 @@ test('should resync on reconnect', function(t) {
     return driver.set('/foo', 'foo').then(function() {
         var squirrel = createSquirrel({
             cwd: cwd,
-            fallback: path.join(__dirname, './fallback.json'),
+            fallback: path.join(__dirname, 'fixtures/fallback.json'),
             hosts: t.context.proxy.host
         });
 

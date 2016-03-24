@@ -5,7 +5,7 @@ var _ = require('lodash/fp');
 var Promise = require('bluebird');
 var httpProxy = require('http-proxy');
 var createEtcdDriver = require('../etcd-driver');
-var generatePath = require('../util/test').generatePath;
+var generateCwd = require('./helpers/generate-cwd');
 
 var PORT = 42379;
 test.beforeEach('create proxy', function(t) {
@@ -27,7 +27,7 @@ test.afterEach('close proxy', function(t) {
 });
 
 test('should resync', function(t) {
-    var cwd = generatePath();
+    var cwd = generateCwd();
 
     var driver = createEtcdDriver({
         cwd: cwd
@@ -47,7 +47,7 @@ test('should resync', function(t) {
 });
 
 test('should reconnect', function(t) {
-    var cwd = generatePath();
+    var cwd = generateCwd();
 
     return Promise.fromCallback(function(cb) {
         t.context.proxy.listen(cb);

@@ -4,15 +4,15 @@ var path = require('path');
 var test = require('ava');
 var createSquirrel = require('..');
 var createEtcdDriver = require('../etcd-driver');
-var retry = require('../util/test').retry;
-var generatePath = require('../util/test').generatePath;
+var retry = require('./helpers/retry');
+var generateCwd = require('./helpers/generate-cwd');
 
 test('should watch set file', function(t) {
-    var cwd = generatePath();
+    var cwd = generateCwd();
 
     var squirrel = createSquirrel({
         cwd: cwd,
-        fallback: path.join(__dirname, './watch.json'),
+        fallback: path.join(__dirname, 'fixtures/watch.json'),
         fetch: false,
         indexes: ['name']
     });
@@ -38,11 +38,11 @@ test('should watch set file', function(t) {
 });
 
 test('should watch add directory', function(t) {
-    var cwd = generatePath();
+    var cwd = generateCwd();
 
     var squirrel = createSquirrel({
         cwd: cwd,
-        fallback: path.join(__dirname, './watch.json'),
+        fallback: path.join(__dirname, 'fixtures/watch.json'),
         fetch: false,
         indexes: ['name']
     });
@@ -64,11 +64,11 @@ test('should watch add directory', function(t) {
 });
 
 test('should watch remove directory', function(t) {
-    var cwd = generatePath();
+    var cwd = generateCwd();
 
     var squirrel = createSquirrel({
         cwd: cwd,
-        fallback: path.join(__dirname, './watch.json'),
+        fallback: path.join(__dirname, 'fixtures/watch.json'),
         fetch: false,
         indexes: ['name']
     });
@@ -92,11 +92,11 @@ test('should watch remove directory', function(t) {
 });
 
 test('should watch remove file', function(t) {
-    var cwd = generatePath();
+    var cwd = generateCwd();
 
     var squirrel = createSquirrel({
         cwd: cwd,
-        fallback: path.join(__dirname, './watch.json'),
+        fallback: path.join(__dirname, 'fixtures/watch.json'),
         fetch: false,
         indexes: ['name']
     });
