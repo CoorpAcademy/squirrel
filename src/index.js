@@ -145,7 +145,7 @@ function createSquirrel(options) {
     function fetch(state$) {
         return state$.then(function() {
             return driver.mkdir('/').catch(function() {
-                Promise.resolve();
+                return Promise.resolve();
             });
         }).then(function() {
             return driver.list();
