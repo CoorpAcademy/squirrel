@@ -1,6 +1,6 @@
 {
   "name": "@coorpacademy/squirrel",
-  "version": "1.3.1",
+  "version": "1.4.0",
   "description": "High level client for Coorpacademy's squirrel service",
   "main": "src/index.js",
   "scripts": {
@@ -8,7 +8,8 @@
     "lint": "eslint .",
     "ava": "RUNNING_UNIT_TESTS=true ava",
     "nyc": "RUNNING_UNIT_TESTS=true  nyc ava",
-    "coverage": "nyc report --reporter=text-lcov | coveralls"
+    "nyc:lcov": "npm run nyc -- --reporter=lcov",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",
@@ -47,6 +48,11 @@
     "files": [
       "src/**/test/**/*.js",
       "!node_module/**/*"
+    ]
+  },
+  "nyc": {
+    "exclude": [
+      "src/**/test/**/*.js"
     ]
   }
 }

@@ -2,14 +2,13 @@
 
 var path = require('path');
 var test = require('ava');
-var generatePath = require('../util/test').generatePath;
-
+var generateCwd = require('./helpers/generate-cwd');
 var createSquirrel = require('..');
 
 test('should find by name', function(t) {
     var squirrel = createSquirrel({
-        cwd: generatePath(),
-        fallback: path.join(__dirname, './accessors.json'),
+        cwd: generateCwd(),
+        fallback: path.join(__dirname, 'fixtures/indexes.json'),
         fetch: false,
         indexes: ['name']
     });
@@ -29,8 +28,8 @@ test('should find by name', function(t) {
 
 test('should find by host', function(t) {
     var squirrel = createSquirrel({
-        cwd: generatePath(),
-        fallback: path.join(__dirname, './accessors.json'),
+        cwd: generateCwd(),
+        fallback: path.join(__dirname, 'fixtures/indexes.json'),
         fetch: false,
         indexes: ['host']
     });
@@ -50,8 +49,8 @@ test('should find by host', function(t) {
 
 test('should find by meta.foo', function(t) {
     var squirrel = createSquirrel({
-        cwd: generatePath(),
-        fallback: path.join(__dirname, './accessors.json'),
+        cwd: generateCwd(),
+        fallback: path.join(__dirname, 'fixtures/indexes.json'),
         fetch: false,
         indexes: ['meta.foo']
     });
@@ -71,14 +70,14 @@ test('should find by meta.foo', function(t) {
 
 test('should get all names', function(t) {
     var squirrel = createSquirrel({
-        cwd: generatePath(),
-        fallback: path.join(__dirname, './accessors.json'),
+        cwd: generateCwd(),
+        fallback: path.join(__dirname, 'fixtures/indexes.json'),
         fetch: false,
         indexes: ['name']
     });
 
     var emptySquirrel = createSquirrel({
-        cwd: generatePath(),
+        cwd: generateCwd(),
         fetch: false
     });
 
@@ -94,14 +93,14 @@ test('should get all names', function(t) {
 
 test('should get all meta.foo', function(t) {
     var squirrel = createSquirrel({
-        cwd: generatePath(),
-        fallback: path.join(__dirname, './accessors.json'),
+        cwd: generateCwd(),
+        fallback: path.join(__dirname, 'fixtures/indexes.json'),
         fetch: false,
         indexes: ['meta.foo']
     });
 
     var emptySquirrel = createSquirrel({
-        cwd: generatePath(),
+        cwd: generateCwd(),
         fetch: false
     });
 

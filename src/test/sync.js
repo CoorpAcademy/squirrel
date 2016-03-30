@@ -5,11 +5,11 @@ var test = require('ava');
 var Promise = require('bluebird');
 var createSquirrel = require('..');
 var createEtcdDriver = require('../etcd-driver');
-var retry = require('../util/test').retry;
-var generatePath = require('../util/test').generatePath;
+var retry = require('./helpers/retry');
+var generateCwd = require('./helpers/generate-cwd');
 
 test('should sync squirrel', function(t) {
-    var cwd = generatePath();
+    var cwd = generateCwd();
 
     var squirrel = createSquirrel({
         cwd: cwd,
@@ -52,13 +52,13 @@ test('should sync squirrel', function(t) {
 
 test('should override fallback', function(t) {
     var overridedsquirrel = createSquirrel({
-        cwd: generatePath(),
-        fallback: path.join(__dirname, './sync.json')
+        cwd: generateCwd(),
+        fallback: path.join(__dirname, 'fixtures/sync.json')
     });
 
     var squirrel = createSquirrel({
-        cwd: generatePath(),
-        fallback: path.join(__dirname, './sync.json'),
+        cwd: generateCwd(),
+        fallback: path.join(__dirname, 'fixtures/sync.json'),
         fetch: false
     });
 

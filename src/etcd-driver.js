@@ -23,7 +23,7 @@ var getNode = _.get('node');
 function createEtcdSync(options) {
     options = _.assign({
         cwd: '/',
-        hosts: 'localhost:2379',
+        hosts: 'http://localhost:2379',
         auth: null,
         ca: null,
         key: null,

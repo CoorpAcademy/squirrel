@@ -3,11 +3,11 @@
 var Promise = require('bluebird');
 var test = require('ava');
 var createEtcdDriver = require('../etcd-driver');
-var generatePath = require('../util/test').generatePath;
+var generateCwd = require('./helpers/generate-cwd');
 
 test('should create etcd driver', function(t) {
     var driver = createEtcdDriver({
-        cwd: generatePath()
+        cwd: generateCwd()
     });
 
     return driver.list().then(function(node) {
@@ -17,7 +17,7 @@ test('should create etcd driver', function(t) {
 
 test('should fetch folder content', function(t) {
     var driver = createEtcdDriver({
-        cwd: generatePath()
+        cwd: generateCwd()
     });
 
     return driver.set('/foo', {
@@ -37,7 +37,7 @@ test('should fetch folder content', function(t) {
 
 test('should watch set', function(t) {
     var driver = createEtcdDriver({
-        cwd: generatePath()
+        cwd: generateCwd()
     });
 
     return Promise.fromCallback(function(cb) {
@@ -56,7 +56,7 @@ test('should watch set', function(t) {
 
 test('should watch delete', function(t) {
     var driver = createEtcdDriver({
-        cwd: generatePath()
+        cwd: generateCwd()
     });
 
     return Promise.fromCallback(function(cb) {
