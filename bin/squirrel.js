@@ -10,26 +10,28 @@ var argz = minimist(process.argv.slice(2));
 var source = path.join(process.cwd(), argz._[0]);
 var destination = path.join('/', argz._[1]);
 
-var driver = createDriver({
-    hosts: argz.hosts ? argz.hosts.split(',') : undefined,
+var driverOptions = {
     cwd: destination
-});
+};
+if (argz.hosts) driverOptions.hosts = argz.hosts.split(',');
+if (argz.ca) driverOptions.ca = fs.readFileSync(path.join(process.cwd(), argz.ca));
+var driver = createDriver(driverOptions);
 
 function syncEntry(cwd) {
     return Promise.all([
         Promise.fromCallback(function(cb) {
             fs.stat(path.join(source, cwd), cb);
         }),
-        driver.get(cwd).catch(function(err) {
+        driver.get(cwd).catch(function() {
             return Promise.resolve(null);
         })
     ]).then(function(results) {
-        process.stdout.write('sync: ' + cwd + '\n');
+        process.stdout.write('sync: /' + cwd + '\n');
         var stat = results[0];
         var node = results[1];
 
         if (stat.isDirectory()) {
-            (function() {
+            return (function() {
                 if (!node) return driver.mkdir(cwd);
                 if (node.dir) return Promise.resolve();
                 return driver.del(cwd).then(function() {
@@ -83,5 +85,5 @@ process.stdout.write('Copy ' + source + ' local directory to ' + destination + '
 syncEntry('').then(function() {
     process.stdout.write('Sync\n');
 }, function(err) {
-    process.stderr.write('Error: \n' + err.stack + '\n');
+    process.stderr.write('Error: \n' + err + '\n');
 });
