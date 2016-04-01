@@ -5,9 +5,13 @@ var test = require('ava');
 var createEtcdDriver = require('../etcd-driver');
 var generateCwd = require('./helpers/generate-cwd');
 
+test.beforeEach(function(t) {
+    t.context.cwd = generateCwd();
+});
+
 test('should create etcd driver', function(t) {
     var driver = createEtcdDriver({
-        cwd: generateCwd()
+        cwd: t.context.cwd
     });
 
     return driver.list().then(function(node) {
@@ -15,9 +19,29 @@ test('should create etcd driver', function(t) {
     });
 });
 
+test('should get node', function(t) {
+    var driver = createEtcdDriver({
+        cwd: t.context.cwd
+    });
+
+    return driver.get('/').then(function(node) {
+        t.is(node.key, '/');
+    });
+});
+
+test('should get root', function(t) {
+    var driver = createEtcdDriver({
+        cwd: '/'
+    });
+
+    return driver.get('/').then(function(node) {
+        t.is(node.key, '/');
+    });
+});
+
 test('should fetch folder content', function(t) {
     var driver = createEtcdDriver({
-        cwd: generateCwd()
+        cwd: t.context.cwd
     });
 
     return driver.set('/foo', {
@@ -37,7 +61,7 @@ test('should fetch folder content', function(t) {
 
 test('should watch set', function(t) {
     var driver = createEtcdDriver({
-        cwd: generateCwd()
+        cwd: t.context.cwd
     });
 
     return Promise.fromCallback(function(cb) {
@@ -56,7 +80,7 @@ test('should watch set', function(t) {
 
 test('should watch delete', function(t) {
     var driver = createEtcdDriver({
-        cwd: generateCwd()
+        cwd: t.context.cwd
     });
 
     return Promise.fromCallback(function(cb) {

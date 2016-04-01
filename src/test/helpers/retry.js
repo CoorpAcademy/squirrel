@@ -5,8 +5,8 @@ var retry = require('bluebird-retry');
 
 var retryOptions = {
     max_tries: -1,
-    interval: 10,
-    timeout: 2000
+    interval: 100,
+    timeout: 60000
 };
 
 module.exports = function(squirrel, path, test) {

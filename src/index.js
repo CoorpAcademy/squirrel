@@ -9,23 +9,7 @@ var createEtcdDriver = require('./etcd-driver');
 
 function addNode(node, prevNode, store) {
     debug('addNode', node, prevNode, store);
-    if (!_.startsWith(store.key, node.key)) return store;
-    if (node.dir && prevNode) return store;
     if (node.key === store.key) return node;
-
-    var index = _.findIndex(function(child) {
-        return _.startsWith(child.key, node.key);
-    }, store.nodes);
-
-    if (index > -1) {
-        return _.set(
-            'nodes',
-            _.map(function(child) {
-                return addNode(node, prevNode, child);
-            }, store.nodes),
-            store
-        );
-    }
 
     var storeKey = path.join(
         store.key,
@@ -107,9 +91,25 @@ function createSquirrel(options) {
         )(node.dir && node.nodes || []);
     }
 
-    var state$ = Promise.resolve();
+    var state$;
 
     var driver = createEtcdDriver(options);
+
+    state$ = driver.mkdir('/').catch(function(err) {
+        return Promise.resolve({
+            key: '/',
+            dir: true
+        });
+    });
+
+    if (options.fallback)
+        state$ = setStore(Promise.try(function() {
+            return updateStore(require(options.fallback));
+        }), state$);
+    if (options.fetch) {
+        state$ = fetch(state$);
+    }
+
     driver.watch({
         set: function(err, node, prevNode) {
             debug('watch:set', arguments);
@@ -133,21 +133,8 @@ function createSquirrel(options) {
         }
     });
 
-
-    if (options.fallback)
-        state$ = setStore(Promise.try(function() {
-            return updateStore(require(options.fallback));
-        }), state$);
-    if (options.fetch) {
-        state$ = fetch(state$);
-    }
-
     function fetch(state$) {
         return state$.then(function() {
-            return driver.mkdir('/').catch(function() {
-                return Promise.resolve();
-            });
-        }).then(function() {
             return driver.list();
         }).then(function(node) {
             return updateStore(node);
