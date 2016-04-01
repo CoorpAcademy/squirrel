@@ -3,7 +3,7 @@ var path = require('path');
 var minimist = require('minimist');
 var fs = require('fs');
 var Promise = require('bluebird');
-var createDriver = require('../src/etcd-driver');
+var createDriver = require('../etcd-driver');
 
 var argz = minimist(process.argv.slice(2));
 

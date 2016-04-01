@@ -42,7 +42,7 @@
     "nyc": "^6.1.1"
   },
   "bin": {
-    "squirrel": "bin/squirrel.js"
+    "squirrel": "src/bin/squirrel.js"
   },
   "ava": {
     "files": [
