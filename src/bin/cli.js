@@ -2,22 +2,11 @@
 var path = require('path');
 var minimist = require('minimist');
 var fs = require('fs');
+var _ = require('lodash/fp');
 var Promise = require('bluebird');
 var createDriver = require('../etcd-driver');
 
-var argz = minimist(process.argv.slice(2));
-
-var source = path.join(process.cwd(), argz._[0]);
-var destination = path.join('/', argz._[1]);
-
-var driverOptions = {
-    cwd: destination
-};
-if (argz.hosts) driverOptions.hosts = argz.hosts.split(',');
-if (argz.ca) driverOptions.ca = fs.readFileSync(path.join(process.cwd(), argz.ca));
-var driver = createDriver(driverOptions);
-
-function syncEntry(cwd) {
+function sync(source, cwd, driver) {
     return Promise.all([
         Promise.fromCallback(function(cb) {
             fs.stat(path.join(source, cwd), cb);
@@ -26,7 +15,6 @@ function syncEntry(cwd) {
             return Promise.resolve(null);
         })
     ]).then(function(results) {
-        process.stdout.write('sync: /' + cwd + '\n');
         var stat = results[0];
         var node = results[1];
 
@@ -50,7 +38,7 @@ function syncEntry(cwd) {
 
                 return Promise.all([].concat(
                     files.map(function(file) {
-                        return syncEntry(path.join(cwd, file));
+                        return sync(source, path.join(cwd, file), driver);
                     }),
                     node.nodes.filter(function(node) {
                         return !~files.indexOf(node.key);
@@ -80,10 +68,31 @@ function syncEntry(cwd) {
     });
 }
 
-process.stdout.write('Copy ' + source + ' local directory to ' + destination + ' etcd directory \n');
+function syncFolder(source, destination, options) {
+    options = _.assign(options, {
+        cwd: destination
+    });
 
-syncEntry('').then(function() {
-    process.stdout.write('Sync\n');
-}, function(err) {
-    process.stderr.write('Error: \n' + err + '\n');
-});
+    var driver = createDriver(options);
+    return sync(source, '', driver);
+}
+
+module.exports = syncFolder;
+
+if (!module.parent) {
+    var argz = minimist(process.argv.slice(2));
+
+    var source = path.join(process.cwd(), argz._[0]);
+    var destination = path.join('/', argz._[1]);
+
+    var options = {};
+    if (argz.hosts) options = _.set('hosts', argz.hosts.split(','), options);
+    if (argz.ca) options = _.set('ca', fs.readFileSync(path.join(process.cwd(), argz.ca)), options);
+
+    process.stdout.write('Copy ' + source + ' local directory to ' + destination + ' etcd directory \n');
+    syncFolder(source, destination, options).then(function() {
+        process.stdout.write('Sync\n');
+    }, function(err) {
+        process.stdout.write('Sync\n');
+    });
+}
