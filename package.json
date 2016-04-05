@@ -7,7 +7,7 @@
     "test": "npm run lint && npm run nyc",
     "lint": "eslint .",
     "ava": "RUNNING_UNIT_TESTS=true ava",
-    "nyc": "RUNNING_UNIT_TESTS=true  nyc ava",
+    "nyc": "RUNNING_UNIT_TESTS=true nyc ava --all",
     "nyc:lcov": "npm run nyc -- --reporter=lcov",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
@@ -52,7 +52,8 @@
   },
   "nyc": {
     "exclude": [
-      "src/**/test/**/*.js"
+      "src/**/test/**/*.js",
+      "coverage"
     ]
   }
 }
