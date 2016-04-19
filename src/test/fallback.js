@@ -50,7 +50,9 @@ test('should read fallback', function(t) {
 
 var PORT = 41379;
 test.beforeEach('create proxy', function(t) {
-    var proxy = httpProxy.createProxyServer({target:'http://localhost:2379'});
+    var proxy = httpProxy.createProxyServer({
+        target: 'http://localhost:2379'
+    });
     var port = PORT++;
     t.context.proxy = {
         listen: function(cb) {

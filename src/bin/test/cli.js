@@ -15,7 +15,8 @@ test('should sync cli', function(t) {
             ]);
 
             child.on('exit', function(code) {
-                if (code !== 0) return reject(new Error('CLI : ' + code))
+                if (code !== 0)
+                    return reject(new Error('CLI : ' + code));
                 resolve();
             });
         });
