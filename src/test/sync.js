@@ -28,7 +28,7 @@ test('should sync squirrel', function(t) {
     };
 
     return squirrel.getBy('name', brand.value.name).then(function(value) {
-        t.same(value, null);
+        t.deepEqual(value, null);
         return driver.set(brand.key, brand.value);
     }).then(function() {
         return retry(squirrel, brand.key, function(node) {
@@ -37,7 +37,7 @@ test('should sync squirrel', function(t) {
     }).then(function() {
         return squirrel.getBy('name', brand.value.name);
     }).then(function(value) {
-        t.same(value, brand.value);
+        t.deepEqual(value, brand.value);
         return driver.del(brand.key);
     }).then(function() {
         return retry(squirrel, brand.key, function(node) {
@@ -46,7 +46,7 @@ test('should sync squirrel', function(t) {
     }).then(function() {
         return squirrel.getBy('name', brand.value.name);
     }).then(function(value) {
-        t.same(value, null);
+        t.deepEqual(value, null);
     });
 });
 
@@ -64,7 +64,7 @@ test('should override fallback', function(t) {
 
     return Promise.all([
         overridedsquirrel.getStore().then(function(node) {
-            t.same(node.nodes, []);
+            t.deepEqual(node.nodes, []);
         }),
         squirrel.getStore().then(function(node) {
             t.is(node.nodes.length, 2);

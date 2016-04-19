@@ -32,7 +32,7 @@ test('should watch set file', function(t) {
     }).then(function() {
         return squirrel.getBy('name', 'foo');
     }).then(function(node) {
-        t.same(node, {
+        t.deepEqual(node, {
             name: 'foo'
         });
     });
@@ -58,7 +58,7 @@ test('should watch add directory', function(t) {
     }).then(function() {
         return squirrel.get('/foo');
     }).then(function(node) {
-        t.same(node.nodes, []);
+        t.deepEqual(node.nodes, []);
     });
 });
 

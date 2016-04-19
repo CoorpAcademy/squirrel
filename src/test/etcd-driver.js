@@ -15,7 +15,7 @@ test('should create etcd driver', function(t) {
     });
 
     return driver.list().then(function(node) {
-        t.same(node.nodes, []);
+        t.deepEqual(node.nodes, []);
     });
 });
 
@@ -53,7 +53,7 @@ test('should fetch folder content', function(t) {
             return node.value;
         });
     }).then(function(nodes) {
-        t.same(nodes, [{
+        t.deepEqual(nodes, [{
             foo: 'foo'
         }]);
     });
@@ -68,8 +68,8 @@ test('should watch set', function(t) {
         driver.watch({
             set: function(err, node) {
                 if (node.dir) return;
-                t.same(node.key, '/foo');
-                t.same(node.value, 'bar');
+                t.deepEqual(node.key, '/foo');
+                t.deepEqual(node.value, 'bar');
                 cb();
             }
         });
@@ -86,8 +86,8 @@ test('should watch delete', function(t) {
     return Promise.fromCallback(function(cb) {
         driver.watch({
             delete: function(err, node) {
-                t.same(node.key, '/foo');
-                t.same(node.value);
+                t.deepEqual(node.key, '/foo');
+                t.deepEqual(node.value);
                 cb();
             }
         });

@@ -19,13 +19,13 @@ test('should find by name', function(t) {
 
     return Promise.all([
         squirrel.getBy('name', 'foo').then(function(value) {
-            t.same(value.name, 'foo');
+            t.deepEqual(value.name, 'foo');
         }),
         squirrel.getBy('name', 'bar').then(function(value) {
-            t.same(value.name, 'bar');
+            t.deepEqual(value.name, 'bar');
         }),
         squirrel.getBy('name', 'baz').then(function(value) {
-            t.same(value, null);
+            t.deepEqual(value, null);
         })
     ]);
 });
@@ -40,13 +40,13 @@ test('should find by host', function(t) {
 
     return Promise.all([
         squirrel.getBy('host', 'foo.coorpacademy.com').then(function(value) {
-            t.same(value.host, 'foo.coorpacademy.com');
+            t.deepEqual(value.host, 'foo.coorpacademy.com');
         }),
         squirrel.getBy('host', 'bar.coorpacademy.com').then(function(value) {
-            t.same(value.host, 'bar.coorpacademy.com');
+            t.deepEqual(value.host, 'bar.coorpacademy.com');
         }),
         squirrel.getBy('host', 'baz.coorpacademy.com').then(function(value) {
-            t.same(value, null);
+            t.deepEqual(value, null);
         })
     ]);
 });
@@ -61,13 +61,13 @@ test('should find by meta.foo', function(t) {
 
     return Promise.all([
         squirrel.getBy('meta.foo', 'foo').then(function(value) {
-            t.same(value.meta.foo, 'foo');
+            t.deepEqual(value.meta.foo, 'foo');
         }),
         squirrel.getBy('meta.foo', 'bar').then(function(value) {
-            t.same(value.meta.foo, 'bar');
+            t.deepEqual(value.meta.foo, 'bar');
         }),
         squirrel.getBy('meta.foo', 'baz').then(function(value) {
-            t.same(value, null);
+            t.deepEqual(value, null);
         })
     ]);
 });
@@ -87,10 +87,10 @@ test('should get all names', function(t) {
 
     return Promise.all([
         squirrel.getAll('name').then(function(values) {
-            t.same(values, ['foo', 'bar']);
+            t.deepEqual(values, ['foo', 'bar']);
         }),
         emptySquirrel.getAll('name').then(function(values) {
-            t.same(values, []);
+            t.deepEqual(values, []);
         })
     ]);
 });
@@ -110,10 +110,10 @@ test('should get all meta.foo', function(t) {
 
     return Promise.all([
         squirrel.getAll('meta.foo').then(function(values) {
-            t.same(values, ['foo', 'bar']);
+            t.deepEqual(values, ['foo', 'bar']);
         }),
         emptySquirrel.getAll('meta.foo').then(function(values) {
-            t.same(values, []);
+            t.deepEqual(values, []);
         })
     ]);
 });
