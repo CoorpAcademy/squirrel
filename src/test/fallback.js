@@ -23,7 +23,7 @@ test('should fetch from server', function(t) {
         });
 
         return squirrel.get('/foo').then(function(node) {
-            t.same(node.value, 'foo');
+            t.deepEqual(node.value, 'foo');
         });
     });
 });
@@ -43,14 +43,16 @@ test('should read fallback', function(t) {
         });
 
         return squirrel.get('/foo').then(function(node) {
-            t.same(node.value, 'bar');
+            t.deepEqual(node.value, 'bar');
         });
     });
 });
 
 var PORT = 41379;
 test.beforeEach('create proxy', function(t) {
-    var proxy = httpProxy.createProxyServer({target:'http://localhost:2379'});
+    var proxy = httpProxy.createProxyServer({
+        target: 'http://localhost:2379'
+    });
     var port = PORT++;
     t.context.proxy = {
         listen: function(cb) {
@@ -82,7 +84,7 @@ test('should restore fallback if etcd is unavailable', function(t) {
         });
 
         return squirrel.get('/foo').then(function(node) {
-            t.same(node.value, 'bar');
+            t.deepEqual(node.value, 'bar');
         });
     });
 });
@@ -102,7 +104,7 @@ test('should resync on reconnect', function(t) {
         });
 
         return squirrel.get('/foo').then(function(node) {
-            t.same(node.value, 'bar');
+            t.deepEqual(node.value, 'bar');
         }).then(function() {
             return Promise.fromCallback(t.context.proxy.listen);
         }).then(function() {
@@ -110,7 +112,7 @@ test('should resync on reconnect', function(t) {
                 return node.value !== 'bar';
             });
         }).then(function(node) {
-            t.same(node.value, 'foo');
+            t.deepEqual(node.value, 'foo');
         });
     });
 });

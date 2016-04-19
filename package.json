@@ -26,18 +26,18 @@
   "homepage": "https://github.com/coorpacademy/squirrel#readme",
   "dependencies": {
     "bluebird": "^3.3.4",
-    "bluebird-retry": "0.5.3",
+    "bluebird-retry": "0.6.1",
     "debug": "^2.2.0",
     "lodash": "^4.6.1",
     "minimist": "^1.2.0",
     "node-etcd": "^5.0.0"
   },
   "devDependencies": {
-    "ava": "^0.13.0",
+    "ava": "^0.14.0",
     "coveralls": "^2.11.8",
     "eslint": "^2.4.0",
-    "eslint-config-coorpacademy": "^1.0.0",
-    "eslint-plugin-ava": "^1.2.0",
+    "eslint-config-coorpacademy": "^2.0.2",
+    "eslint-plugin-ava": "^2.2.1",
     "http-proxy": "^1.13.2",
     "nyc": "^6.1.1"
   },
