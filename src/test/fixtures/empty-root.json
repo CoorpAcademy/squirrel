@@ -1,0 +1,8 @@
+{
+  "action": "get",
+  "node": {
+    "key": "/",
+    "dir": true,
+    "nodes": []
+  }
+}
