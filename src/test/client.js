@@ -1,5 +1,5 @@
 import test from 'ava';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import createIndexer from '../indexer';
 import createClient from '../client';
 
@@ -62,7 +62,7 @@ test('should provide get function', t => {
 });
 
 test('should get unknown file', t => {
-  const store$ = Observable.create(subscriber => {});
+  const store$ = Observable.create(() => {});
   const client = createClient(store$, indexer);
 
   return client.get('/foo').then(node =>
