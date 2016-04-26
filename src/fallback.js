@@ -1,5 +1,5 @@
 import {readFile} from 'fs';
-import {isString} from 'lodash/fp';
+import {isString, identity} from 'lodash/fp';
 import {Observable} from 'rxjs';
 import {parseAction} from './parser';
 import createDebug from 'debug';
@@ -15,9 +15,11 @@ const wrapAction = data => ({
 const createFallback$ = filePath => {
   if (!isString(filePath)) return Observable.empty();
   debug(`Read fallback ${filePath}`);
-  return readFile$(filePath, {
+
+  return Observable.of(filePath)
+    .flatMap(filePath => readFile$(filePath, {
     encoding: 'UTF8'
-  }).map(JSON.parse).map(wrapAction).map(parseAction);
+  })).map(JSON.parse).filter(identity).map(wrapAction).map(parseAction).catch(() => Observable.empty());
 };
 
 export default createFallback$;

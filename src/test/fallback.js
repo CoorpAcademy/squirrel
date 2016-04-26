@@ -16,3 +16,11 @@ test('should load fallback', t => {
     }])
   );
 });
+
+test('shouldn\'t throw error if file doesn\'t exist', t => {
+  return createFallback$(
+    join(__dirname, 'fixtures/nope.json')
+  ).toArray().toPromise().then(events =>
+    t.deepEqual(events, [])
+  );
+});
