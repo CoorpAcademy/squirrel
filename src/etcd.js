@@ -1,26 +1,10 @@
-import {set, reduce, has} from 'lodash/fp';
 import {Observable} from 'rxjs';
-
-const parseNode = node => {
-  if (node.dir)
-    return set('nodes', (node.nodes || []).map(parseNode), node);
-  try {
-    return set('value', JSON.parse(node.value), node);
-  } catch (err) {
-    return node;
-  }
-};
-
-const parseAction = action => {
-  return reduce((action, key) => {
-    if (has(key, action)) {
-      return set(key, parseNode(action[key]), action);
-    }
-    return action;
-  }, action, ['node', 'prevNode']);
-};
+import {parseAction} from './parser';
+import createDebug from 'debug';
+const debug = createDebug('squirrel:etcd');
 
 const createFetch$ = (client, cwd) => {
+  debug(`fetch: ${cwd}`);
   const list = Observable.bindNodeCallback(
     cb => client.get(cwd, {recursive: true}, (err, data) => cb(err, data))
   );
@@ -46,8 +30,10 @@ const createEtcd$ = (client, watcher, cwd) => {
   const events$ = watcher$.startWith({
     action: 'resync'
   }).flatMap(action => {
-    if (action.action === 'resync')
+    if (action.action === 'resync') {
+      debug('watcher: resync');
       return createFetch$(client, cwd);
+    }
     return Observable.of(action);
   });
 

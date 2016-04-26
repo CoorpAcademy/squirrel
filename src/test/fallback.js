@@ -1,5 +1,6 @@
 import test from 'ava';
 import {join} from 'path';
+import {parseNode} from '../parser';
 
 import createFallback$ from '../fallback';
 
@@ -11,7 +12,7 @@ test('should load fallback', t => {
   ).toArray().toPromise().then(events =>
     t.deepEqual(events, [{
       action: 'get',
-      node: expected
+      node: parseNode(expected)
     }])
   );
 });

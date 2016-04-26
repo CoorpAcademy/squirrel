@@ -7,8 +7,11 @@ import {
   reduce,
   zipObject
 } from 'lodash/fp';
+import createDebug from 'debug';
+const debug = createDebug('squirrel:indexer');
 
 const updateIndexes = indexes => store => {
+  debug(`Update indexes ${indexes.join(',')}`);
   return zipObject(indexes, map(function(index) {
     return buildIndex(index, store);
   }, indexes));

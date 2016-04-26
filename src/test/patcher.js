@@ -76,6 +76,7 @@ test('should get deep node', t => {
 
   t.deepEqual(get(input, action), output);
 });
+
 test('should set node', t => {
   const input = {
     key: '/',

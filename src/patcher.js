@@ -6,17 +6,26 @@ import {
   set as set_,
   startsWith
 } from 'lodash/fp';
+import createDebug from 'debug';
+const debug = createDebug('squirrel:patcher');
 
-const get = (store, action) => {
-  if (store.key === action.node.key) return store;
+const get = (store, {action, node}) => {
+  if (store.key === node.key) {
+    debug(`get: ${node.key}`);
+    return store;
+  }
+
   return filter(node => startsWith(store.key, node.key), store.nodes)
-  .reduce((acc, node) =>
-    acc || get(node, action)
+  .reduce((acc, _node) =>
+    acc || get(_node, {action, node})
   , null);
 };
 
 const set = (store, {action, node, prevNode}) => {
-  if (node.key === store.key) return node;
+  if (node.key === store.key) {
+    debug(`set: ${node.key}`);
+    return node;
+  }
 
   const storeKey = path.join(
     store.key,
@@ -26,10 +35,11 @@ const set = (store, {action, node, prevNode}) => {
   return set_(
     'nodes',
     concat(
-      (store.nodes || []).filter(n => n.key !== node.key),
+      (store.nodes).filter(n => n.key !== node.key),
       set({
         key: storeKey,
-        dir: true
+        dir: true,
+        nodes: []
       }, {
         action,
         node,
@@ -41,7 +51,10 @@ const set = (store, {action, node, prevNode}) => {
 };
 
 const del = (store, {action, node, prevNode}) => {
-  if (node.key === store.key) return null;
+  if (node.key === store.key) {
+    debug(`del: ${node.key}`);
+    return null;
+  }
 
   if (store.dir && startsWith(store.key, node.key))
     return set_(

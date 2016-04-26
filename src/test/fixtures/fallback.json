@@ -1,5 +1,8 @@
 {
   "key": "/",
   "dir": true,
-  "nodes": []
+  "nodes": [{
+    "key": "/foo",
+    "value": "{\"foo\":\"bar\"}"
+  }]
 }
