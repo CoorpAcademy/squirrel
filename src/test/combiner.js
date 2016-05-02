@@ -6,7 +6,7 @@ import createCombiner$ from '../combiner';
 import emptyRoot from './fixtures/empty-root';
 import setEvent from './fixtures/set-event';
 
-test('should fetch nodes', t => {
+test('should fetch nodes', async t => {
   const events$ = Observable.of(emptyRoot, setEvent, {
     action: 'set',
     node: {
@@ -35,12 +35,11 @@ test('should fetch nodes', t => {
     ]
   }];
 
-  return combiner$.toArray().toPromise().then(events => {
-    t.deepEqual(events, expected);
-  });
+  const events = await combiner$.toArray().toPromise();
+  t.deepEqual(events, expected);
 });
 
-test('should remove node', t => {
+test('should remove node', async t => {
   const events$ = Observable.of({
     action: 'get',
     node: {
@@ -72,12 +71,11 @@ test('should remove node', t => {
     nodes: []
   }];
 
-  return combiner$.toArray().toPromise().then(events => {
-    t.deepEqual(events, expected);
-  });
+  const events = await combiner$.toArray().toPromise();
+  t.deepEqual(events, expected);
 });
 
-test('should prevent malformed actions', t => {
+test('should prevent malformed actions', async t => {
   const events$ = Observable.of({
     action: 'get',
     node: {
@@ -104,7 +102,6 @@ test('should prevent malformed actions', t => {
     }]
   };
 
-  return combiner$.toArray().toPromise().then(events => {
-    events.forEach(event => t.deepEqual(event, expected));
-  });
+  const events = await combiner$.toArray().toPromise();
+  events.forEach(event => t.deepEqual(event, expected));
 });

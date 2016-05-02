@@ -8,7 +8,10 @@ const node = {
   nodes: [{
     key: '/foo',
     value: {
-      value: 'foo'
+      value: 'foo',
+      deep: {
+        value: 'foo'
+      }
     }
   }, {
     key: '/bar',
@@ -16,12 +19,18 @@ const node = {
     nodes: [{
       key: '/bar/baz',
       value: {
-        value: 'baz'
+        value: 'baz',
+        deep: {
+          value: 'baz'
+        }
       }
     }, {
       key: '/bar/qux',
       value: {
-        value: 'qux'
+        value: 'qux',
+        deep: {
+          value: 'quz'
+        }
       }
     }]
   }]
@@ -29,6 +38,26 @@ const node = {
 
 const indexes = {
   value: {
+    foo: {
+      key: '/foo',
+      value: {
+        value: 'foo'
+      }
+    },
+    baz: {
+      key: '/bar/baz',
+      value: {
+        value: 'baz'
+      }
+    },
+    qux: {
+      key: '/bar/qux',
+      value: {
+        value: 'qux'
+      }
+    }
+  },
+  'deep.value': {
     foo: {
       key: '/foo',
       value: {
@@ -65,43 +94,83 @@ test('should create API', t => {
   t.truthy(api.getAll);
 });
 
-test('should provide getAll function', t => {
-  return Promise.all([
-    api.getAll('value').then(values =>
-      t.deepEqual(values, ['foo', 'baz', 'qux'])
-    ),
-    api.getAll('nope').then(values =>
-      t.deepEqual(values, [])
-    )
-  ]);
+test('should get keys of simple index', async t => {
+  t.deepEqual(
+    await api.getAll('value'),
+    ['foo', 'baz', 'qux']
+  );
 });
 
-test('should provide getBy function', t => {
-  return Promise.all([
-    api.getBy('value', 'nope').then(value =>
-      t.deepEqual(value, null)
-    ),
-    api.getBy('value', 'foo').then(value =>
-      t.deepEqual(value, {
-        value: 'foo'
-      })
-    ),
-    api.getBy('nope', 'nope').then(value =>
-      t.deepEqual(value, null)
-    )
-  ]);
+test('should get keys of complex index', async t => {
+  t.deepEqual(
+    await api.getAll('deep.value'),
+    ['foo', 'baz', 'qux']
+  );
 });
 
-test('should provide get function', t => {
-  return Promise.all([
-    api.get('/').then(value =>
-      t.deepEqual(value, node)
-    ),
-    api.get('/foo').then(value =>
-      t.deepEqual(value, node.nodes[0])
-    ),
-    api.get('/nope').then(value =>
-      t.deepEqual(value, null)
-    )
-  ]);
+test('should get empty array if simple index doesn\'t exists', async t => {
+  t.deepEqual(
+    await api.getAll('nope'),
+    []
+  );
+});
+
+test('should get node by simple index', async t => {
+  t.deepEqual(
+    await api.getBy('value', 'foo'),
+    {
+      value: 'foo'
+    }
+  );
+});
+
+test('should get null if any node matches', async t => {
+  t.deepEqual(
+    await api.getBy('value', 'nope'),
+    null
+  );
+});
+
+test('should get null if any index matches', async t => {
+  t.deepEqual(
+    await api.getBy('nope', 'nope'),
+    null
+  );
+});
+
+test('should get node by complex index', async t => {
+  t.deepEqual(
+    await api.getBy('deep.value', 'foo'),
+    {
+      value: 'foo'
+    }
+  );
+});
+
+test('should get null if any complex index matches', async t => {
+  t.deepEqual(
+    await api.getBy('deep.nope', 'nope'),
+    null
+  );
+});
+
+test('should get root node by path', async t => {
+  t.deepEqual(
+    await api.get('/'),
+    node
+  );
+});
+
+test('should get node by path', async t => {
+  t.deepEqual(
+    await api.get('/foo'),
+    node.nodes[0]
+  );
+});
+
+test('should get null if any node matches this path', async t => {
+  t.deepEqual(
+    await api.get('/nope'),
+    null
+  );
 });

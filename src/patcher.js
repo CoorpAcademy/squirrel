@@ -2,7 +2,7 @@ import path from 'path';
 import {
   compact,
   concat,
-  filter,
+  reduce,
   set as set_,
   startsWith
 } from 'lodash/fp';
@@ -10,15 +10,15 @@ import createDebug from 'debug';
 const debug = createDebug('squirrel:patcher');
 
 const get = (store, {action, node}) => {
+  if (!startsWith(store.key, node.key)) return null;
   if (store.key === node.key) {
     debug(`get: ${node.key}`);
     return store;
   }
 
-  return filter(node => startsWith(store.key, node.key), store.nodes)
-  .reduce((acc, _node) =>
+  return reduce((acc, _node) =>
     acc || get(_node, {action, node})
-  , null);
+  , null)(store.nodes);
 };
 
 const set = (store, {action, node, prevNode}) => {

@@ -1,6 +1,6 @@
 import {
   assign,
-  concat,
+  flatMap,
   get,
   map,
   pipe,
@@ -21,10 +21,9 @@ const buildIndex = (index, node) => {
   const value = get(index, node.value);
 
   return pipe(
-    map(function(child) {
+    flatMap(function(child) {
       return buildIndex(index, child);
     }),
-    reduce(concat, []),
     reduce(assign, value ? zipObject([get(index, node.value)], [node]) : {})
   )(node.dir && node.nodes || []);
 };

@@ -1,6 +1,4 @@
 import test from 'ava';
-import {join} from 'path';
-import {tmpdir} from 'os';
 import createClient from '../index';
 
 test('should createClient', t => {

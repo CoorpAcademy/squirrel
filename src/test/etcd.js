@@ -7,7 +7,7 @@ import setEvent from './fixtures/set-event';
 import deleteEvent from './fixtures/delete-event';
 import resyncEvent from './fixtures/resync-event';
 
-test('should resync', t => {
+test('should resync', async t => {
   const client = createEtcd({
     get: [[null, {
       action: 'get',
@@ -37,7 +37,6 @@ test('should resync', t => {
     }
   }, deleteEvent, setEvent];
 
-  return watcher$.take(6).toArray().toPromise().then(events => {
-    t.deepEqual(events, expected);
-  });
+  const events = await watcher$.take(6).toArray().toPromise();
+  t.deepEqual(events, expected);
 });
