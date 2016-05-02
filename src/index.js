@@ -1,5 +1,6 @@
 import {
   assign,
+  identity,
   pick
 } from 'lodash/fp';
 import Etcd from 'node-etcd';
@@ -11,6 +12,8 @@ import createFallback$ from './fallback';
 import createCombiner$ from './combiner';
 import createStore from './store';
 import createAPI from './api';
+import createSave from './save';
+import createIndexer from './indexer';
 
 const debug = createDebug('squirrel');
 
@@ -31,15 +34,26 @@ const createSquirrel = options => {
 
   const client = new Etcd(options.hosts, pick(['auth', 'ca', 'key', 'cert'], options));
   const watcher = client.watcher(options.cwd, null, {recursive: true});
+  const indexer = createIndexer(options.indexes);
+  const save = options.save ? createSave(options.fallback) : identity;
 
   const events$ = Observable.concat(
     createFallback$(options.fallback),
     createEtcd$(client, watcher, options.cwd)
   );
 
-  const combiner$ = createCombiner$(events$);
-  const {store, subscription} = createStore(options, combiner$, watcher);
+  const node$ = createCombiner$(events$);
+  const {store, observable} = createStore(
+    save(node$),
+    indexer
+  );
   const api = createAPI(store);
+
+  const subscription = observable.subscribe();
+  subscription.add(() => {
+    debug('Unsubscribe');
+    watcher.stop();
+  });
 
   return {
     ...api,
