@@ -1,191 +1,64 @@
-'use strict';
+import {
+  assign,
+  identity,
+  pick
+} from 'lodash/fp';
+import Etcd from 'node-etcd';
+import {Observable} from 'rxjs';
+import createDebug from 'debug';
 
-var fs = require('fs');
-var path = require('path');
-var _ = require('lodash/fp');
-var Promise = require('bluebird');
-var debug = require('debug')('squirrel');
-var createEtcdDriver = require('./etcd-driver');
+import {createEtcd$} from './etcd';
+import createFallback$ from './fallback';
+import createCombiner$ from './combiner';
+import createStore from './store';
+import createAPI from './api';
+import createSave from './save';
+import createIndexer from './indexer';
 
-function addNode(node, prevNode, store) {
-    debug('addNode', node, prevNode, store);
-    if (node.key === store.key) return node;
+const debug = createDebug('squirrel');
 
-    var storeKey = path.join(
-        store.key,
-        path.relative(store.key, node.key).split('/').shift()
-    );
+const createSquirrel = options => {
+  debug('Init');
+  options = assign({
+    hosts: 'http://localhost:2379',
+    auth: null,
+    ca: null,
+    key: null,
+    cert: null,
+    fallback: null,
+    save: true,
 
-    return _.set(
-        'nodes',
-        _.concat(
-            store.nodes,
-            addNode(node, prevNode, {
-                key: storeKey,
-                dir: true
-            })
-        ),
-        store
-    );
-}
+    cwd: '/',
+    indexes: []
+  }, options);
 
-function removeNode(node, prevNode, store) {
-    debug('removeNode', node, prevNode, store);
-    if (node.key === store.key) return null;
+  const client = new Etcd(options.hosts, pick(['auth', 'ca', 'key', 'cert'], options));
+  const watcher = client.watcher(options.cwd, null, {recursive: true});
+  const indexer = createIndexer(options.indexes);
+  const save = options.save ? createSave(options.fallback) : identity;
 
-    if (store.dir && _.startsWith(store.key, node.key))
-        return _.set(
-            'nodes',
-            _.compact((store.nodes || []).map(function(child) {
-                return removeNode(node, prevNode, child);
-            })),
-            store
-        );
+  const events$ = Observable.concat(
+    createFallback$(options.fallback),
+    createEtcd$(client, watcher, options.cwd)
+  );
 
-    return store;
-}
+  const node$ = createCombiner$(events$);
+  const {store, observable} = createStore(
+    save(node$),
+    indexer
+  );
+  const api = createAPI(store);
 
-function createSquirrel(options) {
-    options = _.assign({
-        mock: null,
-        cwd: '/',
-        indexes: ['name', 'host'],
-        fallback: null,
-        save: false,
-        fetch: true
-    }, options);
-    debug('createSquirrel', options);
+  const subscription = observable.subscribe();
+  subscription.add(() => {
+    debug('Unsubscribe');
+    watcher.stop();
+  });
 
-    function updateStore(store) {
-        debug('updateStore', store);
-        store = store || {};
-        var indexes = updateIndexes(store);
-
-        return Promise.fromCallback(function(cb) {
-            if (options.fallback && options.save)
-                return fs.writeFile(options.fallback, JSON.stringify(store, null, 4), cb);
-            cb();
-        }).return({
-            store: store,
-            indexes: indexes
-        });
-    }
-
-    function updateIndexes(store) {
-        debug('updateIndexes', store);
-        return _.zipObject(options.indexes, _.map(function(index) {
-            return buildIndex(index, store);
-        }, options.indexes));
-    }
-
-    function buildIndex(index, node) {
-        debug('buildIndex', index, node);
-        var value = _.get(index, node.value);
-
-        return _.pipe(
-            _.map(function(child) {
-                return buildIndex(index, child);
-            }),
-            _.reduce(_.concat, []),
-            _.reduce(_.assign, value ? _.zipObject([_.get(index, node.value)], [node]) : {})
-        )(node.dir && node.nodes || []);
-    }
-
-    var state$;
-
-    var driver = createEtcdDriver(options);
-
-    state$ = driver.mkdir('/').catch(function(err) {
-        return Promise.resolve({
-            key: '/',
-            dir: true
-        });
-    });
-
-    if (options.fallback)
-        state$ = setStore(Promise.try(function() {
-            return updateStore(require(options.fallback));
-        }), state$);
-    if (options.fetch) {
-        state$ = fetch(state$);
-    }
-
-    driver.watch({
-        set: function(err, node, prevNode) {
-            debug('watch:set', arguments);
-            state$ = state$.then(_.get('store')).then(function(store) {
-                return addNode(node, prevNode, store);
-            }).then(updateStore).catch(_.constant(state$));
-        },
-        delete: function(err, node, prevNode) {
-            debug('watch:delete', arguments);
-            state$ = state$.then(_.get('store')).then(function(store) {
-                return removeNode(node, prevNode, store);
-            }).then(updateStore).catch(_.constant(state$));
-        },
-        resync: function(err) {
-            debug('watch:resync');
-            state$ = fetch(state$);
-        },
-        reconnect: function(err) {
-            debug('watch:reconnect');
-            state$ = fetch(state$);
-        }
-    });
-
-    function fetch(state$) {
-        return state$.then(function() {
-            return driver.list();
-        }).then(function(node) {
-            return updateStore(node);
-        }).catch(_.constant(state$));
-    }
-
-    function setStore(state$, init$) {
-        return state$.catch(_.constant(init$));
-    }
-
-    function getBy(index, key) {
-        debug('getBy', index, key);
-        return state$.then(_.get('indexes')).then(function(indexes) {
-            return _.has(key, indexes[index]) ? _.get(key, indexes[index]).value : null;
-        });
-    }
-
-    function getAll(index) {
-        debug('getAll', index);
-        return state$.then(_.get('indexes')).then(function(indexes) {
-            return _.keys(indexes && indexes[index]);
-        });
-    }
-
-    function getStore() {
-        debug('getStore');
-        return state$.then(_.get('store'));
-    }
-
-    function get(path) {
-        debug('get', path);
-        return state$.then(_.get('store')).then(function(store) {
-            return _get(path, store);
-        });
-    }
-
-    function _get(_path, node) {
-        if (!node) return null;
-        if (path.relative(node.key, _path) === '') return node;
-
-        return _get(_path, _.find(function(child) {
-            return _.startsWith(child.key, _path);
-        }, node.nodes));
-    }
-
-    return {
-        getBy: getBy,
-        getAll: getAll,
-        getStore: getStore,
-        get: get
-    };
-}
+  return {
+    ...api,
+    close: () => subscription.unsubscribe()
+  };
+};
 
 module.exports = createSquirrel;

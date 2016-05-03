@@ -1,0 +1,11 @@
+{
+  "presets": ["es2015", "stage-1"],
+  "env": {
+    "development": {
+      "sourceMaps": "inline"
+    }
+  },
+  "ignore": [
+    "node_modules/**/*"
+  ]
+}
