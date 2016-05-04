@@ -1,5 +1,5 @@
 import test from 'ava';
-import {get, set, del} from '../patcher';
+import {get, set, del} from '../patch';
 
 test('should get node', t => {
   const input = {

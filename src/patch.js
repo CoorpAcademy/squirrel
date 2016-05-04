@@ -7,7 +7,7 @@ import {
   startsWith
 } from 'lodash/fp';
 import createDebug from 'debug';
-const debug = createDebug('squirrel:patcher');
+const debug = createDebug('squirrel:patch');
 
 const get = (store, {action, node}) => {
   if (!startsWith(store.key, node.key)) return null;

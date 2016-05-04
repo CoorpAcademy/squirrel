@@ -1,6 +1,6 @@
 import test from 'ava';
 import {join} from 'path';
-import {parseNode} from '../parser';
+import {parseNode} from '../parse';
 
 import createFallback$ from '../fallback';
 

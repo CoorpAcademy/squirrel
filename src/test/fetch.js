@@ -2,7 +2,7 @@ import test from 'ava';
 import {pipe, fill, map, concat} from 'lodash/fp';
 
 import createEtcd from './helpers/etcd';
-import {createFetch$} from '../etcd';
+import createFetch$ from '../fetch';
 
 import emptyRoot from './fixtures/empty-root';
 

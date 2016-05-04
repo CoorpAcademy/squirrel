@@ -1,6 +1,6 @@
-import {set, del} from './patcher';
+import {set, del} from './patch';
 import createDebug from 'debug';
-const debug = createDebug('squirrel:combiner');
+const debug = createDebug('squirrel:combine');
 
 const createCombiner$ = event$ => {
   return event$.scan((store, action) => {
