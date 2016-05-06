@@ -1,13 +1,13 @@
 import test from 'ava';
 
 import createEtcd from './helpers/etcd';
-import {createEtcd$} from '../etcd';
+import createEtcd$ from '../etcd';
 
 import setEvent from './fixtures/set-event';
 import deleteEvent from './fixtures/delete-event';
 import resyncEvent from './fixtures/resync-event';
 
-test('should resync', async t => {
+test('should composite events observable', async t => {
   const client = createEtcd({
     get: [[null, {
       action: 'get',

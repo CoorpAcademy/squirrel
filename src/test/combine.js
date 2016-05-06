@@ -1,7 +1,7 @@
-import {Observable} from 'rxjs';
 import test from 'ava';
+import {Observable} from 'rxjs';
 
-import createCombiner$ from '../combiner';
+import createCombiner$ from '../combine';
 
 import emptyRoot from './fixtures/empty-root';
 import setEvent from './fixtures/set-event';

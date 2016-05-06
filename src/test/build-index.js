@@ -1,8 +1,8 @@
 import test from 'ava';
-import createIndexer from '../indexer';
+import createIndexBuild from '../build-index';
 
 test('should create indexer', t => {
-  createIndexer(['name']);
+  createIndexBuild(['name']);
 });
 
 test('should create index', t => {
@@ -41,7 +41,7 @@ test('should create index', t => {
     }
   };
 
-  t.deepEqual(createIndexer(indexes)(input), output);
+  t.deepEqual(createIndexBuild(indexes)(input), output);
 });
 
 test('should index with two same entry', t => {
@@ -74,7 +74,7 @@ test('should index with two same entry', t => {
     }
   };
 
-  t.deepEqual(createIndexer(indexes)(input), output);
+  t.deepEqual(createIndexBuild(indexes)(input), output);
 });
 
 test('should create index with deep key', t => {
@@ -121,5 +121,5 @@ test('should create index with deep key', t => {
     }
   };
 
-  t.deepEqual(createIndexer(indexes)(input), output);
+  t.deepEqual(createIndexBuild(indexes)(input), output);
 });

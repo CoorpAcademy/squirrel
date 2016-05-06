@@ -1,7 +1,7 @@
 import {readFile} from 'fs';
 import {isString, identity} from 'lodash/fp';
 import {Observable} from 'rxjs';
-import {parseAction} from './parser';
+import {parseAction} from './parse';
 import createDebug from 'debug';
 const debug = createDebug('squirrel:fallback');
 

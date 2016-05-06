@@ -1,7 +1,7 @@
 import {EventEmitter} from 'events';
 import test from 'ava';
 
-import {createWatcher$} from '../etcd';
+import createWatcher$ from '../watch';
 
 import setEvent from './fixtures/set-event';
 import deleteEvent from './fixtures/delete-event';

@@ -1,5 +1,5 @@
 import test from 'ava';
-import {parseAction, parseNode} from '../parser';
+import {parseAction, parseNode} from '../parse';
 
 test('should parseNode', t => {
   const tests = [{

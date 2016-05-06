@@ -7,13 +7,13 @@ import Etcd from 'node-etcd';
 import {Observable} from 'rxjs';
 import createDebug from 'debug';
 
-import {createEtcd$} from './etcd';
+import createEtcd$ from './etcd';
 import createFallback$ from './fallback';
-import createCombiner$ from './combiner';
+import createCombiner$ from './combine';
 import createStore from './store';
 import createAPI from './api';
 import createSave from './save';
-import createIndexer from './indexer';
+import createIndexBuilder from './build-index';
 
 const debug = createDebug('squirrel');
 
@@ -34,7 +34,7 @@ const createSquirrel = options => {
 
   const client = new Etcd(options.hosts, pick(['auth', 'ca', 'key', 'cert'], options));
   const watcher = client.watcher(options.cwd, null, {recursive: true});
-  const indexer = createIndexer(options.indexes);
+  const indexBuilder = createIndexBuilder(options.indexes);
   const save = options.save ? createSave(options.fallback) : identity;
 
   const events$ = Observable.concat(
@@ -45,7 +45,7 @@ const createSquirrel = options => {
   const node$ = createCombiner$(events$);
   const {store, observable} = createStore(
     save(node$),
-    indexer
+    indexBuilder
   );
   const api = createAPI(store);
 
