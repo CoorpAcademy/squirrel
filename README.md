@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.com/CoorpAcademy/squirrel.svg?token=tpTZr2AKsFCqAwZ7nAEf&branch=master)](https://travis-ci.com/CoorpAcademy/squirrel)
-[![Coverage Status](https://coveralls.io/repos/github/CoorpAcademy/squirrel/badge.svg?branch=master&t=EmnJXv)](https://coveralls.io/github/CoorpAcademy/squirrel?branch=master)
+[![Build Status](https://travis-ci.org/CoorpAcademy/squirrel.svg?branch=master)](https://travis-ci.com/CoorpAcademy/squirrel)
+[![Coverage Status](https://coveralls.io/repos/github/CoorpAcademy/squirrel/badge.svg?branch=master)](https://coveralls.io/github/CoorpAcademy/squirrel?branch=master)
 
 # squirrel
 Watch etcd folder and keep it synchronized.
