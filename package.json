@@ -1,6 +1,6 @@
 {
   "name": "@coorpacademy/squirrel",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "High level client for Coorpacademy's squirrel service",
   "main": "lib/index.js",
   "scripts": {
@@ -57,7 +57,9 @@
       "src/**/test/**/*.js",
       "!node_module/**/*"
     ],
-    "require": ["babel-register"],
+    "require": [
+      "babel-register"
+    ],
     "babel": "inherit",
     "timeout": "5m",
     "failFast": true
