@@ -1,6 +1,6 @@
 {
   "name": "@coorpacademy/squirrel",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "High level client for Coorpacademy's squirrel service",
   "main": "lib/index.js",
   "scripts": {
@@ -26,6 +26,10 @@
   "bugs": {
     "url": "https://github.com/coorpacademy/squirrel/issues"
   },
+  "bin": {
+    "squirrel-sync": "lib/bin/sync.js",
+    "squirrel-watch": "lib/bin/watch.js"
+  },
   "homepage": "https://github.com/coorpacademy/squirrel#readme",
   "dependencies": {
     "babel-cli": "^6.8.0",
@@ -41,6 +45,7 @@
   "devDependencies": {
     "ava": "^0.14.0",
     "babel-eslint": "^6.0.3",
+    "babel-register": "^6.9.0",
     "coveralls": "^2.11.8",
     "eslint": "^2.9.0",
     "eslint-config-coorpacademy": "^2.0.2",
@@ -53,20 +58,22 @@
       "!node_module/**/*"
     ],
     "require": [
-      "babel-core/register"
+      "babel-register"
     ],
     "babel": "inherit",
-    "timeout": "5m"
+    "timeout": "5m",
+    "failFast": true
   },
   "nyc": {
     "include": [
       "src/**"
     ],
     "exclude": [
-      "**/test/**/*"
+      "**/test/**/*",
+      "src/bin"
     ],
     "require": [
-      "babel-core/register"
+      "babel-register"
     ],
     "all": true
   }

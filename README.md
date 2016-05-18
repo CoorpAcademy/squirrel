@@ -14,7 +14,8 @@ $ npm install --save @coorpacademy/squirrel
 ### Command Line Interface
 
 ```
-squirrel --hosts localhost:2379,localhost:2379 ./my-folder /etcd-folder
+squirrel-sync --hosts localhost:2379,localhost:2379 ./my-folder /etcd-folder
+squirrel-watch --hosts localhost:2379,localhost:2379 /etcd-folder
 ```
 
 ### Retrieve a Client
