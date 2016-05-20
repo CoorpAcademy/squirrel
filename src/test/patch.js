@@ -222,16 +222,16 @@ test('should remove folder', t => {
       key: '/foo/foo'
     },
     prevNode: {
-        key: '/foo/foo',
-        dir: true,
-        nodes: [{
-          key: '/foo/foo/foo',
-          value: 'foo'
-        }, {
-          key: '/foo/foo/bar',
-          value: 'bar'
-        }]
-      }
+      key: '/foo/foo',
+      dir: true,
+      nodes: [{
+        key: '/foo/foo/foo',
+        value: 'foo'
+      }, {
+        key: '/foo/foo/bar',
+        value: 'bar'
+      }]
+    }
   };
 
   const output = {

@@ -21,21 +21,28 @@ test('should composite events observable', async t => {
   });
   const watcher$ = createEtcd$(client, client.watcher(), '/');
 
-  const expected = [{
+  const expected = [
+    {
       action: 'get',
       node: {
         key: '/',
         dir: true,
         nodes: [setEvent.node]
       }
-    }, setEvent, deleteEvent, {
-    action: 'get',
-    node: {
-      key: '/',
-      dir: true,
-      nodes: []
-    }
-  }, deleteEvent, setEvent];
+    },
+    setEvent,
+    deleteEvent,
+    {
+      action: 'get',
+      node: {
+        key: '/',
+        dir: true,
+        nodes: []
+      }
+    },
+    deleteEvent,
+    setEvent
+  ];
 
   const events = await watcher$.take(6).toArray().toPromise();
   t.deepEqual(events, expected);

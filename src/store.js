@@ -5,7 +5,7 @@ const createStore = (node$, indexer) => {
   }));
 
   let store = null;
-   const storeReady = store$.take(1).do(_store => {
+  const storeReady = store$.take(1).do(_store => {
     store = _store;
   }).toPromise();
   const observable = store$.do(_store => {
