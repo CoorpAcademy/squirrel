@@ -43,13 +43,12 @@ const createSquirrel = options => {
   );
 
   const node$ = createCombiner$(events$);
-  const {store, observable} = createStore(
+  const {store, subscription} = createStore(
     save(node$),
     indexBuilder
   );
   const api = createAPI(store);
 
-  const subscription = observable.subscribe();
   subscription.add(() => {
     debug('Unsubscribe');
     watcher.stop();

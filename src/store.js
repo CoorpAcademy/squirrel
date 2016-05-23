@@ -4,19 +4,13 @@ const createStore = (node$, indexer) => {
     indexes: indexer(node)
   }));
 
-  let store = null;
-  const storeReady = store$.take(1).do(_store => {
-    store = _store;
-  }).toPromise();
-  const observable = store$.do(_store => {
-    store = _store;
-  });
+  const replayed$ = store$.publishReplay(1);
 
-  const ready = key => storeReady.then(() => store[key]);
+  const ready = key => replayed$.first().pluck(key).toPromise();
 
   return {
     store: ready,
-    observable
+    subscription: replayed$.connect()
   };
 };
 

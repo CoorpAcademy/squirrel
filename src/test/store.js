@@ -1,4 +1,4 @@
-import {Observable, Subject} from 'rxjs';
+import {Observable, Subject, Subscription} from 'rxjs';
 import test from 'ava';
 import {identity} from 'lodash/fp';
 
@@ -38,14 +38,14 @@ test('should wait first event', t => {
   ]));
 });
 
-test('should return observable', t => {
+test('should return subscription', t => {
   const node$ = Observable.empty();
 
   const {
-    observable
+    subscription
   } = createStore(node$, identity);
 
-  t.true(observable instanceof Observable);
+  t.true(subscription instanceof Subscription);
 });
 
 test('should', t => {
@@ -53,18 +53,16 @@ test('should', t => {
 
   const {
     store,
-    observable
+    subscription
   } = createStore(node$, identity);
 
-  return observable.toPromise().then(
-    Promise.all([
-      store('node').then(store =>
-        t.deepEqual(store, 'bar')
-      ),
-      store('indexes').then(indexes =>
-        t.deepEqual(indexes, 'bar')
-      )
-    ])
-  );
+  return Promise.all([
+    store('node').then(store =>
+      t.deepEqual(store, 'bar')
+    ),
+    store('indexes').then(indexes =>
+      t.deepEqual(indexes, 'bar')
+    )
+  ]).then(() => subscription.unsubscribe());
 });
 
