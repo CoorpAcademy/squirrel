@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@coorpacademy/eslint-plugin-coorpacademy": "^1.1.2",
-    "ava": "^0.14.0",
+    "ava": "^0.15.1",
     "babel-cli": "^6.9.0",
     "babel-core": "^6.9.0",
     "babel-eslint": "^6.0.3",
