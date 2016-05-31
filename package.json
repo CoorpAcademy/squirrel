@@ -9,9 +9,8 @@
     "build": "babel src --out-dir lib -s",
     "test": "npm run lint && npm run nyc",
     "lint": "eslint .",
-    "ava": "RUNNING_UNIT_TESTS=true ava",
-    "nyc": "RUNNING_UNIT_TESTS=true nyc ava --all",
-    "nyc:lcov": "npm run nyc -- --reporter=text --reporter=lcov",
+    "ava": "ava",
+    "nyc": "nyc ava --all --reporter=text --reporter=lcov",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
@@ -22,7 +21,7 @@
     "squirrel"
   ],
   "author": "dev@coorpacademy.com",
-  "license": "SEE LICENSE IN LICENSE.TXT",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/coorpacademy/squirrel/issues"
   },
