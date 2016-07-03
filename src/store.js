@@ -4,7 +4,7 @@ const createStore = (node$, indexer) => {
     indexes: indexer(node)
   }));
 
-  const replayed$ = store$.publishReplay(1);
+  const replayed$ = store$.publishLast();
 
   const ready = key => replayed$.first().pluck(key).toPromise();
 
