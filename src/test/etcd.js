@@ -1,6 +1,6 @@
+import {EventEmitter} from 'events';
 import test from 'ava';
 
-import createEtcd from './helpers/etcd';
 import createEtcd$ from '../etcd';
 
 import setEvent from './fixtures/set-event';
@@ -8,18 +8,33 @@ import deleteEvent from './fixtures/delete-event';
 import resyncEvent from './fixtures/resync-event';
 
 test('should composite events observable', async t => {
-  const client = createEtcd({
-    get: [[null, {
-      action: 'get',
-      node: {
-        key: '/',
-        dir: true,
-        nodes: [setEvent.node]
-      }
-    }]],
-    watcher: [setEvent, deleteEvent, resyncEvent, deleteEvent, setEvent]
-  });
-  const watcher$ = createEtcd$(client, client.watcher(), '/');
+  const getMocks = [[null, {
+    action: 'get',
+    node: {
+      key: '/',
+      dir: true,
+      nodes: [setEvent.node]
+    }
+  }], [null, {
+    action: 'get',
+    node: {
+      key: '/',
+      dir: true,
+      nodes: []
+    }
+  }]];
+
+  const watcher = new EventEmitter();
+  watcher.stop = () => {};
+
+  const watcherMocks = [setEvent, deleteEvent, resyncEvent, deleteEvent, setEvent];
+
+  const client = {
+    get: (cwd, options, cb) => cb(...getMocks.shift()),
+    watcher: () => watcher
+  };
+
+  const events$ = createEtcd$(client, '/');
 
   const expected = [
     {
@@ -44,6 +59,12 @@ test('should composite events observable', async t => {
     setEvent
   ];
 
-  const events = await watcher$.take(6).toArray().toPromise();
+  const eventsP = events$.take(6).toArray().toPromise();
+
+  watcherMocks.forEach(
+    event => watcher.emit(event.action, event)
+  );
+
+  const events = await eventsP;
   t.deepEqual(events, expected);
 });
