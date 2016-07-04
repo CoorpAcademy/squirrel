@@ -16,11 +16,10 @@ const createFallback$ = filePath => {
   if (!isString(filePath)) return Observable.empty();
   debug(`Read fallback ${filePath}`);
 
-  return Observable.of(filePath)
-    .flatMap(filePath => readFile$(filePath, {
-      encoding: 'UTF8'
-    }))
-    .map(JSON.parse).filter(identity).map(wrapAction).map(parseAction).catch(() => Observable.empty());
+  return readFile$(filePath, {
+    encoding: 'UTF8'
+  })
+  .map(JSON.parse).filter(identity).map(wrapAction).map(parseAction).catch(() => Observable.empty());
 };
 
 export default createFallback$;
