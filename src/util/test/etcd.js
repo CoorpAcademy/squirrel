@@ -74,19 +74,56 @@ const headers = () => ({'content-type': 'application/json'});
   fn: 'set',
   argz: ['foo', 'foo'],
   results: [action('set', node('/foo', 'foo'), node('/foo', 'bar')), headers]
-}].map(({title, fn$, fn, argz, expected, results}) =>
-  test(title, t =>
-    fn$({
+}].forEach(({title, fn$, fn, argz, expected, results}) => {
+  test(title, t => {
+    t.plan(3);
+    return fn$({
       [fn]: (..._argz) => {
         const cb = _argz.pop();
         t.deepEqual(expected || argz, _argz);
         cb(null, ...results);
+        return {
+          abort: () => {
+            t.pass();
+          }
+        };
       }
     }, ...argz).toArray().toPromise().then(events =>
       t.deepEqual(events, slice(0, results.length - 1, results))
-    )
-  )
-);
+    );
+  });
+
+  test(`${title} be cancellable`, t => {
+    t.plan(1);
+    fn$({
+      [fn]: (..._argz) => {
+        return {
+          abort: () => {
+            t.pass();
+          }
+        };
+      }
+    }, ...argz).subscribe().unsubscribe();
+  });
+
+  test(`${title} raise error`, t => {
+    return fn$({
+      [fn]: (..._argz) => {
+        const cb = _argz.pop();
+        cb(new Error('za'));
+        return {
+          abort: () => {
+            t.pass();
+          }
+        };
+      }
+    }, ...argz).toPromise().then(() => {
+      throw new Error();
+    }, () => {
+      return Promise.resolve();
+    });
+  });
+});
 
 test('isDirectory should return false on null', t =>
   t.deepEqual(isDirectory(), false)

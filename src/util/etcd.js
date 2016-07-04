@@ -1,42 +1,45 @@
 import {Observable} from 'rxjs';
+import {invoke, invokeArgs} from 'lodash/fp';
 import makeDebug from 'debug';
 const debug = makeDebug('squirrel:util:etcd');
 
-export const compareAndSwap$ = (client, ...argz) =>
-  debug('compareAndSwap', ...argz) ||
-  Observable.bindNodeCallback(client.compareAndSwap.bind(client))(...argz).pluck(0);
+const wrap = fnName => (client, ...argz) =>
+  debug(fnName, ...argz) ||
+  Observable.create(observer => {
+    const token = invokeArgs(fnName, [...argz, (err, value) => {
+      if (err) return observer.error(err);
+      observer.next(value);
+      observer.complete();
+    }], client);
 
-export const del$ = (client, ...argz) =>
-  debug('del', ...argz) ||
-  Observable.bindNodeCallback(client.del.bind(client))(...argz).pluck(0);
+    return () => {
+      invoke('abort', token);
+    };
+  });
+
+export const compareAndSwap$ = wrap('compareAndSwap');
+
+export const del$ = wrap('del');
 
 export const delRecursive$ = (client, key) =>
   debug('delRecursive', key) ||
   del$(client, key, {recursive: true});
 
-export const get$ = (client, ...argz) =>
-  debug('get', ...argz) ||
-  Observable.bindNodeCallback(client.get.bind(client))(...argz).pluck(0);
+export const get$ = wrap('get');
 
 export const getRecursive$ = (client, key) =>
   debug('getRecursive', key) ||
   get$(client, key, {recursive: true});
 
-export const mkdir$ = (client, ...argz) =>
-  debug('mkdir', ...argz) ||
-  Observable.bindNodeCallback(client.mkdir.bind(client))(...argz).pluck(0);
+export const mkdir$ = wrap('mkdir');
 
-export const rmdir$ = (client, ...argz) =>
-  debug('rmdir', ...argz) ||
-  Observable.bindNodeCallback(client.rmdir.bind(client))(...argz).pluck(0);
+export const rmdir$ = wrap('rmdir');
 
 export const rmdirRecursive$ = (client, key) =>
   debug('rmdirRecursive', key) ||
   rmdir$(client, key, {recursive: true});
 
-export const set$ = (client, ...argz) =>
-  debug('set', ...argz) ||
-  Observable.bindNodeCallback(client.set.bind(client))(...argz).pluck(0);
+export const set$ = wrap('set');
 
 export const isDirectory = node =>
   debug('isDirectory', node) ||
