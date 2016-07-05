@@ -6,19 +6,17 @@ import createWatcher$ from '../watch';
 import setEvent from './fixtures/set-event';
 import deleteEvent from './fixtures/delete-event';
 import resyncEvent from './fixtures/resync-event';
+import createEtcdMock from '../util/test/helpers/etcd';
 
 test('should create watcher observable', t => {
   t.plan(2);
 
   const watcher = new EventEmitter();
   watcher.stop = () => {};
-
-  const client = {
-    watcher: cwd => {
-      t.deepEqual(cwd, '/');
-      return watcher;
-    }
-  };
+  const client = createEtcdMock({}, cwd => {
+    t.deepEqual(cwd, '/');
+    return watcher;
+  });
 
   const watcher$ = createWatcher$(client, '/');
 
@@ -38,10 +36,7 @@ test('should close watcher on unsubscribe', t => {
   watcher.stop = () => {
     t.pass();
   };
-
-  const client = {
-    watcher: () => watcher
-  };
+  const client = createEtcdMock({}, cwd => watcher);
 
   const watcher$ = createWatcher$(client, '/');
 
@@ -54,9 +49,7 @@ test('should, emit set/delete/resync events', t => {
   const watcher = new EventEmitter();
   watcher.stop = () => {};
 
-  const client = {
-    watcher: () => watcher
-  };
+  const client = createEtcdMock({}, cwd => watcher);
 
   const watcher$ = createWatcher$(client, '/');
 

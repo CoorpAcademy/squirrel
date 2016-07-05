@@ -4,13 +4,12 @@ import {pipe, fill, map, concat} from 'lodash/fp';
 import createFetch$ from '../fetch';
 
 import emptyRoot from './fixtures/empty-root';
+import createEtcdMock from '../util/test/helpers/etcd';
 
 test('should fetch nodes', t => {
-  const getMocks = [[null, emptyRoot]];
-
-  const client = {
-    get: (cwd, options, cb) => cb(...getMocks.shift())
-  };
+  const client = createEtcdMock({
+    get: [[null, emptyRoot, null]]
+  });
 
   const fetch$ = createFetch$(client, '/');
 
@@ -27,15 +26,13 @@ test('should fetch nodes', t => {
 });
 
 test('should retry on error', t => {
-  const getMocks = pipe(
+  const client = createEtcdMock({
+    get: pipe(
     fill(new Error),
     map(err => [err]),
-    concat([[null, emptyRoot]])
-  )(Array(10));
-
-  const client = {
-    get: (cwd, options, cb) => cb(...getMocks.shift())
-  };
+    concat([[null, emptyRoot, null]])
+  )(Array(10))
+  });
 
   const fetch$ = createFetch$(client, '/');
 

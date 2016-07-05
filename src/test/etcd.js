@@ -6,6 +6,7 @@ import createEtcd$ from '../etcd';
 import setEvent from './fixtures/set-event';
 import deleteEvent from './fixtures/delete-event';
 import resyncEvent from './fixtures/resync-event';
+import createEtcdMock from '../util/test/helpers/etcd';
 
 test('should composite events observable', async t => {
   const getMocks = [[null, {
@@ -27,12 +28,9 @@ test('should composite events observable', async t => {
   const watcher = new EventEmitter();
   watcher.stop = () => {};
 
-  const watcherMocks = [setEvent, deleteEvent, resyncEvent, deleteEvent, setEvent];
-
-  const client = {
-    get: (cwd, options, cb) => cb(...getMocks.shift()),
-    watcher: () => watcher
-  };
+  const client = createEtcdMock({
+    get: getMocks
+  }, () => watcher);
 
   const events$ = createEtcd$(client, '/');
 
@@ -61,7 +59,7 @@ test('should composite events observable', async t => {
 
   const eventsP = events$.take(6).toArray().toPromise();
 
-  watcherMocks.forEach(
+  [setEvent, deleteEvent, resyncEvent, deleteEvent, setEvent].forEach(
     event => watcher.emit(event.action, event)
   );
 

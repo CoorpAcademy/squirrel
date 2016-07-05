@@ -1,10 +1,10 @@
 import {Observable} from 'rxjs';
-import {invoke, invokeArgs} from 'lodash/fp';
+import {invokeArgs} from 'lodash/fp';
 import makeDebug from 'debug';
 const debug = makeDebug('squirrel:util:etcd');
 
 const wrap = fnName => (client, ...argz) =>
-  debug(fnName, ...argz) ||
+  debug(fnName, ...argz, client) ||
   Observable.create(observer => {
     const token = invokeArgs(fnName, [...argz, (err, value) => {
       if (err) return observer.error(err);
@@ -13,7 +13,7 @@ const wrap = fnName => (client, ...argz) =>
     }], client);
 
     return () => {
-      invoke('abort', token);
+      token.abort();
     };
   });
 
