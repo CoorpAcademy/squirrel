@@ -33,13 +33,12 @@ const createSquirrel = options => {
   }, options);
 
   const client = new Etcd(options.hosts, pick(['auth', 'ca', 'key', 'cert'], options));
-  const watcher = client.watcher(options.cwd, null, {recursive: true});
   const indexBuilder = createIndexBuilder(options.indexes);
   const save = options.save ? createSave(options.fallback) : identity;
 
   const events$ = Observable.concat(
     createFallback$(options.fallback),
-    createEtcd$(client, watcher, options.cwd)
+    createEtcd$(client, options.cwd)
   );
 
   const node$ = createCombiner$(events$);
@@ -48,11 +47,6 @@ const createSquirrel = options => {
     indexBuilder
   );
   const api = createAPI(store);
-
-  subscription.add(() => {
-    debug('Unsubscribe');
-    watcher.stop();
-  });
 
   return {
     ...api,
