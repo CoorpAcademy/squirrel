@@ -22,7 +22,7 @@ export const syncDirectory$ = (client, pathFS, pathETCD) => {
   return get$(client, pathETCD).catch(err => {
     if (err.errorCode === 100)
       return mkdir$(client, pathETCD);
-    return err;
+    throw err;
   }).flatMap(action => {
     if (action && !get('node.dir', action))
       return del$(client, pathETCD)
@@ -52,7 +52,7 @@ export const syncFile$ = (client, pathFS, pathETCD) => {
   return get$(client, pathETCD).catch(err => {
     if (err.errorCode === 100)
       return Observable.of(null);
-    return err;
+    throw err;
   }).flatMap(action => {
     if (action && get('node.dir', action)) return rmdirRecursive$(client, pathETCD);
     return Observable.of(action);
