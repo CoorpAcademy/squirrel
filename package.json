@@ -50,7 +50,7 @@
     "eslint": "^3.0.1",
     "eslint-plugin-ava": "^2.2.1",
     "eslint-plugin-lodash-fp": "^1.2.0",
-    "nyc": "^6.6.0"
+    "nyc": "^7.0.0"
   },
   "ava": {
     "files": [
@@ -78,6 +78,6 @@
     "all": true
   },
   "engines": {
-    "node" : ">=4"
+    "node": ">=4"
   }
 }
