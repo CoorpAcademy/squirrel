@@ -18,8 +18,7 @@ const createFallback$ = filePath => {
 
   return readFile$(filePath, {
     encoding: 'UTF8'
-  })
-  .map(JSON.parse).filter(identity).map(wrapAction).map(parseAction).catch(() => Observable.empty());
+  }).map(JSON.parse).filter(identity).map(wrapAction).map(parseAction).catch(() => Observable.empty());
 };
 
 export default createFallback$;
