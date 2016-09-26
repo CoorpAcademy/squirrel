@@ -181,15 +181,15 @@ test('should set value if value setted', async t => {
     set: [{
       assert: (key, value) => {
         t.deepEqual(key, '/foo');
-        t.deepEqual(value, {foo: 'baz'});
+        t.deepEqual(value, JSON.stringify({foo: 'baz'}, null, 4));
       },
-      values: [null, {foo: 'baz'}, null]
+      values: [null, JSON.stringify({foo: 'baz'}, null, 4), null]
     }]
   });
   const api = createAPI(getStore, client);
   t.deepEqual(
     await api.set('/foo', {foo: 'baz'}),
-    {foo: 'baz'}
+    JSON.stringify({foo: 'baz'}, null, 4)
   );
 });
 
