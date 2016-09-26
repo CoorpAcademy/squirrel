@@ -46,7 +46,7 @@ const createSquirrel = options => {
     save(node$),
     indexBuilder
   );
-  const api = createAPI(store, client, options);
+  const api = createAPI(store, client);
 
   return {
     ...api,

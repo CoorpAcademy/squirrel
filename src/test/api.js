@@ -1,7 +1,7 @@
 import test from 'ava';
+import createEtcdMock from '../util/test/helpers/etcd';
 
 import createAPI from '../api';
-import Etcd from './fixtures/node-etcd';
 const node = {
   key: '/',
   dir: true,
@@ -85,10 +85,7 @@ const store = {
 };
 
 const getStore = key => Promise.resolve(store[key]);
-const client = new Etcd();
-const api = createAPI(getStore, client);
-const clientErrored = new Etcd({err: new Error('boom')});
-const apiErrored = createAPI(getStore, clientErrored);
+const api = createAPI(getStore);
 
 test('should create API', t => {
   t.truthy(api);
@@ -180,6 +177,16 @@ test('should get null if any node matches this path', async t => {
 });
 
 test('should set nothing if value is null', async t => {
+  const client = createEtcdMock({
+    set: [{
+      assert: (key, value) => {
+        t.deepEqual(key, '/nope');
+        t.deepEqual(value, null);
+      },
+      values: [null, null, null]
+    }]
+  });
+  const api = createAPI(getStore, client);
   t.deepEqual(
     await api.set('/nope', null),
     null
@@ -187,6 +194,16 @@ test('should set nothing if value is null', async t => {
 });
 
 test('should set value if value setted', async t => {
+  const client = createEtcdMock({
+    set: [{
+      assert: (key, value) => {
+        t.deepEqual(key, '/foo');
+        t.deepEqual(value, {foo: 'baz'});
+      },
+      values: [null, {foo: 'baz'}, null]
+    }]
+  });
+  const api = createAPI(getStore, client);
   t.deepEqual(
     await api.set('/foo', {foo: 'baz'}),
     {foo: 'baz'}
@@ -194,8 +211,12 @@ test('should set value if value setted', async t => {
 });
 
 test('should failed if error occured', async t => {
+  const client = createEtcdMock({
+    set: [[new Error('boom'), null, null]]
+  });
+  const api = createAPI(getStore, client);
   t.throws(
-    apiErrored.set('/foo', {foo: 'baz'}),
+    api.set('/foo', {foo: 'baz'}),
     /boom/
   );
 });

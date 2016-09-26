@@ -6,11 +6,12 @@ import {
   startsWith,
   curry
 } from 'lodash/fp';
+import {set$} from './util/etcd';
 import createDebug from 'debug';
 
 const debug = createDebug('squirrel');
 
-const createAPI = (store, client, options = {cwd: '/'}) => {
+const createAPI = (store, client) => {
   const getBy = (index, key) => {
     debug(`getBy: ${index} => ${key}`);
     return store('indexes').then(getOr(null, [index, key, 'value']));
@@ -29,9 +30,7 @@ const createAPI = (store, client, options = {cwd: '/'}) => {
   };
 
   const set = (_path, value) => {
-    _path = path.join(options.cwd, _path);
-    debug(`set => ${_path}`);
-    return _set(_path, value);
+    return set$(client, _path, value).toPromise();
   };
 
   const _get = curry((_path, node) => {
@@ -42,21 +41,6 @@ const createAPI = (store, client, options = {cwd: '/'}) => {
       return startsWith(child.key, _path);
     }, node.nodes));
   });
-
-  const _set = (_path, value) => {
-    return new Promise(function(resolve, reject) {
-      if (!value) {
-        return resolve(value);
-      }
-      client.set(_path, value, (err, res) => {
-        if (err) {
-          return reject(err);
-        }
-
-        return resolve(res);
-      });
-    });
-  };
 
   return {
     getBy,
