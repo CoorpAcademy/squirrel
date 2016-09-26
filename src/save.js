@@ -10,7 +10,7 @@ const writeFile$ = Observable.bindNodeCallback(writeFile);
 const createSave = filePath => event$ => {
   if (!isString(filePath)) return event$;
 
-  return event$.delayWhen(event => {
+  return event$.map(event => {
     debug(`saving ${filePath}`);
     return writeFile$(
       filePath,
@@ -18,8 +18,8 @@ const createSave = filePath => event$ => {
       {encoding: 'UTF8'}
     ).do(() =>
       debug(`saved ${filePath}`)
-    );
-  });
+    ).mapTo(event);
+  }).concatAll();
 };
 
 export default createSave;
