@@ -30,7 +30,7 @@ const createAPI = (store, client) => {
   };
 
   const set = (_path, value) => {
-    return set$(client, _path, value).toPromise();
+    return set$(client, _path, JSON.stringify(value, null, 4)).toPromise();
   };
 
   const _get = curry((_path, node) => {
