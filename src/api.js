@@ -6,12 +6,13 @@ import {
   startsWith,
   curry
 } from 'lodash/fp';
+import {stringify, parseValue} from './parse';
 import {set$} from './util/etcd';
 import createDebug from 'debug';
 
 const debug = createDebug('squirrel');
 
-const createAPI = (store, client) => {
+const createAPI = (store, client, options = {cwd: '/'}) => {
   const getBy = (index, key) => {
     debug(`getBy: ${index} => ${key}`);
     return store('indexes').then(getOr(null, [index, key, 'value']));
@@ -30,7 +31,12 @@ const createAPI = (store, client) => {
   };
 
   const set = (_path, value) => {
-    return set$(client, _path, JSON.stringify(value, null, 4)).toPromise();
+    _path = path.join(options.cwd, _path);
+    debug(`set => ${_path}`);
+    return set$(client, _path, stringify(value))
+        .pluck('node', 'value')
+        .map(parseValue)
+        .toPromise();
   };
 
   const _get = curry((_path, node) => {

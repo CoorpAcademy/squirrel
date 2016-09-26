@@ -5,6 +5,7 @@ import minimist from 'minimist';
 
 import makeEtcdClient from './etcd';
 import createWatcher$ from '../watch';
+import {stringify} from '../parse';
 
 const argz = minimist(process.argv.slice(2));
 
@@ -14,5 +15,5 @@ const client = makeEtcdClient(argz);
 
 const watcher = client.watcher(pathETCD, null, {recursive: true});
 createWatcher$(watcher).do(action =>
-  process.stdout.write(`${JSON.stringify(action, null, 4)}\n`)
+  process.stdout.write(`${stringify(action)}\n`)
 ).toPromise();

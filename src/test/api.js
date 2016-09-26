@@ -1,5 +1,6 @@
 import test from 'ava';
 import createEtcdMock from '../util/test/helpers/etcd';
+import {stringify} from '../parse';
 
 import createAPI from '../api';
 const node = {
@@ -176,20 +177,30 @@ test('should get null if any node matches this path', async t => {
   );
 });
 
+const createAction = (type, node) => ({
+  type,
+  node
+});
+const createNode = (key, value) => ({
+  key,
+  value: stringify(value),
+  prevNode: null
+});
+
 test('should set value if value setted', async t => {
   const client = createEtcdMock({
     set: [{
       assert: (key, value) => {
         t.deepEqual(key, '/foo');
-        t.deepEqual(value, JSON.stringify({foo: 'baz'}, null, 4));
+        t.deepEqual(value, stringify({foo: 'baz'}));
       },
-      values: [null, JSON.stringify({foo: 'baz'}, null, 4), null]
+      values: [null, createAction('set', createNode('/foo', {foo: 'baz'})), null]
     }]
   });
   const api = createAPI(getStore, client);
   t.deepEqual(
     await api.set('/foo', {foo: 'baz'}),
-    JSON.stringify({foo: 'baz'}, null, 4)
+    {foo: 'baz'}
   );
 });
 
