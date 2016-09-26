@@ -10,7 +10,7 @@ import createDebug from 'debug';
 
 const debug = createDebug('squirrel');
 
-const createAPI = store => {
+const createAPI = (store, client, options = {cwd: '/'}) => {
   const getBy = (index, key) => {
     debug(`getBy: ${index} => ${key}`);
     return store('indexes').then(getOr(null, [index, key, 'value']));
@@ -28,6 +28,12 @@ const createAPI = store => {
     return store('node').then(_get(path));
   };
 
+  const set = (_path, value) => {
+    _path = path.join(options.cwd, _path);
+    debug(`set => ${_path}`);
+    return _set(_path, value);
+  };
+
   const _get = curry((_path, node) => {
     if (!node) return null;
     if (path.relative(node.key, _path) === '') return node;
@@ -37,10 +43,26 @@ const createAPI = store => {
     }, node.nodes));
   });
 
+  const _set = (_path, value) => {
+    return new Promise(function(resolve, reject) {
+      if (!value) {
+        return resolve(value);
+      }
+      client.set(_path, value, (err, res) => {
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve(res);
+      });
+    });
+  };
+
   return {
     getBy,
     getAll,
-    get
+    get,
+    set
   };
 };
 

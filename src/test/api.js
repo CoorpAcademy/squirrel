@@ -1,7 +1,7 @@
 import test from 'ava';
 
 import createAPI from '../api';
-
+import Etcd from './fixtures/node-etcd';
 const node = {
   key: '/',
   dir: true,
@@ -85,13 +85,17 @@ const store = {
 };
 
 const getStore = key => Promise.resolve(store[key]);
-const api = createAPI(getStore);
+const client = new Etcd();
+const api = createAPI(getStore, client);
+const clientErrored = new Etcd({err: new Error('boom')});
+const apiErrored = createAPI(getStore, clientErrored);
 
 test('should create API', t => {
   t.truthy(api);
   t.truthy(api.get);
   t.truthy(api.getBy);
   t.truthy(api.getAll);
+  t.truthy(api.set);
 });
 
 test('should get keys of simple index', async t => {
@@ -172,5 +176,26 @@ test('should get null if any node matches this path', async t => {
   t.deepEqual(
     await api.get('/nope'),
     null
+  );
+});
+
+test('should set nothing if value is null', async t => {
+  t.deepEqual(
+    await api.set('/nope', null),
+    null
+  );
+});
+
+test('should set value if value setted', async t => {
+  t.deepEqual(
+    await api.set('/foo', {foo: 'baz'}),
+    {foo: 'baz'}
+  );
+});
+
+test('should failed if error occured', async t => {
+  t.throws(
+    apiErrored.set('/foo', {foo: 'baz'}),
+    /boom/
   );
 });
