@@ -176,23 +176,6 @@ test('should get null if any node matches this path', async t => {
   );
 });
 
-test('should set nothing if value is null', async t => {
-  const client = createEtcdMock({
-    set: [{
-      assert: (key, value) => {
-        t.deepEqual(key, '/nope');
-        t.deepEqual(value, null);
-      },
-      values: [null, null, null]
-    }]
-  });
-  const api = createAPI(getStore, client);
-  t.deepEqual(
-    await api.set('/nope', null),
-    null
-  );
-});
-
 test('should set value if value setted', async t => {
   const client = createEtcdMock({
     set: [{
