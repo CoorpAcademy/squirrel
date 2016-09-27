@@ -1,7 +1,8 @@
 import test from 'ava';
+import createEtcdMock from '../util/test/helpers/etcd';
+import {stringify} from '../parse';
 
 import createAPI from '../api';
-
 const node = {
   key: '/',
   dir: true,
@@ -92,6 +93,7 @@ test('should create API', t => {
   t.truthy(api.get);
   t.truthy(api.getBy);
   t.truthy(api.getAll);
+  t.truthy(api.set);
 });
 
 test('should get keys of simple index', async t => {
@@ -172,5 +174,43 @@ test('should get null if any node matches this path', async t => {
   t.deepEqual(
     await api.get('/nope'),
     null
+  );
+});
+
+const createAction = (type, node) => ({
+  type,
+  node
+});
+const createNode = (key, value) => ({
+  key,
+  value: stringify(value),
+  prevNode: null
+});
+
+test('should set value if value setted', async t => {
+  const client = createEtcdMock({
+    set: [{
+      assert: (key, value) => {
+        t.deepEqual(key, '/foo');
+        t.deepEqual(value, stringify({foo: 'baz'}));
+      },
+      values: [null, createAction('set', createNode('/foo', {foo: 'baz'})), null]
+    }]
+  });
+  const api = createAPI(getStore, client);
+  t.deepEqual(
+    await api.set('/foo', {foo: 'baz'}),
+    {foo: 'baz'}
+  );
+});
+
+test('should failed if error occured', async t => {
+  const client = createEtcdMock({
+    set: [[new Error('boom'), null, null]]
+  });
+  const api = createAPI(getStore, client);
+  t.throws(
+    api.set('/foo', {foo: 'baz'}),
+    /boom/
   );
 });

@@ -1,5 +1,17 @@
 import test from 'ava';
-import {parseAction, parseNode} from '../parse';
+import {stringify, parseValue, parseAction, parseNode} from '../parse';
+
+test('should parse value as JSON', t => {
+  const expected = {
+    foo: 'foo'
+  };
+  t.deepEqual(parseValue(stringify(expected)), expected);
+});
+
+test('shouldn\'t parse value if ', t => {
+  const expected = 'foo';
+  t.deepEqual(parseValue(expected), expected);
+});
 
 test('should parseNode', t => {
   const tests = [{
@@ -23,7 +35,7 @@ test('should parseNode', t => {
   }, {
     input: {
       key: '/foo',
-      value: JSON.stringify({
+      value: stringify({
         foo: 'foo'
       })
     },
@@ -39,7 +51,7 @@ test('should parseNode', t => {
       dir: true,
       nodes: [{
         key: '/foo/bar',
-        value: JSON.stringify({
+        value: stringify({
           foo: 'foo'
         })
       }]
@@ -81,7 +93,7 @@ test('should parseAction', t => {
       action: 'foo',
       node: {
         key: '/foo',
-        value: JSON.stringify({
+        value: stringify({
           foo: 'foo'
         })
       }
@@ -100,7 +112,7 @@ test('should parseAction', t => {
       action: 'foo',
       prevNode: {
         key: '/foo',
-        value: JSON.stringify({
+        value: stringify({
           foo: 'foo'
         })
       }
