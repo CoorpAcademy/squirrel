@@ -12,6 +12,7 @@ Provide an index system to access a file without scanning all nodes.
     - [`get(path)`](#getpath)
     - [`getBy(index, key)`](#getbyindex-key)
     - [`getAll(index)`](#getallindex)
+    - [`set(path, value)`](#setpath-value)
   - [Command Line Interface](#command-line-interface)
     - [`squirrel-sync`](#squirrel-sync)
     - [`squirrel-watch`](#squirrel-watch)
@@ -113,6 +114,20 @@ console.log(foo); // { "bar": { "foo": "bar" } }
 const barBaz = await squirrel.getAll('bar.baz');
 console.log(barBaz); // { "qux": { "bar": { "baz": "qux" } } }
 ```
+
+#### `set(path, value)`
+
+Set file by path. Returns `Promise`;
+
+- `path` (String): the path of the file to get.
+- `value` (Object): An object to store in file. Will be serialized.
+
+```JavaScript
+const foo = await squirrel.set('/foo',  { "foo": "bar" });
+console.log(foo); // { "foo": "bar" }
+
+```
+
 
 ## Command Line Interface
 
