@@ -25,6 +25,11 @@ const createAPI = (store, client, options = {cwd: '/'}) => {
     });
   };
 
+  const getByRaw = (index, key) => {
+    debug(`getBy: ${index} => ${key}`);
+    return store('indexes').then(getOr(null, [index, key]));
+  };
+
   const get = path => {
     debug(`get => ${path}`);
     return store('node').then(_get(path));
@@ -50,6 +55,7 @@ const createAPI = (store, client, options = {cwd: '/'}) => {
 
   return {
     getBy,
+    getByRaw,
     getAll,
     get,
     set

@@ -92,6 +92,7 @@ test('should create API', t => {
   t.truthy(api);
   t.truthy(api.get);
   t.truthy(api.getBy);
+  t.truthy(api.getByRaw);
   t.truthy(api.getAll);
   t.truthy(api.set);
 });
@@ -126,14 +127,14 @@ test('should get node by simple index', async t => {
   );
 });
 
-test('should get null if any node matches', async t => {
+test('should get null if no node matches', async t => {
   t.deepEqual(
     await api.getBy('value', 'nope'),
     null
   );
 });
 
-test('should get null if any index matches', async t => {
+test('should get null if no index matches', async t => {
   t.deepEqual(
     await api.getBy('nope', 'nope'),
     null
@@ -149,9 +150,44 @@ test('should get node by complex index', async t => {
   );
 });
 
-test('should get null if any complex index matches', async t => {
+test('should get null if no complex index matches', async t => {
   t.deepEqual(
     await api.getBy('deep.nope', 'nope'),
+    null
+  );
+});
+
+test('should get raw node by simple index', async t => {
+  t.deepEqual(
+    await api.getByRaw('value', 'foo'),
+    {key: '/foo', value: {value: 'foo' }}
+  );
+});
+
+test('should get null if no node matches (raw)', async t => {
+  t.deepEqual(
+    await api.getByRaw('value', 'nope'),
+    null
+  );
+});
+
+test('should get null if no index matches (raw)', async t => {
+  t.deepEqual(
+    await api.getByRaw('nope', 'nope'),
+    null
+  );
+});
+
+test('should get node by complex index (raw)', async t => {
+  t.deepEqual(
+    await api.getByRaw('deep.value', 'foo'),
+    {key: '/foo', value: {value: 'foo'}}
+  );
+});
+
+test('should get null if no complex index matches (raw)', async t => {
+  t.deepEqual(
+    await api.getByRaw('deep.nope', 'nope'),
     null
   );
 });
@@ -170,7 +206,7 @@ test('should get node by path', async t => {
   );
 });
 
-test('should get null if any node matches this path', async t => {
+test('should get null if no node matches this path', async t => {
   t.deepEqual(
     await api.get('/nope'),
     null
