@@ -13,11 +13,6 @@ import createDebug from 'debug';
 const debug = createDebug('squirrel');
 
 const createAPI = (store, client, options = {cwd: '/'}) => {
-  const getBy = (index, key) => {
-    debug(`getBy: ${index} => ${key}`);
-    return store('indexes').then(getOr(null, [index, key, 'value']));
-  };
-
   const getAll = index => {
     debug(`getAll => ${index}`);
     return store('indexes').then(indexes => {
@@ -28,6 +23,11 @@ const createAPI = (store, client, options = {cwd: '/'}) => {
   const getByRaw = (index, key) => {
     debug(`getBy: ${index} => ${key}`);
     return store('indexes').then(getOr(null, [index, key]));
+  };
+
+  const getBy = (index, key) => {
+    debug(`getBy: ${index} => ${key}`);
+    return getByRaw(index, key).then(getOr(null, ['value']));
   };
 
   const get = path => {
