@@ -6,7 +6,6 @@ import {
 import Etcd from 'node-etcd';
 import {Observable} from 'rxjs';
 import createDebug from 'debug';
-
 import createEtcd$ from './etcd';
 import createFallback$ from './fallback';
 import createCombiner$ from './combine';
@@ -17,9 +16,9 @@ import createIndexBuilder from './build-index';
 
 const debug = createDebug('squirrel');
 
-const createSquirrel = options => {
+const createSquirrel = _options => {
   debug('Init');
-  options = assign({
+  const options = assign({
     hosts: 'http://localhost:2379',
     auth: null,
     ca: null,
@@ -30,7 +29,7 @@ const createSquirrel = options => {
 
     cwd: '/',
     indexes: []
-  }, options);
+  }, _options);
 
   const client = new Etcd(options.hosts, pick(['auth', 'ca', 'key', 'cert'], options));
   const indexBuilder = createIndexBuilder(options.indexes);

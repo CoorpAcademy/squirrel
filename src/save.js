@@ -3,6 +3,7 @@ import {Observable} from 'rxjs';
 import {isString} from 'lodash/fp';
 import createDebug from 'debug';
 import {stringify} from './parse';
+
 const debug = createDebug('squirrel:save');
 
 const writeFile$ = Observable.bindNodeCallback(writeFile);

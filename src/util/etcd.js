@@ -1,6 +1,7 @@
 import {Observable} from 'rxjs';
 import {invokeArgs} from 'lodash/fp';
 import makeDebug from 'debug';
+
 const debug = makeDebug('squirrel:util:etcd');
 
 const wrap = fnName => (client, ...argz) =>

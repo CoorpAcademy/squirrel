@@ -12,5 +12,8 @@
     ],
     "plugins": [
         "@coorpacademy/coorpacademy"
-    ]
+    ],
+    "rules": {
+      "promise/no-native": 0
+    }
 }

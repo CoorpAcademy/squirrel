@@ -1,7 +1,6 @@
 import {join} from 'path';
 import {xor, map, isBuffer} from 'lodash/fp';
 import test from 'ava';
-
 import {isFile$, readdir$, isDirectory$, filter$, readFile$, readFileUTF8$} from '../fs';
 
 const joinTestFolder = (...argz) => join(__dirname, 'fixtures/fs', ...argz);
@@ -61,16 +60,14 @@ test('should filterDirectory directory content', t =>
   )
 );
 
-test('should read file', t =>
-  readFile$(joinTestFolder('foo')).toPromise().then(data => {
-    t.true(isBuffer(data));
-    t.deepEqual(data.toString(), 'foo');
-  })
-);
+test('should read file', async t => {
+  const data = await readFile$(joinTestFolder('foo')).toPromise();
+  t.true(isBuffer(data));
+  t.deepEqual(data.toString(), 'foo');
+});
 
-test('should read UTF8 file', t =>
-  readFileUTF8$(joinTestFolder('foo')).toPromise().then(data => {
-    t.falsy(isBuffer(data));
-    t.deepEqual(data, 'foo');
-  })
-);
+test('should read UTF8 file', async t => {
+  const data = await readFileUTF8$(joinTestFolder('foo')).toPromise();
+  t.falsy(isBuffer(data));
+  t.deepEqual(data, 'foo');
+});

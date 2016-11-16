@@ -14,7 +14,7 @@ import {
   isFile
 } from '../etcd';
 
-const action = (action, node, prevNode) => ({action, node, prevNode});
+const action = (_action, _node, _prevNode) => ({action: _action, node: _node, prevNode: _prevNode});
 const node = (key, value, dir) => ({key, value, dir});
 const headers = () => ({'content-type': 'application/json'});
 
@@ -75,9 +75,9 @@ const headers = () => ({'content-type': 'application/json'});
   argz: ['foo', 'foo'],
   results: [action('set', node('/foo', 'foo'), node('/foo', 'bar')), headers]
 }].forEach(({title, fn$, fn, argz, expected, results}) => {
-  test(title, t => {
+  test(title, async t => {
     t.plan(3);
-    return fn$({
+    const events = await fn$({
       [fn]: (..._argz) => {
         const cb = _argz.pop();
         t.deepEqual(expected || argz, _argz);
@@ -88,9 +88,8 @@ const headers = () => ({'content-type': 'application/json'});
           }
         };
       }
-    }, ...argz).toArray().toPromise().then(events =>
-      t.deepEqual(events, slice(0, results.length - 1, results))
-    );
+    }, ...argz).toArray().toPromise();
+    t.deepEqual(events, slice(0, results.length - 1, results));
   });
 
   test(`${title} be cancellable`, t => {
@@ -106,22 +105,25 @@ const headers = () => ({'content-type': 'application/json'});
     }, ...argz).subscribe().unsubscribe();
   });
 
-  test(`${title} raise error`, t => {
-    return fn$({
-      [fn]: (..._argz) => {
-        const cb = _argz.pop();
-        cb(new Error('za'));
-        return {
-          abort: () => {
-            t.pass();
-          }
-        };
-      }
-    }, ...argz).toPromise().then(() => {
-      throw new Error();
-    }, () => {
-      return Promise.resolve();
-    });
+  test(`${title} raise error`, async t => {
+    t.plan(2);
+    try {
+      await fn$({
+        [fn]: (..._argz) => {
+          const cb = _argz.pop();
+          cb(new Error('za'));
+          return {
+            abort: () => {
+              t.pass();
+            }
+          };
+        }
+      }, ...argz).toPromise();
+      t.fail();
+    }
+    catch (err) {
+      t.pass();
+    }
   });
 });
 

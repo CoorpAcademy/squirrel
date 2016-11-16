@@ -1,5 +1,5 @@
 import test from 'ava';
-import createClient from '../index';
+import createClient from '../index'; // eslint-disable-line import/default
 
 test('should createClient', t => {
   const client = createClient();

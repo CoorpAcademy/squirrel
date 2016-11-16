@@ -1,12 +1,10 @@
-import {EventEmitter} from 'events';
+import {EventEmitter} from 'events'; // eslint-disable-line fp/no-events
 import test from 'ava';
-
 import createEtcd$ from '../etcd';
-
+import createEtcdMock from '../util/test/helpers/etcd';
 import setEvent from './fixtures/set-event';
 import deleteEvent from './fixtures/delete-event';
 import resyncEvent from './fixtures/resync-event';
-import createEtcdMock from '../util/test/helpers/etcd';
 
 test('should composite events observable', async t => {
   const getMocks = [[null, {

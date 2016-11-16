@@ -4,7 +4,6 @@ import {readFile} from 'fs';
 import test from 'ava';
 import {Observable} from 'rxjs';
 import createSave from '../save';
-
 import fallback from './fixtures/fallback';
 
 const readFile$ = Observable.bindNodeCallback(readFile);

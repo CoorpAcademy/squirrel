@@ -26,10 +26,10 @@ export const parseNode = pipe(
 );
 
 export const parseAction = action => {
-  return reduce((action, key) => {
-    if (has(key, action)) {
-      return set(key, parseNode(get(key, action)), action);
+  return reduce((_action, key) => {
+    if (has(key, _action)) {
+      return set(key, parseNode(get(key, _action)), _action);
     }
-    return action;
+    return _action;
   }, action, ['node', 'prevNode']);
 };

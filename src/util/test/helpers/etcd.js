@@ -1,4 +1,4 @@
-import EventEmitter from 'events';
+import EventEmitter from 'events'; // eslint-disable-line fp/no-events
 import {assign, mapValues, noop, pipe} from 'lodash/fp';
 
 const createWatcher = () => () => {

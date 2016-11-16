@@ -34,13 +34,14 @@ test('should create etcd directory if not exists', t => {
     }]
   });
 
-  return syncDirectory$(client, join(__dirname, 'fixtures/fs'), '/test').toArray().toPromise().then(events => {
+  return syncDirectory$(client, join(__dirname, 'fixtures/fs'), '/test').toArray().do(events => {
     t.deepEqual(xor(events, ['foo', 'bar']), []);
     t.plan(3);
-  });
+  }).toPromise();
 });
 
-test('should throw error on directory sync if etcd throw unknown error', t => {
+test('should throw error on directory sync if etcd throw unknown error', async t => {
+  t.plan(2);
   const client = createEtcdMock({
     get: [{
       assert: key =>
@@ -54,14 +55,17 @@ test('should throw error on directory sync if etcd throw unknown error', t => {
     }]
   });
 
-  return syncDirectory$(client, join(__dirname, 'fixtures/fs'), '/test').toArray().toPromise().then(() =>
-    t.fail()
-  , () =>
-    Promise.resolve()
-  );
+  try {
+    await syncDirectory$(client, join(__dirname, 'fixtures/fs'), '/test').toArray().toPromise();
+    t.fail();
+  }
+  catch (err) {
+    t.pass();
+  }
 });
 
 test('should remove extra entry of directory', t => {
+  t.plan(3);
   const client = createEtcdMock({
     get: [{
       assert: key =>
@@ -85,13 +89,13 @@ test('should remove extra entry of directory', t => {
     }]
   });
 
-  syncDirectory$(client, join(__dirname, 'fixtures/fs'), '/test').toArray().toPromise().then(events => {
+  return syncDirectory$(client, join(__dirname, 'fixtures/fs'), '/test').toArray().do(events => {
     t.deepEqual(xor(events, ['bar', 'foo']), []);
-    t.plan(3);
-  });
+  }).toPromise();
 });
 
-test('should create file if doesn\t exists', t => {
+test('should create file if doesn\t exists', async t => {
+  t.plan(4);
   const client = createEtcdMock({
     get: [{
       assert: key =>
@@ -113,13 +117,12 @@ test('should create file if doesn\t exists', t => {
     }]
   });
 
-  return syncFile$(client, join(__dirname, 'fixtures/fs/foo'), '/test/foo').toArray().toPromise().then(events => {
-    t.deepEqual(events, []);
-    t.plan(4);
-  });
+  const events = await syncFile$(client, join(__dirname, 'fixtures/fs/foo'), '/test/foo').toArray().toPromise();
+  t.deepEqual(events, []);
 });
 
-test('should throw error on file sync if etcd throw unknown error', t => {
+test('should throw error on file sync if etcd throw unknown error', async t => {
+  t.plan(2);
   const client = createEtcdMock({
     get: [{
       assert: key =>
@@ -132,14 +135,17 @@ test('should throw error on file sync if etcd throw unknown error', t => {
     }]
   });
 
-  return syncFile$(client, join(__dirname, 'fixtures/fs/foo'), '/test/foo').toArray().toPromise().then(() =>
-    t.fail()
-  , () =>
-    Promise.resolve()
-  );
+  try {
+    await syncFile$(client, join(__dirname, 'fixtures/fs/foo'), '/test/foo').toArray().toPromise();
+    t.fail();
+  }
+  catch (err) {
+    t.pass();
+  }
 });
 
-test('should remove directory if it should be a file', t => {
+test('should remove directory if it should be a file', async t => {
+  t.plan(6);
   const client = createEtcdMock({
     get: [{
       assert: key =>
@@ -185,13 +191,12 @@ test('should remove directory if it should be a file', t => {
     }]
   });
 
-  return syncFile$(client, join(__dirname, 'fixtures/fs/foo'), '/test/foo').toArray().toPromise().then(events => {
-    t.deepEqual(events, []);
-    t.plan(6);
-  });
+  const events = await syncFile$(client, join(__dirname, 'fixtures/fs/foo'), '/test/foo').toArray().toPromise();
+  t.deepEqual(events, []);
 });
 
-test('should remove file if it should be a directory', t => {
+test('should remove file if it should be a directory', async t => {
+  t.plan(4);
   const client = createEtcdMock({
     get: [{
       assert: key =>
@@ -232,13 +237,12 @@ test('should remove file if it should be a directory', t => {
     }]
   });
 
-  return syncDirectory$(client, join(__dirname, 'fixtures/fs/bar'), '/test/bar').toArray().toPromise().then(events => {
-    t.deepEqual(events, ['baz']);
-    t.plan(4);
-  });
+  const events = await syncDirectory$(client, join(__dirname, 'fixtures/fs/bar'), '/test/bar').toArray().toPromise();
+  t.deepEqual(events, ['baz']);
 });
 
-test('should update file if it\'s outdated', t => {
+test('should update file if it\'s outdated', async t => {
+  t.plan(4);
   const client = createEtcdMock({
     get: [{
       assert: key =>
@@ -270,13 +274,12 @@ test('should update file if it\'s outdated', t => {
     }]
   });
 
-  return syncFile$(client, join(__dirname, 'fixtures/fs/foo'), '/test/foo').toArray().toPromise().then(events => {
-    t.deepEqual(events, []);
-    t.plan(4);
-  });
+  const events = await syncFile$(client, join(__dirname, 'fixtures/fs/foo'), '/test/foo').toArray().toPromise();
+  t.deepEqual(events, []);
 });
 
-test('shouldn\'t update file if it\'s updated', t => {
+test('shouldn\'t update file if it\'s updated', async t => {
+  t.plan(2);
   const client = createEtcdMock({
     get: [{
       assert: key =>
@@ -295,13 +298,12 @@ test('shouldn\'t update file if it\'s updated', t => {
     }]
   });
 
-  return syncFile$(client, join(__dirname, 'fixtures/fs/foo'), '/test/foo').toArray().toPromise().then(events => {
-    t.deepEqual(events, []);
-    t.plan(2);
-  });
+  const events = await syncFile$(client, join(__dirname, 'fixtures/fs/foo'), '/test/foo').toArray().toPromise();
+  t.deepEqual(events, []);
 });
 
-test('should loop on sync', t => {
+test('should loop on sync', async t => {
+  t.plan(7);
   const client = createEtcdMock({
     get: [{
       assert: key =>
@@ -361,7 +363,5 @@ test('should loop on sync', t => {
     }]
   });
 
-  return sync$(client, join(__dirname, 'fixtures/fs'), '/test').toPromise().then(() => {
-    t.plan(7);
-  });
+  await sync$(client, join(__dirname, 'fixtures/fs'), '/test').toPromise();
 });

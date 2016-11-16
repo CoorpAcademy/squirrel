@@ -38,7 +38,7 @@
     "rxjs": "^5.0.0-beta.7"
   },
   "devDependencies": {
-    "@coorpacademy/eslint-plugin-coorpacademy": "^1.2.1",
+    "@coorpacademy/eslint-plugin-coorpacademy": "^2.0.0",
     "ava": "^0.16.0",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.2",
@@ -49,7 +49,12 @@
     "coveralls": "^2.11.15",
     "eslint": "^3.10.2",
     "eslint-plugin-ava": "^4.0.0",
+    "eslint-plugin-fp": "^2.2.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-json": "^1.2.0",
     "eslint-plugin-lodash-fp": "^2.1.3",
+    "eslint-plugin-promise": "^3.3.2",
+    "eslint-plugin-xo": "^1.0.0",
     "nyc": "^9.0.1"
   },
   "ava": {

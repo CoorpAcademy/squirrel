@@ -1,7 +1,6 @@
 import {Observable, Subject, Subscription} from 'rxjs';
 import test from 'ava';
 import {identity} from 'lodash/fp';
-
 import createStore from '../store';
 
 test('should get node and indexes', t => {
@@ -12,8 +11,8 @@ test('should get node and indexes', t => {
   } = createStore(node$, identity);
 
   const assert = Promise.all([
-    store('node').then(store =>
-      t.deepEqual(store, 'foo')
+    store('node').then(node =>
+      t.deepEqual(node, 'foo')
     ),
     store('indexes').then(indexes =>
       t.deepEqual(indexes, 'foo')
@@ -48,7 +47,7 @@ test('should return subscription', t => {
   t.true(subscription instanceof Subscription);
 });
 
-test('should', t => {
+test('should', async t => {
   const node$ = Observable.of('foo', 'bar');
 
   const {
@@ -56,13 +55,13 @@ test('should', t => {
     subscription
   } = createStore(node$, identity);
 
-  return Promise.all([
-    store('node').then(store =>
-      t.deepEqual(store, 'bar')
-    ),
-    store('indexes').then(indexes =>
-      t.deepEqual(indexes, 'bar')
-    )
-  ]).then(() => subscription.unsubscribe());
+  const [node, indexes] = await Promise.all([
+    store('node'),
+    store('indexes')
+  ]);
+  t.deepEqual(node, 'bar');
+  t.deepEqual(indexes, 'bar');
+
+  subscription.unsubscribe();
 });
 

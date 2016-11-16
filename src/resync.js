@@ -1,6 +1,7 @@
 import {Observable} from 'rxjs';
-import createFetcher$ from './fetch';
 import createDebug from 'debug';
+import createFetcher$ from './fetch';
+
 const debug = createDebug('squirrel:etcd');
 
 const createResync$ = (client, cwd, events$) =>

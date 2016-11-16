@@ -1,10 +1,8 @@
 import test from 'ava';
 import {pipe, fill, map, concat} from 'lodash/fp';
-
 import createFetch$ from '../fetch';
-
-import emptyRoot from './fixtures/empty-root';
 import createEtcdMock from '../util/test/helpers/etcd';
+import emptyRoot from './fixtures/empty-root';
 
 test('should fetch nodes', t => {
   const client = createEtcdMock({

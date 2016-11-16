@@ -1,8 +1,8 @@
 import test from 'ava';
 import createEtcdMock from '../util/test/helpers/etcd';
 import {stringify} from '../parse';
-
 import createAPI from '../api';
+
 const node = {
   key: '/',
   dir: true,
@@ -213,9 +213,9 @@ test('should get null if no node matches this path', async t => {
   );
 });
 
-const createAction = (type, node) => ({
+const createAction = (type, _node) => ({
   type,
-  node
+  node: _node
 });
 const createNode = (key, value) => ({
   key,
@@ -233,9 +233,9 @@ test('should set value if value setted', async t => {
       values: [null, createAction('set', createNode('/foo', {foo: 'baz'})), null]
     }]
   });
-  const api = createAPI(getStore, client);
+  const _api = createAPI(getStore, client);
   t.deepEqual(
-    await api.set('/foo', {foo: 'baz'}),
+    await _api.set('/foo', {foo: 'baz'}),
     {foo: 'baz'}
   );
 });
@@ -244,9 +244,9 @@ test('should failed if error occured', async t => {
   const client = createEtcdMock({
     set: [[new Error('boom'), null, null]]
   });
-  const api = createAPI(getStore, client);
+  const _api = createAPI(getStore, client);
   t.throws(
-    api.set('/foo', {foo: 'baz'}),
+    _api.set('/foo', {foo: 'baz'}),
     /boom/
   );
 });

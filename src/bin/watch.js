@@ -2,10 +2,9 @@
 
 import {resolve} from 'path';
 import minimist from 'minimist';
-
-import makeEtcdClient from './etcd';
 import createWatcher$ from '../watch';
 import {stringify} from '../parse';
+import makeEtcdClient from './etcd';
 
 const argz = minimist(process.argv.slice(2));
 

@@ -1,11 +1,9 @@
 import test from 'ava';
 import {Observable} from 'rxjs';
-
 import createResyncer$ from '../resync';
-
+import createEtcdMock from '../util/test/helpers/etcd';
 import setEvent from './fixtures/set-event';
 import resyncEvent from './fixtures/resync-event';
-import createEtcdMock from '../util/test/helpers/etcd';
 
 test('should transform resync event', async t => {
   const client = createEtcdMock({

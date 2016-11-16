@@ -1,21 +1,11 @@
 import {join, relative} from 'path';
 import {Observable} from 'rxjs';
 import {includes, get, filter} from 'lodash/fp';
+import makeDebug from 'debug';
 import {isDirectory$, readdir$, readFileUTF8$} from './fs';
 import {get$, set$, delRecursive$, del$, mkdir$, rmdirRecursive$} from './etcd';
-import makeDebug from 'debug';
-const debug = makeDebug('squirrel:util:cli');
 
-export const sync$ = (client, pathFS, pathETCD) => {
-  debug('sync', pathFS, pathETCD);
-  return isDirectory$(pathFS).flatMap(isDirectory => {
-    if (isDirectory)
-      return syncDirectory$(client, pathFS, pathETCD);
-    return syncFile$(client, pathFS, pathETCD);
-  }).flatMap(entry =>
-    sync$(client, join(pathFS, entry), join(pathETCD, entry))
-  );
-};
+const debug = makeDebug('squirrel:util:cli');
 
 export const syncDirectory$ = (client, pathFS, pathETCD) => {
   debug('syncDirectory', pathFS, pathETCD);
@@ -33,12 +23,12 @@ export const syncDirectory$ = (client, pathFS, pathETCD) => {
 
     const entries = readdir$(pathFS);
 
-    return entries.toArray().flatMap(entries => {
-      const nodeToDelete = filter(node => {
-        return !includes(join(pathFS, relative(pathETCD, node.key)), entries);
+    return entries.toArray().flatMap(_entries => {
+      const nodeToDelete = filter(_node => {
+        return !includes(join(pathFS, relative(pathETCD, _node.key)), _entries);
       }, nodes);
-      const nodeToDelete$ = Observable.from(nodeToDelete).flatMap(node =>
-        delRecursive$(client, node.key)
+      const nodeToDelete$ = Observable.from(nodeToDelete).flatMap(_node =>
+        delRecursive$(client, _node.key)
       );
       return nodeToDelete$;
     }).toArray().flatMap(() => entries);
@@ -60,4 +50,15 @@ export const syncFile$ = (client, pathFS, pathETCD) => {
     if (action && get('node.value', action) === file) return Observable.empty();
     return set$(client, pathETCD, file);
   }).combineAll().ignoreElements();
+};
+
+export const sync$ = (client, pathFS, pathETCD) => {
+  debug('sync', pathFS, pathETCD);
+  return isDirectory$(pathFS).flatMap(isDirectory => {
+    if (isDirectory)
+      return syncDirectory$(client, pathFS, pathETCD);
+    return syncFile$(client, pathFS, pathETCD);
+  }).flatMap(entry =>
+    sync$(client, join(pathFS, entry), join(pathETCD, entry))
+  );
 };

@@ -1,7 +1,7 @@
-import {curry} from 'lodash/fp';
-import {Observable} from 'rxjs';
 import {stat, readdir, readFile} from 'fs';
 import {join} from 'path';
+import {curry} from 'lodash/fp';
+import {Observable} from 'rxjs';
 
 export const stat$ =
   Observable.bindNodeCallback(stat);
@@ -13,10 +13,10 @@ export const readFile$ = Observable.bindNodeCallback(readFile);
 export const readFileUTF8$ = file => readFile$(file, {encoding: 'UTF8'});
 
 export const isFile$ = pathFS =>
-  stat$(pathFS).map(stat => stat.isFile());
+  stat$(pathFS).map(_stat => _stat.isFile());
 
 export const isDirectory$ = pathFS =>
-  stat$(pathFS).map(stat => stat.isDirectory());
+  stat$(pathFS).map(_stat => _stat.isDirectory());
 
 export const filter$ = curry((predicate, value) =>
   predicate(value)
