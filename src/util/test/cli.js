@@ -8,12 +8,13 @@ import {
 } from '../cli';
 import createEtcdMock from './helpers/etcd';
 
-const NotExistsError = new Error();
+const NotExistsError = new Error('NotExistsError');
 NotExistsError.errorCode = 100;
 
-const UnknownError = new Error();
+const UnknownError = new Error('UnknownError');
 
 test('should create etcd directory if not exists', t => {
+  t.plan(3);
   const client = createEtcdMock({
     get: [{
       assert: key =>
@@ -36,12 +37,10 @@ test('should create etcd directory if not exists', t => {
 
   return syncDirectory$(client, join(__dirname, 'fixtures/fs'), '/test').toArray().do(events => {
     t.deepEqual(xor(events, ['foo', 'bar']), []);
-    t.plan(3);
   }).toPromise();
 });
 
-test('should throw error on directory sync if etcd throw unknown error', async t => {
-  t.plan(2);
+test('should throw error on directory sync if etcd throw unknown error', t => {
   const client = createEtcdMock({
     get: [{
       assert: key =>
@@ -55,13 +54,7 @@ test('should throw error on directory sync if etcd throw unknown error', async t
     }]
   });
 
-  try {
-    await syncDirectory$(client, join(__dirname, 'fixtures/fs'), '/test').toArray().toPromise();
-    t.fail();
-  }
-  catch (err) {
-    t.pass();
-  }
+  t.throws(syncDirectory$(client, join(__dirname, 'fixtures/fs'), '/test').toArray().toPromise(), 'UnknownError');
 });
 
 test('should remove extra entry of directory', t => {
@@ -122,7 +115,6 @@ test('should create file if doesn\t exists', async t => {
 });
 
 test('should throw error on file sync if etcd throw unknown error', async t => {
-  t.plan(2);
   const client = createEtcdMock({
     get: [{
       assert: key =>
@@ -135,13 +127,7 @@ test('should throw error on file sync if etcd throw unknown error', async t => {
     }]
   });
 
-  try {
-    await syncFile$(client, join(__dirname, 'fixtures/fs/foo'), '/test/foo').toArray().toPromise();
-    t.fail();
-  }
-  catch (err) {
-    t.pass();
-  }
+  t.throws(syncFile$(client, join(__dirname, 'fixtures/fs/foo'), '/test/foo').toArray().toPromise(), 'UnknownError');
 });
 
 test('should remove directory if it should be a file', async t => {

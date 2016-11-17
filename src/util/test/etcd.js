@@ -107,11 +107,12 @@ const headers = () => ({'content-type': 'application/json'});
 
   test(`${title} raise error`, async t => {
     t.plan(2);
+    const TestError = new Error();
     try {
       await fn$({
         [fn]: (..._argz) => {
           const cb = _argz.pop();
-          cb(new Error('za'));
+          cb(TestError);
           return {
             abort: () => {
               t.pass();
@@ -122,7 +123,7 @@ const headers = () => ({'content-type': 'application/json'});
       t.fail();
     }
     catch (err) {
-      t.pass();
+      t.is(err, TestError);
     }
   });
 });

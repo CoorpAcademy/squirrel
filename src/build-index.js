@@ -1,7 +1,5 @@
 import {
   assign,
-  cond,
-  constant,
   flatMap,
   get,
   getOr,
@@ -18,10 +16,11 @@ const buildIndex = (index, node) => {
   const value = get(index, node.value);
 
   return pipe(
-    cond([
-        [get('dir'), getOr([], 'nodes')],
-        [constant(true), constant([])]
-    ]),
+    _node => {
+      if (get('dir', _node))
+        return getOr([], 'nodes', _node);
+      return [];
+    },
     flatMap(function(child) {
       return buildIndex(index, child);
     }),
