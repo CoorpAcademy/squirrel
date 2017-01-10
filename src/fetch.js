@@ -10,7 +10,9 @@ const createFetch$ = (client, cwd) => {
     cb => client.get(cwd, {recursive: true}, (err, data) => cb(err, data))
   );
 
-  return list()
+  return Observable.of(list)
+    .map(f => f())
+    .mergeAll()
     .retry(Infinity)
     .map(parseAction);
 };
