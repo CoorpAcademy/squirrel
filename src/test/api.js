@@ -33,6 +33,22 @@ const node = {
           value: 'quz'
         }
       }
+    }, {
+      key: '/bim',
+      value: {
+        value: 'mfw',
+        deep: {
+          value: 'fwiw'
+        }
+      }
+    }, {
+      key: '/bim/bam',
+      value: {
+        value: 'yolo',
+        deep: {
+          value: 'lol'
+        }
+      }
     }]
   }]
 };
@@ -76,7 +92,21 @@ const indexes = {
       value: {
         value: 'qux'
       }
+    },
+
+    bim: {
+      key: '/bim',
+      value: {
+        value: 'mfw'
+      }
+    },
+    bam: {
+      key: '/bim/bam',
+      value: {
+        value: 'yolo'
+      }
     }
+
   }
 };
 
@@ -95,6 +125,7 @@ test('should create API', t => {
   t.truthy(api.getByRaw);
   t.truthy(api.getAll);
   t.truthy(api.set);
+  t.truthy(api.del);
 });
 
 test('should get keys of simple index', async t => {
@@ -107,7 +138,7 @@ test('should get keys of simple index', async t => {
 test('should get keys of complex index', async t => {
   t.deepEqual(
     await api.getAll('deep.value'),
-    ['foo', 'baz', 'qux']
+    ['foo', 'baz', 'qux', 'bim', 'bam']
   );
 });
 
@@ -188,6 +219,13 @@ test('should get node by complex index (raw)', async t => {
 test('should get null if no complex index matches (raw)', async t => {
   t.deepEqual(
     await api.getByRaw('deep.nope', 'nope'),
+    null
+  );
+});
+
+test('should delete node if it match (del)', async t => {
+  t.deepEqual(
+    await api.del('/bim/bam'),
     null
   );
 });

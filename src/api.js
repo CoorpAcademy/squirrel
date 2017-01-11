@@ -9,9 +9,9 @@ import {
   startsWith,
   curry
 } from 'lodash/fp';
-import createDebug from 'debug';
-import {set$} from './util/etcd';
 import {stringify, parseValue} from './parse';
+import {set$, del$} from './util/etcd';
+import createDebug from 'debug';
 
 const debug = createDebug('squirrel');
 
@@ -56,12 +56,24 @@ const createAPI = (store, client, options = {cwd: '/'}) => {
         .toPromise();
   };
 
+  const del = _path => {
+    const fullPath = join(options.cwd, _path);
+    debug(`del => ${fullPath}`);
+    return del$(client, fullPath)
+        .map(x => {
+          debug('DEL$', fullPath, x);
+          return x;
+        })
+        .toPromise();
+  };
+
   return {
     getBy,
     getByRaw,
     getAll,
     get,
-    set
+    set,
+    del
   };
 };
 
