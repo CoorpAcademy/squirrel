@@ -59,12 +59,7 @@ const createAPI = (store, client, options = {cwd: '/'}) => {
   const del = _path => {
     const fullPath = join(options.cwd, _path);
     debug(`del => ${fullPath}`);
-    return del$(client, fullPath)
-        .map(x => {
-          debug('DEL$', fullPath, x);
-          return x;
-        })
-        .toPromise();
+    return del$(client, fullPath).toPromise();
   };
 
   return {

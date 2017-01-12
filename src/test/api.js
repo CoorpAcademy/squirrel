@@ -224,9 +224,17 @@ test('should get null if no complex index matches (raw)', async t => {
 });
 
 test('should delete node if it match (del)', async t => {
+  const client = createEtcdMock({
+    del: [{
+      assert: p => Promise.resolve(true),
+      values: [null, null, null]
+    }]
+  });
+  const _api = createAPI(getStore, client);
+
   t.deepEqual(
-    await api.del('/bim/bam'),
-    true
+    await _api.del('/bim'),
+    null
   );
 });
 
