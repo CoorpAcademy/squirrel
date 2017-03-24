@@ -114,7 +114,7 @@ test('should create file if doesn\t exists', async t => {
   t.deepEqual(events, []);
 });
 
-test('should throw error on file sync if etcd throw unknown error', async t => {
+test('should throw error on file sync if etcd throw unknown error', t => {
   const client = createEtcdMock({
     get: [{
       assert: key =>

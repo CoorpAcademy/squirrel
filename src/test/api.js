@@ -286,7 +286,7 @@ test('should set value if value setted', async t => {
   );
 });
 
-test('should failed if error occured', async t => {
+test('should failed if error occured', t => {
   const client = createEtcdMock({
     set: [[new Error('boom'), null, null]]
   });
