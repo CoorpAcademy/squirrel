@@ -8,7 +8,8 @@
     "prepublish": "npm run build",
     "build": "babel src --out-dir lib -s",
     "test": "npm run lint && npm run nyc",
-    "lint": "eslint .",
+    "lint": "eslint src/ *.js *.json --ext .js,.json",
+    "lint:fix": "npm run lint -- --fix",
     "ava": "ava",
     "nyc": "nyc ava --all --reporter=text --reporter=lcov",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
@@ -38,7 +39,7 @@
     "rxjs": "^5.0.0-beta.7"
   },
   "devDependencies": {
-    "@coorpacademy/eslint-plugin-coorpacademy": "^2.0.2",
+    "@coorpacademy/eslint-plugin-coorpacademy": "^4.0.1",
     "ava": "^0.16.0",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.2",
