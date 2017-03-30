@@ -14,90 +14,117 @@ test('should fetch nodes', async t => {
   });
   const combiner$ = createCombiner$(events$);
 
-  const expected = [emptyRoot.node, {
-    ...emptyRoot.node,
-    nodes: [
-      setEvent.node
-    ]
-  }, {
-    ...emptyRoot.node,
-    nodes: [
-      setEvent.node, {
-        key: '/bar',
-        dir: true,
-        nodes: [{
-          key: '/bar/bar',
-          value: 'bar'
-        }]
-      }
-    ]
-  }];
+  const expected = [
+    emptyRoot.node,
+    {
+      ...emptyRoot.node,
+      nodes: [setEvent.node]
+    },
+    {
+      ...emptyRoot.node,
+      nodes: [
+        setEvent.node,
+        {
+          key: '/bar',
+          dir: true,
+          nodes: [
+            {
+              key: '/bar/bar',
+              value: 'bar'
+            }
+          ]
+        }
+      ]
+    }
+  ];
 
   const events = await combiner$.toArray().toPromise();
   t.deepEqual(events, expected);
 });
 
 test('should remove node', async t => {
-  const events$ = Observable.of({
-    action: 'get',
-    node: {
-      key: '/',
-      dir: true,
-      nodes: [{
-        key: '/foo',
-        value: 'foo'
-      }]
+  const events$ = Observable.of(
+    {
+      action: 'get',
+      node: {
+        key: '/',
+        dir: true,
+        nodes: [
+          {
+            key: '/foo',
+            value: 'foo'
+          }
+        ]
+      }
+    },
+    {
+      action: 'delete',
+      node: {
+        key: '/foo'
+      }
     }
-  }, {
-    action: 'delete',
-    node: {
-      key: '/foo'
-    }
-  });
+  );
   const combiner$ = createCombiner$(events$);
 
-  const expected = [{
-    key: '/',
-    dir: true,
-    nodes: [{
-      key: '/foo',
-      value: 'foo'
-    }]
-  }, {
-    key: '/',
-    dir: true,
-    nodes: []
-  }];
+  const expected = [
+    {
+      key: '/',
+      dir: true,
+      nodes: [
+        {
+          key: '/foo',
+          value: 'foo'
+        }
+      ]
+    },
+    {
+      key: '/',
+      dir: true,
+      nodes: []
+    }
+  ];
 
   const events = await combiner$.toArray().toPromise();
   t.deepEqual(events, expected);
 });
 
 test('should prevent malformed actions', async t => {
-  const events$ = Observable.of({
-    action: 'get',
-    node: {
-      key: '/',
-      dir: true,
-      nodes: [{
-        key: '/foo',
-        value: 'foo'
-      }]
+  const events$ = Observable.of(
+    {
+      action: 'get',
+      node: {
+        key: '/',
+        dir: true,
+        nodes: [
+          {
+            key: '/foo',
+            value: 'foo'
+          }
+        ]
+      }
+    },
+    {},
+    null,
+    undefined,
+    {
+      foo: 'foo'
+    },
+    [],
+    {
+      action: 'foo'
     }
-  }, {}, null, undefined, {
-    foo: 'foo'
-  }, [], {
-    action: 'foo'
-  });
+  );
   const combiner$ = createCombiner$(events$);
 
   const expected = {
     key: '/',
     dir: true,
-    nodes: [{
-      key: '/foo',
-      value: 'foo'
-    }]
+    nodes: [
+      {
+        key: '/foo',
+        value: 'foo'
+      }
+    ]
   };
 
   const events = await combiner$.toArray().toPromise();

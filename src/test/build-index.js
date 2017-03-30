@@ -11,17 +11,20 @@ test('should create index', t => {
   const input = {
     key: '/',
     dir: true,
-    nodes: [{
-      key: '/foo',
-      value: {
-        foo: 'foo'
+    nodes: [
+      {
+        key: '/foo',
+        value: {
+          foo: 'foo'
+        }
+      },
+      {
+        key: '/bar',
+        value: {
+          foo: 'bar'
+        }
       }
-    }, {
-      key: '/bar',
-      value: {
-        foo: 'bar'
-      }
-    }]
+    ]
   };
 
   const output = {
@@ -50,17 +53,20 @@ test('should index with two same entry', t => {
   const input = {
     key: '/',
     dir: true,
-    nodes: [{
-      key: '/foo',
-      value: {
-        foo: 'foo'
+    nodes: [
+      {
+        key: '/foo',
+        value: {
+          foo: 'foo'
+        }
+      },
+      {
+        key: '/bar',
+        value: {
+          foo: 'foo'
+        }
       }
-    }, {
-      key: '/bar',
-      value: {
-        foo: 'foo'
-      }
-    }]
+    ]
   };
 
   const output = {
@@ -83,21 +89,24 @@ test('should create index with deep key', t => {
   const input = {
     key: '/',
     dir: true,
-    nodes: [{
-      key: '/foo',
-      value: {
-        foo: {
-          bar: 'baz'
+    nodes: [
+      {
+        key: '/foo',
+        value: {
+          foo: {
+            bar: 'baz'
+          }
+        }
+      },
+      {
+        key: '/bar',
+        value: {
+          foo: {
+            bar: 'qux'
+          }
         }
       }
-    }, {
-      key: '/bar',
-      value: {
-        foo: {
-          bar: 'qux'
-        }
-      }
-    }]
+    ]
   };
 
   const output = {

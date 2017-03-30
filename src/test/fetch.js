@@ -25,20 +25,12 @@ test('should fetch nodes', t => {
 
 test('should retry on error', t => {
   const client = createEtcdMock({
-    get: pipe(
-    fill(new Error),
-    map(err => [err]),
-    concat([[null, emptyRoot, null]])
-  )(Array(10))
+    get: pipe(fill(new Error()), map(err => [err]), concat([[null, emptyRoot, null]]))(Array(10))
   });
 
   const fetch$ = createFetch$(client, '/');
 
   return new Promise((resolve, reject) => {
-    fetch$.subscribe(
-      resolve,
-      reject,
-      reject
-    );
+    fetch$.subscribe(resolve, reject, reject);
   });
 });

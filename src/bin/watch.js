@@ -13,6 +13,4 @@ const pathETCD = resolve('/', argz._[0]);
 const client = makeEtcdClient(argz);
 
 const watcher = client.watcher(pathETCD, null, {recursive: true});
-createWatcher$(watcher).do(action =>
-  process.stdout.write(`${stringify(action)}\n`)
-).toPromise();
+createWatcher$(watcher).do(action => process.stdout.write(`${stringify(action)}\n`)).toPromise();

@@ -5,10 +5,12 @@ test('should get node', t => {
   const input = {
     key: '/',
     dir: true,
-    nodes: [{
-      key: '/foo',
-      value: 'foo'
-    }]
+    nodes: [
+      {
+        key: '/foo',
+        value: 'foo'
+      }
+    ]
   };
 
   const action = {
@@ -25,7 +27,7 @@ test('should get node', t => {
   t.deepEqual(get(input, action), output);
 });
 
-test('shouldn\'t found node', t => {
+test("shouldn't found node", t => {
   const input = {
     key: '/',
     dir: true,
@@ -49,17 +51,22 @@ test('should get deep node', t => {
   const input = {
     key: '/',
     dir: true,
-    nodes: [{
-      key: '/foo',
-      dir: true,
-      nodes: [{
-        key: '/foo/foo',
-        value: 'foo'
-      }, {
-        key: '/foo/bar',
-        value: 'bar'
-      }]
-    }]
+    nodes: [
+      {
+        key: '/foo',
+        dir: true,
+        nodes: [
+          {
+            key: '/foo/foo',
+            value: 'foo'
+          },
+          {
+            key: '/foo/bar',
+            value: 'bar'
+          }
+        ]
+      }
+    ]
   };
 
   const action = {
@@ -81,10 +88,12 @@ test('should set node', t => {
   const input = {
     key: '/',
     dir: true,
-    nodes: [{
-      key: '/foo',
-      value: 'foo'
-    }]
+    nodes: [
+      {
+        key: '/foo',
+        value: 'foo'
+      }
+    ]
   };
 
   const action = {
@@ -102,10 +111,12 @@ test('should set node', t => {
   const output = {
     key: '/',
     dir: true,
-    nodes: [{
-      key: '/foo',
-      value: '{"foo": "foo"}'
-    }]
+    nodes: [
+      {
+        key: '/foo',
+        value: '{"foo": "foo"}'
+      }
+    ]
   };
   t.deepEqual(set(input, action), output);
 });
@@ -128,10 +139,12 @@ test('should create node', t => {
   const output = {
     key: '/',
     dir: true,
-    nodes: [{
-      key: '/foo',
-      value: '{"foo": "foo"}'
-    }]
+    nodes: [
+      {
+        key: '/foo',
+        value: '{"foo": "foo"}'
+      }
+    ]
   };
 
   t.deepEqual(set(input, action), output);
@@ -155,14 +168,18 @@ test('should create deep node', t => {
   const output = {
     key: '/',
     dir: true,
-    nodes: [{
-      key: '/foo',
-      dir: true,
-      nodes: [{
-        key: '/foo/bar',
-        value: '{"bar": "bar"}'
-      }]
-    }]
+    nodes: [
+      {
+        key: '/foo',
+        dir: true,
+        nodes: [
+          {
+            key: '/foo/bar',
+            value: '{"bar": "bar"}'
+          }
+        ]
+      }
+    ]
   };
 
   t.deepEqual(set(input, action), output);
@@ -199,21 +216,28 @@ test('should remove folder', t => {
   const input = {
     key: '/',
     dir: true,
-    nodes: [{
-      key: '/foo',
-      dir: true,
-      nodes: [{
-        key: '/foo/foo',
+    nodes: [
+      {
+        key: '/foo',
         dir: true,
-        nodes: [{
-          key: '/foo/foo/foo',
-          value: 'foo'
-        }, {
-          key: '/foo/foo/bar',
-          value: 'bar'
-        }]
-      }]
-    }]
+        nodes: [
+          {
+            key: '/foo/foo',
+            dir: true,
+            nodes: [
+              {
+                key: '/foo/foo/foo',
+                value: 'foo'
+              },
+              {
+                key: '/foo/foo/bar',
+                value: 'bar'
+              }
+            ]
+          }
+        ]
+      }
+    ]
   };
 
   const action = {
@@ -224,24 +248,29 @@ test('should remove folder', t => {
     prevNode: {
       key: '/foo/foo',
       dir: true,
-      nodes: [{
-        key: '/foo/foo/foo',
-        value: 'foo'
-      }, {
-        key: '/foo/foo/bar',
-        value: 'bar'
-      }]
+      nodes: [
+        {
+          key: '/foo/foo/foo',
+          value: 'foo'
+        },
+        {
+          key: '/foo/foo/bar',
+          value: 'bar'
+        }
+      ]
     }
   };
 
   const output = {
     key: '/',
     dir: true,
-    nodes: [{
-      key: '/foo',
-      dir: true,
-      nodes: []
-    }]
+    nodes: [
+      {
+        key: '/foo',
+        dir: true,
+        nodes: []
+      }
+    ]
   };
 
   t.deepEqual(del(input, action), output);
@@ -251,17 +280,22 @@ test('should remove file', t => {
   const input = {
     key: '/',
     dir: true,
-    nodes: [{
-      key: '/foo',
-      dir: true,
-      nodes: [{
-        key: '/foo/foo',
-        value: 'foo'
-      }, {
-        key: '/foo/bar',
-        value: 'bar'
-      }]
-    }]
+    nodes: [
+      {
+        key: '/foo',
+        dir: true,
+        nodes: [
+          {
+            key: '/foo/foo',
+            value: 'foo'
+          },
+          {
+            key: '/foo/bar',
+            value: 'bar'
+          }
+        ]
+      }
+    ]
   };
 
   const action = {
@@ -278,14 +312,18 @@ test('should remove file', t => {
   const output = {
     key: '/',
     dir: true,
-    nodes: [{
-      key: '/foo',
-      dir: true,
-      nodes: [{
-        key: '/foo/bar',
-        value: 'bar'
-      }]
-    }]
+    nodes: [
+      {
+        key: '/foo',
+        dir: true,
+        nodes: [
+          {
+            key: '/foo/bar',
+            value: 'bar'
+          }
+        ]
+      }
+    ]
   };
 
   t.deepEqual(del(input, action), output);

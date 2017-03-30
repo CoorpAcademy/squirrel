@@ -1,11 +1,12 @@
 import EventEmitter from 'events'; // eslint-disable-line fp/no-events
 import {assign, mapValues, noop, pipe} from 'lodash/fp';
 
-const createWatcher = () => () => {
-  const watcher = new EventEmitter();
-  watcher.stop = noop;
-  return watcher;
-};
+const createWatcher = () =>
+  () => {
+    const watcher = new EventEmitter();
+    watcher.stop = noop;
+    return watcher;
+  };
 
 const createEtcdMock = (mock, watcher = createWatcher(), abort = noop) =>
   pipe(
@@ -17,14 +18,11 @@ const createEtcdMock = (mock, watcher = createWatcher(), abort = noop) =>
           rets = rets.values;
         }
         const cb = argz.pop();
-        setTimeout(() =>
-          cb(...rets)
-        , 0);
+        setTimeout(() => cb(...rets), 0);
         return {
           abort
         };
-      }
-    ),
+      }),
     assign({
       watcher
     })
