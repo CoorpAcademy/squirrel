@@ -8,10 +8,7 @@ export default argz => {
 
   const etcdOptions = !argz.ca ? {} : {ca: readFileSync(resolve(process.cwd(), argz.ca))};
 
-  const client = new Etcd(
-    hosts.split(','),
-    pick(['ca'], etcdOptions)
-  );
+  const client = new Etcd(hosts.split(','), pick(['ca'], etcdOptions));
 
   return client;
 };

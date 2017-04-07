@@ -18,9 +18,12 @@ test('should create watcher observable', t => {
 
   const watcher$ = createWatcher$(client, '/');
 
-  const assertion = watcher$.first().do(event => {
-    t.deepEqual(event, setEvent);
-  }).toPromise();
+  const assertion = watcher$
+    .first()
+    .do(event => {
+      t.deepEqual(event, setEvent);
+    })
+    .toPromise();
 
   watcher.emit(setEvent.action, setEvent);
 
@@ -53,13 +56,15 @@ test('should, emit set/delete/resync events', t => {
 
   const expected = [setEvent, deleteEvent, resyncEvent];
 
-  const assertion = watcher$.take(3).toArray().do(events => {
-    t.deepEqual(events, expected);
-  }).toPromise();
+  const assertion = watcher$
+    .take(3)
+    .toArray()
+    .do(events => {
+      t.deepEqual(events, expected);
+    })
+    .toPromise();
 
-  expected.forEach(event =>
-    watcher.emit(event.action, event)
-  );
+  expected.forEach(event => watcher.emit(event.action, event));
 
   return assertion;
 });

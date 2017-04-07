@@ -7,28 +7,36 @@ import resyncEvent from './fixtures/resync-event';
 
 test('should transform resync event', async t => {
   const client = createEtcdMock({
-    get: [[null, {
-      action: 'get',
-      node: {
-        key: '/',
-        dir: true,
-        nodes: [setEvent.node]
-      }
-    }, null]]
+    get: [
+      [
+        null,
+        {
+          action: 'get',
+          node: {
+            key: '/',
+            dir: true,
+            nodes: [setEvent.node]
+          }
+        },
+        null
+      ]
+    ]
   });
 
   const events$ = Observable.of(resyncEvent);
 
   const watcher$ = createResyncer$(client, '/', events$);
 
-  const expected = [{
-    action: 'get',
-    node: {
-      key: '/',
-      dir: true,
-      nodes: [setEvent.node]
+  const expected = [
+    {
+      action: 'get',
+      node: {
+        key: '/',
+        dir: true,
+        nodes: [setEvent.node]
+      }
     }
-  }];
+  ];
 
   const events = await watcher$.take(1).toArray().toPromise();
   t.deepEqual(events, expected);
@@ -36,28 +44,38 @@ test('should transform resync event', async t => {
 
 test('should keep order', async t => {
   const client = createEtcdMock({
-    get: [[null, {
-      action: 'get',
-      node: {
-        key: '/',
-        dir: true,
-        nodes: [setEvent.node]
-      }
-    }, null]]
+    get: [
+      [
+        null,
+        {
+          action: 'get',
+          node: {
+            key: '/',
+            dir: true,
+            nodes: [setEvent.node]
+          }
+        },
+        null
+      ]
+    ]
   });
 
   const events$ = Observable.of(setEvent, resyncEvent, setEvent);
 
   const watcher$ = createResyncer$(client, '/', events$);
 
-  const expected = [setEvent, {
-    action: 'get',
-    node: {
-      key: '/',
-      dir: true,
-      nodes: [setEvent.node]
-    }
-  }, setEvent];
+  const expected = [
+    setEvent,
+    {
+      action: 'get',
+      node: {
+        key: '/',
+        dir: true,
+        nodes: [setEvent.node]
+      }
+    },
+    setEvent
+  ];
 
   const events = await watcher$.take(3).toArray().toPromise();
   t.deepEqual(events, expected);

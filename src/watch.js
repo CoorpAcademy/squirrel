@@ -16,7 +16,9 @@ const createWatcher$ = (client, cwd) => {
     return () => {
       watcher.stop();
     };
-  }).mergeAll().map(parseAction);
+  })
+    .mergeAll()
+    .map(parseAction);
 };
 
 export default createWatcher$;

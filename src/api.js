@@ -1,14 +1,5 @@
-import {
-    join,
-    relative
-} from 'path';
-import {
-  find,
-  getOr,
-  keys,
-  startsWith,
-  curry
-} from 'lodash/fp';
+import {join, relative} from 'path';
+import {find, getOr, keys, startsWith, curry} from 'lodash/fp';
 import createDebug from 'debug';
 import {stringify, parseValue} from './parse';
 import {set$, del$} from './util/etcd';
@@ -37,9 +28,15 @@ const createAPI = (store, client, options = {cwd: '/'}) => {
     if (!node) return null;
     if (relative(node.key, _path) === '') return node;
 
-    return _get(_path, find(function(child) {
-      return startsWith(child.key, _path);
-    }, node.nodes));
+    return _get(
+      _path,
+      find(
+        function(child) {
+          return startsWith(child.key, _path);
+        },
+        node.nodes
+      )
+    );
   });
 
   const get = path => {
@@ -51,9 +48,9 @@ const createAPI = (store, client, options = {cwd: '/'}) => {
     const fullPath = join(options.cwd, _path);
     debug(`set => ${fullPath}`);
     return set$(client, fullPath, stringify(value))
-        .pluck('node', 'value')
-        .map(parseValue)
-        .toPromise();
+      .pluck('node', 'value')
+      .map(parseValue)
+      .toPromise();
   };
 
   const del = _path => {

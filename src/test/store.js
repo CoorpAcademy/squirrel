@@ -11,12 +11,8 @@ test('should get node and indexes', t => {
   } = createStore(node$, identity);
 
   const assert = Promise.all([
-    store('node').then(node =>
-      t.deepEqual(node, 'foo')
-    ),
-    store('indexes').then(indexes =>
-      t.deepEqual(indexes, 'foo')
-    )
+    store('node').then(node => t.deepEqual(node, 'foo')),
+    store('indexes').then(indexes => t.deepEqual(indexes, 'foo'))
   ]);
 
   node$.next('foo');
@@ -31,10 +27,7 @@ test('should wait first event', t => {
     store
   } = createStore(node$, identity);
 
-  t.throws(Promise.race([
-    store('node'),
-    Promise.reject(new Error())
-  ]));
+  t.throws(Promise.race([store('node'), Promise.reject(new Error())]));
 });
 
 test('should return subscription', t => {
@@ -55,13 +48,9 @@ test('should', async t => {
     subscription
   } = createStore(node$, identity);
 
-  const [node, indexes] = await Promise.all([
-    store('node'),
-    store('indexes')
-  ]);
+  const [node, indexes] = await Promise.all([store('node'), store('indexes')]);
   t.deepEqual(node, 'bar');
   t.deepEqual(indexes, 'bar');
 
   subscription.unsubscribe();
 });
-

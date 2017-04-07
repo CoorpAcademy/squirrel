@@ -1,8 +1,4 @@
-import {
-  assign,
-  identity,
-  pick
-} from 'lodash/fp';
+import {assign, identity, pick} from 'lodash/fp';
 import Etcd from 'node-etcd';
 import {Observable} from 'rxjs';
 import createDebug from 'debug';
@@ -18,18 +14,21 @@ const debug = createDebug('squirrel');
 
 const createSquirrel = _options => {
   debug('Init');
-  const options = assign({
-    hosts: 'http://localhost:2379',
-    auth: null,
-    ca: null,
-    key: null,
-    cert: null,
-    fallback: null,
-    save: true,
+  const options = assign(
+    {
+      hosts: 'http://localhost:2379',
+      auth: null,
+      ca: null,
+      key: null,
+      cert: null,
+      fallback: null,
+      save: true,
 
-    cwd: '/',
-    indexes: []
-  }, _options);
+      cwd: '/',
+      indexes: []
+    },
+    _options
+  );
 
   const client = new Etcd(options.hosts, pick(['auth', 'ca', 'key', 'cert'], options));
   const indexBuilder = createIndexBuilder(options.indexes);
@@ -41,10 +40,7 @@ const createSquirrel = _options => {
   );
 
   const node$ = createCombiner$(events$);
-  const {store, subscription} = createStore(
-    save(node$),
-    indexBuilder
-  );
+  const {store, subscription} = createStore(save(node$), indexBuilder);
   const api = createAPI(store, client, options);
 
   return {
