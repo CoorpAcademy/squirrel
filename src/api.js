@@ -30,12 +30,9 @@ const createAPI = (store, client, options = {cwd: '/'}) => {
 
     return _get(
       _path,
-      find(
-        function(child) {
-          return startsWith(child.key, _path);
-        },
-        node.nodes
-      )
+      find(function(child) {
+        return startsWith(child.key, _path);
+      }, node.nodes)
     );
   });
 

@@ -17,4 +17,5 @@ export const isFile$ = pathFS => stat$(pathFS).map(_stat => _stat.isFile());
 export const isDirectory$ = pathFS => stat$(pathFS).map(_stat => _stat.isDirectory());
 
 export const filter$ = curry((predicate, value) =>
-  predicate(value).filter(Boolean).map(() => value));
+  predicate(value).filter(Boolean).map(() => value)
+);

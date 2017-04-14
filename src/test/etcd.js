@@ -70,7 +70,8 @@ test('should composite events observable', async t => {
   const eventsP = events$.take(6).toArray().toPromise();
 
   [setEvent, deleteEvent, resyncEvent, deleteEvent, setEvent].forEach(event =>
-    watcher.emit(event.action, event));
+    watcher.emit(event.action, event)
+  );
 
   const events = await eventsP;
   t.deepEqual(events, expected);

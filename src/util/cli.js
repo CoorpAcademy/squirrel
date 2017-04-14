@@ -27,14 +27,12 @@ export const syncDirectory$ = (client, pathFS, pathETCD) => {
       return entries
         .toArray()
         .flatMap(_entries => {
-          const nodeToDelete = filter(
-            _node => {
-              return !includes(join(pathFS, relative(pathETCD, _node.key)), _entries);
-            },
-            nodes
-          );
+          const nodeToDelete = filter(_node => {
+            return !includes(join(pathFS, relative(pathETCD, _node.key)), _entries);
+          }, nodes);
           const nodeToDelete$ = Observable.from(nodeToDelete).flatMap(_node =>
-            delRecursive$(client, _node.key));
+            delRecursive$(client, _node.key)
+          );
           return nodeToDelete$;
         })
         .toArray()

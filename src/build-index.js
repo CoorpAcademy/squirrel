@@ -18,18 +18,14 @@ const buildIndex = (index, node) => {
   )(node);
 };
 
-const updateIndexes = indexes =>
-  store => {
-    debug(`Update indexes ${indexes.join(',')}`);
-    return zipObject(
-      indexes,
-      map(
-        function(index) {
-          return buildIndex(index, store);
-        },
-        indexes
-      )
-    );
-  };
+const updateIndexes = indexes => store => {
+  debug(`Update indexes ${indexes.join(',')}`);
+  return zipObject(
+    indexes,
+    map(function(index) {
+      return buildIndex(index, store);
+    }, indexes)
+  );
+};
 
 export default updateIndexes;

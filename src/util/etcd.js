@@ -4,27 +4,26 @@ import makeDebug from 'debug';
 
 const debug = makeDebug('squirrel:util:etcd');
 
-const wrap = fnName =>
-  (client, ...argz) =>
-    debug(fnName, ...argz, client) ||
-    Observable.create(observer => {
-      const token = invokeArgs(
-        fnName,
-        [
-          ...argz,
-          (err, value) => {
-            if (err) return observer.error(err);
-            observer.next(value);
-            observer.complete();
-          }
-        ],
-        client
-      );
+const wrap = fnName => (client, ...argz) =>
+  debug(fnName, ...argz, client) ||
+  Observable.create(observer => {
+    const token = invokeArgs(
+      fnName,
+      [
+        ...argz,
+        (err, value) => {
+          if (err) return observer.error(err);
+          observer.next(value);
+          observer.complete();
+        }
+      ],
+      client
+    );
 
-      return () => {
-        token.abort();
-      };
-    });
+    return () => {
+      token.abort();
+    };
+  });
 
 export const compareAndSwap$ = wrap('compareAndSwap');
 

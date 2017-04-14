@@ -8,18 +8,17 @@ const debug = createDebug('squirrel:save');
 
 const writeFile$ = Observable.bindNodeCallback(writeFile);
 
-const createSave = filePath =>
-  event$ => {
-    if (!isString(filePath)) return event$;
+const createSave = filePath => event$ => {
+  if (!isString(filePath)) return event$;
 
-    return event$
-      .map(event => {
-        debug(`saving ${filePath}`);
-        return writeFile$(filePath, stringify(event), {encoding: 'UTF8'})
-          .do(() => debug(`saved ${filePath}`))
-          .mapTo(event);
-      })
-      .concatAll();
-  };
+  return event$
+    .map(event => {
+      debug(`saving ${filePath}`);
+      return writeFile$(filePath, stringify(event), {encoding: 'UTF8'})
+        .do(() => debug(`saved ${filePath}`))
+        .mapTo(event);
+    })
+    .concatAll();
+};
 
 export default createSave;
