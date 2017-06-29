@@ -15,6 +15,6 @@
         "@coorpacademy/coorpacademy"
     ],
     "rules": {
-      "promise/no-native": 0
+      "promise/no-native": "off"
     }
 }

@@ -3,7 +3,7 @@ import {resolve} from 'path';
 import {pick} from 'lodash/fp';
 import Etcd from 'node-etcd';
 
-export default argz => {
+const makeEtcdClient = argz => {
   const hosts = argz.hosts || 'http://localhost:2379';
 
   const etcdOptions = !argz.ca ? {} : {ca: readFileSync(resolve(process.cwd(), argz.ca))};
@@ -12,3 +12,5 @@ export default argz => {
 
   return client;
 };
+
+export default makeEtcdClient;
