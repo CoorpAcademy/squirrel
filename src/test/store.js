@@ -23,7 +23,7 @@ test('should wait first event', t => {
 
   const {store} = createStore(node$, identity);
 
-  t.throws(Promise.race([store('node'), Promise.reject(new Error())]));
+  return t.throws(Promise.race([store('node'), Promise.reject(new Error())]));
 });
 
 test('should return subscription', t => {

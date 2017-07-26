@@ -243,10 +243,10 @@ test('should set value if value setted', async t => {
   t.deepEqual(await _api.set('/foo', {foo: 'baz'}), {foo: 'baz'});
 });
 
-test('should failed if error occured', t => {
+test('should fail if error occured', t => {
   const client = createEtcdMock({
     set: [[new Error('boom'), null, null]]
   });
   const _api = createAPI(getStore, client);
-  t.throws(_api.set('/foo', {foo: 'baz'}), /boom/);
+  return t.throws(_api.set('/foo', {foo: 'baz'}), /boom/);
 });

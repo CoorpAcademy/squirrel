@@ -2,7 +2,7 @@ import test from 'ava';
 import createIndexBuild from '../build-index';
 
 test('should create indexer', t => {
-  createIndexBuild(['name']);
+  t.is(typeof createIndexBuild(['name']), 'function');
 });
 
 test('should create index', t => {

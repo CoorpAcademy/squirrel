@@ -45,7 +45,7 @@ test('should create etcd directory if not exists', t => {
     .toPromise();
 });
 
-test('should throw error on directory sync if etcd throw unknown error', t => {
+test('should throw error on directory sync if etcd throws unknown error', t => {
   const client = createEtcdMock({
     get: [
       {
@@ -61,7 +61,7 @@ test('should throw error on directory sync if etcd throw unknown error', t => {
     ]
   });
 
-  t.throws(
+  return t.throws(
     syncDirectory$(client, join(__dirname, 'fixtures/fs'), '/test').toArray().toPromise(),
     'UnknownError'
   );
@@ -144,7 +144,7 @@ test('should create file if doesn\t exists', async t => {
   t.deepEqual(events, []);
 });
 
-test('should throw error on file sync if etcd throw unknown error', t => {
+test('should throw error on file sync if etcd throws unknown error', t => {
   const client = createEtcdMock({
     get: [
       {
@@ -159,7 +159,7 @@ test('should throw error on file sync if etcd throw unknown error', t => {
     ]
   });
 
-  t.throws(
+  return t.throws(
     syncFile$(client, join(__dirname, 'fixtures/fs/foo'), '/test/foo').toArray().toPromise(),
     'UnknownError'
   );

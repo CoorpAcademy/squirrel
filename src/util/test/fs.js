@@ -12,13 +12,14 @@ test('should return true if entry is a file', t =>
 test('should return false if entry is a directory', t =>
   isFile$(joinTestFolder('bar')).toPromise().then(isFile => t.deepEqual(isFile, false)));
 
-test('should return error if entry is neither a file nor a directory', t =>
-  Promise.all([
-    isFile$(joinTestFolder('qux')).toPromise().then(() => t.fail(), err => null),
-    isFile$(joinTestFolder('qux/quux')).toPromise().then(() => t.fail(), err => null),
-    isDirectory$(joinTestFolder('qux')).toPromise().then(() => t.fail(), err => null),
-    isDirectory$(joinTestFolder('qux/quux')).toPromise().then(() => t.fail(), err => null)
-  ]));
+test('should return error if entry is neither a file nor a directory', t => {
+  return Promise.all([
+    isFile$(joinTestFolder('qux')).toPromise().then(() => t.fail(), () => t.pass()),
+    isFile$(joinTestFolder('qux/quux')).toPromise().then(() => t.fail(), () => t.pass()),
+    isDirectory$(joinTestFolder('qux')).toPromise().then(() => t.fail(), () => t.pass()),
+    isDirectory$(joinTestFolder('qux/quux')).toPromise().then(() => t.fail(), () => t.pass())
+  ]);
+});
 
 test('should return false if entry is a file', t =>
   isDirectory$(joinTestFolder('foo'))
@@ -38,8 +39,8 @@ test('should read directory content', t =>
 
 test('should return error if entry is not a directory', t =>
   Promise.all([
-    readdir$(joinTestFolder('foo')).toPromise().then(() => t.fail(), err => null),
-    readdir$(joinTestFolder('quz')).toPromise().then(() => t.fail(), err => null)
+    readdir$(joinTestFolder('foo')).toPromise().then(() => t.fail(), () => t.pass()),
+    readdir$(joinTestFolder('quz')).toPromise().then(() => t.fail(), () => t.pass())
   ]));
 
 test('should filterFile directory content', t =>
