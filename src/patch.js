@@ -20,7 +20,13 @@ const set = (store, {action, node, prevNode}) => {
     return node;
   }
 
-  const storeKey = path.join(store.key, path.relative(store.key, node.key).split('/').shift());
+  const storeKey = path.join(
+    store.key,
+    path
+      .relative(store.key, node.key)
+      .split('/')
+      .shift()
+  );
 
   return set_(
     'nodes',

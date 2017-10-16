@@ -17,6 +17,8 @@ test('should load fallback', async t => {
 });
 
 test("shouldn't throw error if file doesn't exist", async t => {
-  const events = await createFallback$(join(__dirname, 'fixtures/nope.json')).toArray().toPromise();
+  const events = await createFallback$(join(__dirname, 'fixtures/nope.json'))
+    .toArray()
+    .toPromise();
   t.deepEqual(events, []);
 });

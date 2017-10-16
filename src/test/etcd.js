@@ -67,7 +67,10 @@ test('should composite events observable', async t => {
     setEvent
   ];
 
-  const eventsP = events$.take(6).toArray().toPromise();
+  const eventsP = events$
+    .take(6)
+    .toArray()
+    .toPromise();
 
   [setEvent, deleteEvent, resyncEvent, deleteEvent, setEvent].forEach(event =>
     watcher.emit(event.action, event)

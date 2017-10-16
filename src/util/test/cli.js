@@ -62,7 +62,9 @@ test('should throw error on directory sync if etcd throws unknown error', t => {
   });
 
   return t.throws(
-    syncDirectory$(client, join(__dirname, 'fixtures/fs'), '/test').toArray().toPromise(),
+    syncDirectory$(client, join(__dirname, 'fixtures/fs'), '/test')
+      .toArray()
+      .toPromise(),
     'UnknownError'
   );
 });
@@ -160,7 +162,9 @@ test('should throw error on file sync if etcd throws unknown error', t => {
   });
 
   return t.throws(
-    syncFile$(client, join(__dirname, 'fixtures/fs/foo'), '/test/foo').toArray().toPromise(),
+    syncFile$(client, join(__dirname, 'fixtures/fs/foo'), '/test/foo')
+      .toArray()
+      .toPromise(),
     'UnknownError'
   );
 });

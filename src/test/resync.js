@@ -38,7 +38,10 @@ test('should transform resync event', async t => {
     }
   ];
 
-  const events = await watcher$.take(1).toArray().toPromise();
+  const events = await watcher$
+    .take(1)
+    .toArray()
+    .toPromise();
   t.deepEqual(events, expected);
 });
 
@@ -77,6 +80,9 @@ test('should keep order', async t => {
     setEvent
   ];
 
-  const events = await watcher$.take(3).toArray().toPromise();
+  const events = await watcher$
+    .take(3)
+    .toArray()
+    .toPromise();
   t.deepEqual(events, expected);
 });

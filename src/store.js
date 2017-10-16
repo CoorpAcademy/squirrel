@@ -6,7 +6,11 @@ const createStore = (node$, indexer) => {
 
   const replayed$ = store$.publishReplay(1);
 
-  const ready = key => replayed$.first().pluck(key).toPromise();
+  const ready = key =>
+    replayed$
+      .first()
+      .pluck(key)
+      .toPromise();
 
   return {
     store: ready,
