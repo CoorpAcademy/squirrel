@@ -30,14 +30,9 @@ test('should retry on error', t => {
 
   const fetch$ = createFetch$(client, '/');
 
-  return new Promise((resolve, reject) => {
-    fetch$.subscribe(
-      () => {
-        t.pass();
-        resolve();
-      },
-      reject,
-      reject
-    );
-  });
+  return t.notThrows(
+    new Promise((resolve, reject) => {
+      fetch$.subscribe(resolve, reject, reject);
+    })
+  );
 });

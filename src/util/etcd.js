@@ -1,5 +1,5 @@
 import {Observable} from 'rxjs';
-import {invokeArgs} from 'lodash/fp';
+import {invokeArgs, isFunction, get} from 'lodash/fp';
 import makeDebug from 'debug';
 
 const debug = makeDebug('squirrel:util:etcd');
@@ -7,6 +7,11 @@ const debug = makeDebug('squirrel:util:etcd');
 const wrap = fnName => (client, ...argz) =>
   debug(fnName, ...argz, client) ||
   Observable.create(observer => {
+    if (!isFunction(get(fnName, client))) {
+      observer.error(new Error(`${fnName} is not a function`));
+      return;
+    }
+
     const token = invokeArgs(
       fnName,
       [

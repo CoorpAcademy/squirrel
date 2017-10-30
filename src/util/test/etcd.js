@@ -162,3 +162,6 @@ test('isFile should return false on null', t => t.deepEqual(isFile(), false));
 test('isFile should return false on directory', t => t.deepEqual(isFile({dir: true}), false));
 
 test('isFile should return true on file', t => t.deepEqual(isFile({}), true));
+
+test('Should throw error if client is not defined', t =>
+  t.throws(get$(null, 'foo').toPromise(), `get is not a function`));

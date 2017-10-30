@@ -3,6 +3,7 @@ import createIndexBuild from '../build-index';
 
 test('should create indexer', t => {
   t.is(typeof createIndexBuild(['name']), 'function');
+  t.notThrows(() => createIndexBuild(['name']));
 });
 
 test('should create index', t => {

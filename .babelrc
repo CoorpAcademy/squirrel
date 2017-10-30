@@ -1,11 +1,26 @@
 {
-  "presets": ["es2015", "stage-1"],
+  "presets": [
+    "stage-1",
+    [
+      "env",
+      {
+        "targets": {
+          "node": true
+        },
+        "loose": true
+      }
+    ]
+  ],
   "env": {
-    "development": {
-      "sourceMaps": "inline"
+    "test": {
+      "plugins": [
+        [
+          "istanbul",
+          {
+            "useInlineSourceMaps": false
+          }
+        ]
+      ]
     }
-  },
-  "ignore": [
-    "node_modules/**/*"
-  ]
+  }
 }

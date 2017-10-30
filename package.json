@@ -6,12 +6,12 @@
   "scripts": {
     "clean": "rm -rf .nyc_output coverage lib",
     "prepublish": "npm run build",
-    "build": "babel src --out-dir lib -s",
+    "build": "babel src --out-dir lib -s --copy-files",
     "test": "npm run lint && npm run nyc",
     "lint": "eslint src/ *.js *.json --ext .js,.json",
     "lint:fix": "npm run lint -- --fix",
-    "ava": "ava",
-    "nyc": "nyc ava --all --reporter=text --reporter=lcov",
+    "ava": "NODE_ENV=test ava",
+    "nyc": "NODE_ENV=test nyc ava",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/coorpacademy/squirrel#readme",
   "dependencies": {
-    "debug": "^2.3.2",
+    "debug": "^3.1.0",
     "lodash": "^4.17.2",
     "minimist": "^1.2.0",
     "node-etcd": "^5.0.1",
@@ -40,45 +40,49 @@
   },
   "devDependencies": {
     "@coorpacademy/eslint-plugin-coorpacademy": "^7.0.2",
-    "ava": "^0.21.0",
+    "ava": "^0.23.0",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.2",
-    "babel-eslint": "^7.0.0",
-    "babel-polyfill": "^6.23.0",
-    "babel-preset-es2015": "^6.18.0",
+    "babel-eslint": "^8.0.1",
+    "babel-plugin-istanbul": "^4.1.5",
+    "babel-preset-env": "^1.6.1",
     "babel-preset-stage-1": "^6.16.0",
     "babel-register": "^6.18.0",
-    "coveralls": "^2.11.15",
+    "coveralls": "^3.0.0",
     "eslint": "^4.9.0",
-    "nyc": "^9.0.1"
+    "nyc": "^11.2.1"
   },
   "ava": {
     "files": [
-      "src/**/test/**/*.js",
-      "!node_module/**/*"
+      "src/**/test/**/*.js"
     ],
     "require": [
       "babel-register",
       "babel-polyfill"
     ],
-    "babel": "inherit",
-    "timeout": "5m",
-    "failFast": true
+    "babel": "inherit"
   },
   "nyc": {
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ],
+    "all": true,
     "include": [
-      "src/**"
+      "src/**/*"
     ],
     "exclude": [
       "**/test/**/*",
       "src/bin"
     ],
+    "cache": true,
+    "sourceMap": false,
+    "instrument": false,
     "require": [
       "babel-register"
-    ],
-    "all": true
+    ]
   },
   "engines": {
-    "node": ">=4"
+    "node": ">=6"
   }
 }
