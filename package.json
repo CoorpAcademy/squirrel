@@ -29,7 +29,7 @@
   "bin": {
     "squirrel-sync": "lib/bin/sync.js",
     "squirrel-watch": "lib/bin/watch.js",
-    "squirrel-dump": "lib/bin/bump.js"
+    "squirrel-dump": "lib/bin/dump.js"
   },
   "homepage": "https://github.com/coorpacademy/squirrel#readme",
   "dependencies": {
