@@ -18,13 +18,16 @@ test('should load fallback', async t => {
 });
 
 test("shouldn't throw error if file doesn't exist", async t => {
-  const events = await createFallback$(join(__dirname, 'fixtures/nope.json'))
+  const events = await createFallback$(
+    join(__dirname, 'fixtures/nope.json'),
+    Promise.reject(new Error())
+  )
     .toArray()
     .toPromise();
   t.deepEqual(events, []);
 });
 
-test("should load preloadedStore if fallback doesn't exists", async t => {
+test("should load preloadedStore if fallback doesn't exist", async t => {
   const events = await createFallback$(join(__dirname, 'fixtures/nope.json'), expectedAPI)
     .toArray()
     .toPromise();

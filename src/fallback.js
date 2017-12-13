@@ -13,6 +13,9 @@ const wrapAction = data => ({
   node: data
 });
 
+const restorePreloadedStore = preloadedStore =>
+  Observable.fromPromise(Promise.resolve(preloadedStore)).catch(() => Observable.empty());
+
 const createFallback$ = (filePath, preloadedStore) => {
   debug(`Read fallback ${filePath}`);
 
@@ -21,7 +24,7 @@ const createFallback$ = (filePath, preloadedStore) => {
   })
     .map(JSON.parse)
     .filter(identity)
-    .catch(() => (preloadedStore ? Observable.of(preloadedStore) : Observable.empty()))
+    .catch(() => (preloadedStore ? restorePreloadedStore(preloadedStore) : Observable.empty()))
     .map(wrapAction)
     .map(parseAction);
 };
