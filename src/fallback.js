@@ -21,9 +21,9 @@ const createFallback$ = (filePath, preloadedStore) => {
   })
     .map(JSON.parse)
     .filter(identity)
+    .catch(() => (preloadedStore ? Observable.of(preloadedStore) : Observable.empty()))
     .map(wrapAction)
-    .map(parseAction)
-    .catch(() => (preloadedStore ? Observable.of(preloadedStore) : Observable.empty()));
+    .map(parseAction);
 };
 
 export default createFallback$;

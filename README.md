@@ -147,6 +147,14 @@ Watch ETCD folder changes.
 $ squirrel-watch --hosts localhost:2379 /etcd-folder
 ```
 
+### `squirrel-dump`
+
+Write ETCD folder in `preloadedStore` format.
+
+```Shell
+$ squirrel-dump --hosts localhost:2379 /etcd-folder ./dump.json
+```
+
 ### Arguments
 
 - `--hosts="host1,host2"`: ETCD hosts. [more](https://github.com/stianeikeland/node-etcd/#etcdhosts--1270012379-options)

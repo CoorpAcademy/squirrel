@@ -29,5 +29,10 @@ test("should load preloadedStore if fallback doesn't exists", async t => {
     .toArray()
     .toPromise();
 
-  t.deepEqual(events, [expectedAPI]);
+  t.deepEqual(events, [
+    {
+      action: 'get',
+      node: parseNode(expectedAPI)
+    }
+  ]);
 });

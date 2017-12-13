@@ -28,7 +28,8 @@
   },
   "bin": {
     "squirrel-sync": "lib/bin/sync.js",
-    "squirrel-watch": "lib/bin/watch.js"
+    "squirrel-watch": "lib/bin/watch.js",
+    "squirrel-dump": "lib/bin/bump.js"
   },
   "homepage": "https://github.com/coorpacademy/squirrel#readme",
   "dependencies": {
