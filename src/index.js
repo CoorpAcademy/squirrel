@@ -22,6 +22,7 @@ const createSquirrel = _options => {
       key: null,
       cert: null,
       fallback: null,
+      preloadedStore: null,
       save: true,
 
       cwd: '/',
@@ -35,7 +36,7 @@ const createSquirrel = _options => {
   const save = options.save ? createSave(options.fallback) : identity;
 
   const events$ = Observable.concat(
-    createFallback$(options.fallback),
+    createFallback$(options.fallback, options.preloadedStore),
     createEtcd$(client, options.cwd)
   );
 
