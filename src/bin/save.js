@@ -3,7 +3,7 @@
 import {resolve} from 'path';
 import minimist from 'minimist';
 import createEtcd from './helper/etcd';
-import dump from './helper/dump';
+import save from './helper/save';
 
 const argz = minimist(process.argv.slice(2));
 
@@ -12,5 +12,4 @@ const namespace = argz._[1] || '';
 
 const client = createEtcd(argz);
 const namespacedClient = client.namespace(namespace);
-
-dump(namespacedClient, outDir).catch(console.error); // eslint-disable-line no-console
+save(namespacedClient, outDir).catch(console.error); // eslint-disable-line no-console

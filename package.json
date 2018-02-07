@@ -7,11 +7,14 @@
     "clean": "rm -rf .nyc_output coverage lib",
     "prepublish": "npm run build",
     "build": "babel src --out-dir lib -s --copy-files",
-    "test": "npm run lint && npm run nyc",
+    "build:watch": "npm run build -- --watch",
+    "test": "npm run nyc",
+    "test:dev": "npm run lint && npm run ava",
     "lint": "eslint src/ *.js *.json --ext .js,.json",
     "lint:fix": "npm run lint -- --fix",
     "ava": "NODE_ENV=test ava",
-    "nyc": "NODE_ENV=test nyc ava",
+    "ava:watch": "npm run ava -- --watch",
+    "nyc": "NODE_ENV=test nyc npm run test:dev",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
@@ -27,15 +30,18 @@
     "url": "https://github.com/coorpacademy/squirrel/issues"
   },
   "bin": {
-    "squirrel-sync": "lib/bin/sync.js",
-    "squirrel-watch": "lib/bin/watch.js",
-    "squirrel-dump": "lib/bin/dump.js"
+    "squirrel-dump": "lib/bin/dump.js",
+    "squirrel-restore": "lib/bin/restore.js",
+    "squirrel-save": "lib/bin/save.js",
+    "squirrel-watch": "lib/bin/watch.js"
   },
   "homepage": "https://github.com/coorpacademy/squirrel#readme",
   "dependencies": {
     "debug": "^3.1.0",
+    "etcd3": "^0.2.7",
     "lodash": "^4.17.2",
     "minimist": "^1.2.0",
+    "mkdirp": "^0.5.1",
     "node-etcd": "^5.0.1",
     "rxjs": "^5.0.0-beta.7"
   },
@@ -74,7 +80,7 @@
     ],
     "exclude": [
       "**/test/**/*",
-      "src/bin"
+      "**/bin/*.js"
     ],
     "cache": true,
     "sourceMap": false,
@@ -84,6 +90,6 @@
     ]
   },
   "engines": {
-    "node": ">=6"
+    "node": ">=8"
   }
 }

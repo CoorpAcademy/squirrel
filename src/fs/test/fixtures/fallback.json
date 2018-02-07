@@ -1,0 +1,12 @@
+{
+  "foo": {
+    "key": "foo",
+    "value": "foo",
+    "version": "1"
+  },
+  "bar": {
+    "key": "bar",
+    "value": "bar",
+    "version": "2"
+  }
+}

@@ -1,18 +1,38 @@
 #! /usr/bin/env node
 
-import {resolve} from 'path';
 import minimist from 'minimist';
-import createWatcher$ from '../watch';
-import {stringify} from '../parse';
-import makeEtcdClient from './etcd';
+import createEtcd from './helper/etcd';
 
 const argz = minimist(process.argv.slice(2));
 
-const pathETCD = resolve('/', argz._[0]);
+const namespace = argz._[0] || '';
 
-const client = makeEtcdClient(argz);
+const client = createEtcd(argz);
+const namespacedClient = client.namespace(namespace);
 
-const watcher = client.watcher(pathETCD, null, {recursive: true});
-createWatcher$(watcher)
-  .do(action => process.stdout.write(`${stringify(action)}\n`))
-  .toPromise();
+const watch = async () => {
+  const watcher = await namespacedClient
+    .watch()
+    .prefix('')
+    .create();
+
+  // eslint-disable-next-line no-console
+  const putHandler = kv => console.log(`PUT ${kv.key.toString()} = ${kv.value.toString()}`);
+  watcher.on('put', putHandler);
+
+  // eslint-disable-next-line no-console
+  const delHandler = kv => console.log(`DEL ${kv.key.toString()}`);
+  watcher.on('del', delHandler);
+
+  const handle = async () => {
+    await watcher.cancel();
+    client.close();
+  };
+
+  process.on('SIGINT', handle);
+  process.on('SIGTERM', handle);
+
+  return new Promise(resolve => watcher.once('end', resolve));
+};
+
+watch().catch(console.error); // eslint-disable-line no-console

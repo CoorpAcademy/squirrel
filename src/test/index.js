@@ -1,17 +1,16 @@
 import test from 'ava';
-import createClient from '../index'; // eslint-disable-line import/default
+import createSquirrel from '..';
 
 test('should createClient', t => {
-  const client = createClient();
-  t.truthy(client);
-
-  client.close();
+  const squirrel = createSquirrel();
+  t.truthy(squirrel);
+  squirrel.close();
 });
 
 test('should accept fallback', t => {
-  const client = createClient({
+  const squirrel = createSquirrel({
+    namespace: 'brands/',
     save: false
   });
-
-  t.truthy(client);
+  t.truthy(squirrel);
 });

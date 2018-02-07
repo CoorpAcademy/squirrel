@@ -1,48 +1,40 @@
-import {assign, identity, pick} from 'lodash/fp';
-import Etcd from 'node-etcd';
-import {Observable} from 'rxjs';
+import {Etcd3} from 'etcd3';
 import createDebug from 'debug';
-import createEtcd$ from './etcd';
-import createFallback$ from './fallback';
-import createCombiner$ from './combine';
+import createRecords$ from './store/records';
 import createStore from './store';
 import createAPI from './api';
-import createSave from './save';
-import createIndexBuilder from './build-index';
 
 const debug = createDebug('squirrel');
 
-const createSquirrel = _options => {
+const createSquirrel = (
+  {
+    // etcd
+    hosts = ['http://127.0.0.1:2379'],
+    credentials,
+    auth,
+    namespace = '',
+
+    // fs
+    fallback,
+    preloadedStore,
+    save = true,
+
+    // index
+    indexes = []
+  } = {}
+) => {
   debug('Init');
-  const options = assign(
-    {
-      hosts: 'http://localhost:2379',
-      auth: null,
-      ca: null,
-      key: null,
-      cert: null,
-      fallback: null,
-      preloadedStore: null,
-      save: true,
 
-      cwd: '/',
-      indexes: []
-    },
-    _options
-  );
+  const client = new Etcd3({
+    hosts,
+    auth,
+    credentials
+  });
 
-  const client = new Etcd(options.hosts, pick(['auth', 'ca', 'key', 'cert'], options));
-  const indexBuilder = createIndexBuilder(options.indexes);
-  const save = options.save ? createSave(options.fallback) : identity;
-
-  const events$ = Observable.concat(
-    createFallback$(options.fallback, options.preloadedStore),
-    createEtcd$(client, options.cwd)
-  );
-
-  const node$ = createCombiner$(events$);
-  const {store, subscription} = createStore(save(node$), indexBuilder);
-  const api = createAPI(store, client, options);
+  const namespacedClient = namespace ? client.namespace(namespace) : client;
+  const records$ = createRecords$(namespacedClient, {fallback, preloadedStore, save});
+  const {store, subscription} = createStore(records$, indexes);
+  const api = createAPI(store, namespacedClient);
 
   return {
     ...api,
@@ -50,4 +42,4 @@ const createSquirrel = _options => {
   };
 };
 
-module.exports = createSquirrel;
+export default createSquirrel;

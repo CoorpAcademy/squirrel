@@ -1,276 +1,271 @@
 import test from 'ava';
-import createEtcdMock from '../util/test/helpers/etcd';
-import {stringify} from '../parse';
 import createAPI from '../api';
 
-const node = {
-  key: '/',
-  dir: true,
-  nodes: [
-    {
-      key: '/foo',
-      value: {
-        value: 'foo',
-        deep: {
-          value: 'foo'
-        }
+const records = {
+  foo: {
+    key: 'foo',
+    value: {
+      value: 'foo',
+      deep: {
+        value: 'foo'
       }
     },
-    {
-      key: '/bar',
-      dir: true,
-      nodes: [
-        {
-          key: '/bar/baz',
-          value: {
-            value: 'baz',
-            deep: {
-              value: 'baz'
-            }
-          }
-        },
-        {
-          key: '/bar/qux',
-          value: {
-            value: 'qux',
-            deep: {
-              value: 'quz'
-            }
-          }
-        },
-        {
-          key: '/bim',
-          value: {
-            value: 'mfw',
-            deep: {
-              value: 'fwiw'
-            }
-          }
-        },
-        {
-          key: '/bim/bam',
-          value: {
-            value: 'yolo',
-            deep: {
-              value: 'lol'
-            }
-          }
-        }
-      ]
-    }
-  ]
+    version: '1'
+  },
+  'bar/baz': {
+    key: 'bar/baz',
+    value: {
+      value: 'baz',
+      deep: {
+        value: 'baz'
+      }
+    },
+    version: '1'
+  },
+  'bar/qux': {
+    key: 'bar/qux',
+    value: {
+      value: 'qux',
+      deep: {
+        value: 'quz'
+      }
+    },
+    version: '1'
+  },
+  bim: {
+    key: 'bim',
+    value: {
+      value: 'mfw',
+      deep: {
+        value: 'fwiw'
+      }
+    },
+    version: '1'
+  },
+  'bim/bam': {
+    key: 'bim/bam',
+    value: {
+      value: 'yolo',
+      deep: {
+        value: 'lol'
+      }
+    },
+    version: '1'
+  }
 };
 
 const indexes = {
   value: {
     foo: {
-      key: '/foo',
+      key: 'foo',
       value: {
-        value: 'foo'
-      }
+        value: 'foo',
+        deep: {
+          value: 'foo'
+        }
+      },
+      version: '1'
     },
     baz: {
-      key: '/bar/baz',
+      key: 'bar/baz',
       value: {
         value: 'baz'
-      }
+      },
+      version: '1'
     },
     qux: {
-      key: '/bar/qux',
+      key: 'bar/qux',
       value: {
         value: 'qux'
-      }
+      },
+      version: '1'
     }
   },
   'deep.value': {
     foo: {
-      key: '/foo',
+      key: 'foo',
       value: {
         value: 'foo'
-      }
+      },
+      version: '1'
     },
     baz: {
-      key: '/bar/baz',
+      key: 'bar/baz',
       value: {
         value: 'baz'
-      }
+      },
+      version: '1'
     },
     qux: {
-      key: '/bar/qux',
+      key: 'bar/qux',
       value: {
         value: 'qux'
-      }
+      },
+      version: '1'
     },
 
     bim: {
-      key: '/bim',
+      key: 'bim',
       value: {
         value: 'mfw'
-      }
+      },
+      version: '1'
     },
     bam: {
-      key: '/bim/bam',
+      key: 'bim/bam',
       value: {
         value: 'yolo'
-      }
+      },
+      version: '1'
     }
   }
 };
 
 const store = {
-  node,
+  records,
   indexes
 };
 
 const getStore = key => Promise.resolve(store[key]);
 
-test.beforeEach(t => {
-  const api = createAPI(getStore, {
-    del: (path, cb) => cb(null, true)
-  });
-
-  t.context.api = api;
+test('getAll should all keys of index', async t => {
+  const api = createAPI(getStore, {});
+  const actual = await api.getAll('value');
+  const expected = ['foo', 'baz', 'qux'];
+  t.deepEqual(actual, expected);
 });
 
-test('should create API', t => {
-  const {api} = t.context;
-  t.truthy(api);
-  t.truthy(api.get);
-  t.truthy(api.getBy);
-  t.truthy(api.getByRaw);
-  t.truthy(api.getAll);
-  t.truthy(api.set);
-  t.truthy(api.del);
+test("getAll should return an empty array if index doesn't exists", async t => {
+  const api = createAPI(getStore, {});
+  const actual = await api.getAll('nope');
+  const expected = [];
+  t.deepEqual(actual, expected);
 });
 
-test('should get keys of simple index', async t => {
-  const {api} = t.context;
-  t.deepEqual(await api.getAll('value'), ['foo', 'baz', 'qux']);
+test('getBy should search record by index (simple index)', async t => {
+  const api = createAPI(getStore, {});
+  const actual = await api.getBy('value', 'baz');
+  const expected = {
+    value: 'baz'
+  };
+  t.deepEqual(actual, expected);
 });
 
-test('should get keys of complex index', async t => {
-  const {api} = t.context;
-  t.deepEqual(await api.getAll('deep.value'), ['foo', 'baz', 'qux', 'bim', 'bam']);
+test('getBy should search record by index (complex index)', async t => {
+  const api = createAPI(getStore, {});
+  const actual = await api.getBy('deep.value', 'bim');
+  const expected = {
+    value: 'mfw'
+  };
+  t.deepEqual(actual, expected);
 });
 
-test("should get empty array if simple index doesn't exists", async t => {
-  const {api} = t.context;
-  t.deepEqual(await api.getAll('nope'), []);
+test('getBy should return null if any match was found', async t => {
+  const api = createAPI(getStore, {});
+  const actual = await api.getBy('value', 'nope');
+  const expected = null;
+  t.deepEqual(actual, expected);
 });
 
-test('should get node by simple index', async t => {
-  const {api} = t.context;
-  t.deepEqual(await api.getBy('value', 'foo'), {
-    value: 'foo'
-  });
+test('getByRaw should search record by index (simple index)', async t => {
+  const api = createAPI(getStore, {});
+  const actual = await api.getByRaw('value', 'baz');
+  const expected = {
+    key: 'bar/baz',
+    value: {
+      value: 'baz'
+    },
+    version: '1'
+  };
+  t.deepEqual(actual, expected);
 });
 
-test('should get null if no node matches', async t => {
-  const {api} = t.context;
-  t.deepEqual(await api.getBy('value', 'nope'), null);
+test('getByRaw should search record by index (complex index)', async t => {
+  const api = createAPI(getStore, {});
+  const actual = await api.getByRaw('deep.value', 'bim');
+  const expected = {
+    key: 'bim',
+    value: {
+      value: 'mfw'
+    },
+    version: '1'
+  };
+  t.deepEqual(actual, expected);
 });
 
-test('should get null if no index matches', async t => {
-  const {api} = t.context;
-  t.deepEqual(await api.getBy('nope', 'nope'), null);
+test('getByRaw should return null if any match was found', async t => {
+  const api = createAPI(getStore, {});
+  const actual = await api.getByRaw('value', 'nope');
+  const expected = null;
+  t.deepEqual(actual, expected);
 });
 
-test('should get node by complex index', async t => {
-  const {api} = t.context;
-  t.deepEqual(await api.getBy('deep.value', 'foo'), {
-    value: 'foo'
-  });
-});
-
-test('should get null if no complex index matches', async t => {
-  const {api} = t.context;
-  t.deepEqual(await api.getBy('deep.nope', 'nope'), null);
-});
-
-test('should get raw node by simple index', async t => {
-  const {api} = t.context;
-  t.deepEqual(await api.getByRaw('value', 'foo'), {key: '/foo', value: {value: 'foo'}});
-});
-
-test('should get null if no node matches (raw)', async t => {
-  const {api} = t.context;
-  t.deepEqual(await api.getByRaw('value', 'nope'), null);
-});
-
-test('should get null if no index matches (raw)', async t => {
-  const {api} = t.context;
-  t.deepEqual(await api.getByRaw('nope', 'nope'), null);
-});
-
-test('should get node by complex index (raw)', async t => {
-  const {api} = t.context;
-  t.deepEqual(await api.getByRaw('deep.value', 'foo'), {key: '/foo', value: {value: 'foo'}});
-});
-
-test('should get null if no complex index matches (raw)', async t => {
-  const {api} = t.context;
-  t.deepEqual(await api.getByRaw('deep.nope', 'nope'), null);
-});
-
-test('should delete node if it match (del)', async t => {
-  const client = createEtcdMock({
-    del: [
-      {
-        assert: p => Promise.resolve(true),
-        values: [null, null, null]
+test('get should return record by key', async t => {
+  const api = createAPI(getStore, {});
+  const actual = await api.get('bar/baz');
+  const expected = {
+    key: 'bar/baz',
+    value: {
+      value: 'baz',
+      deep: {
+        value: 'baz'
       }
-    ]
-  });
-  const _api = createAPI(getStore, client);
-
-  t.deepEqual(await _api.del('/bim'), null);
+    },
+    version: '1'
+  };
+  t.deepEqual(actual, expected);
 });
 
-test('should get root node by path', async t => {
-  const {api} = t.context;
-  t.deepEqual(await api.get('/'), node);
+test('get should return null if any match was found', async t => {
+  const api = createAPI(getStore, {});
+  const actual = await api.get('value', 'nope');
+  const expected = null;
+  t.deepEqual(actual, expected);
 });
 
-test('should get node by path', async t => {
-  const {api} = t.context;
-  t.deepEqual(await api.get('/foo'), node.nodes[0]);
-});
-
-test('should get null if no node matches this path', async t => {
-  const {api} = t.context;
-  t.deepEqual(await api.get('/nope'), null);
-});
-
-const createAction = (type, _node) => ({
-  type,
-  node: _node
-});
-const createNode = (key, value) => ({
-  key,
-  value: stringify(value),
-  prevNode: null
-});
-
-test('should set value if value setted', async t => {
-  const client = createEtcdMock({
-    set: [
-      {
-        assert: (key, value) => {
-          t.deepEqual(key, '/foo');
-          t.deepEqual(value, stringify({foo: 'baz'}));
-        },
-        values: [null, createAction('set', createNode('/foo', {foo: 'baz'})), null]
+test('set should write to etcd', async t => {
+  const client = {
+    put: key => ({
+      value: value => {
+        t.deepEqual(key, 'foo');
+        t.deepEqual(value, JSON.stringify({foo: 'foo'}));
+        return Promise.resolve();
       }
-    ]
-  });
-  const _api = createAPI(getStore, client);
-  t.deepEqual(await _api.set('/foo', {foo: 'baz'}), {foo: 'baz'});
+    })
+  };
+  const api = createAPI(getStore, client);
+  await t.notThrows(api.set('foo', {foo: 'foo'}));
 });
 
-test('should fail if error occured', t => {
-  const client = createEtcdMock({
-    set: [[new Error('boom'), null, null]]
-  });
-  const _api = createAPI(getStore, client);
-  return t.throws(_api.set('/foo', {foo: 'baz'}), /boom/);
+test('set should throw', async t => {
+  const client = {
+    put: () => ({
+      value: () => Promise.reject(new Error('boom'))
+    })
+  };
+  const api = createAPI(getStore, client);
+  await t.throws(api.set('foo', {foo: 'foo'}), 'boom');
+});
+
+test('del should write to etcd', async t => {
+  const client = {
+    delete: () => ({
+      key: key => {
+        t.deepEqual(key, 'foo');
+        return Promise.resolve();
+      }
+    })
+  };
+  const api = createAPI(getStore, client);
+  await t.notThrows(api.del('foo'));
+});
+
+test('del should throw', async t => {
+  const client = {
+    delete: () => ({
+      key: () => Promise.reject(new Error('boom'))
+    })
+  };
+  const api = createAPI(getStore, client);
+  await t.throws(api.del('foo'), 'boom');
 });
