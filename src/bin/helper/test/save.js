@@ -1,10 +1,10 @@
 import {tmpdir} from 'os';
 import {join} from 'path';
-import {promisify} from 'util';
 import {readFile} from 'fs';
 import test from 'ava';
 import {Etcd3} from 'etcd3';
 import save from '../save';
+import promisify from '../promisify';
 
 const readFileP = promisify(readFile);
 

@@ -1,10 +1,10 @@
-import {promisify} from 'util';
 import {escape as qsEscape} from 'querystring';
 import {join} from 'path';
 import {writeFile} from 'fs';
 import {Observable} from 'rxjs';
 import mkdirp from 'mkdirp';
 import {parseRangeResponse} from '../../etcd/command';
+import promisify from './promisify';
 
 const mkdirpP = promisify(mkdirp);
 const writeFileP = promisify(writeFile);

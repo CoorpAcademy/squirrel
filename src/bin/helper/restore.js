@@ -1,9 +1,9 @@
-import {promisify} from 'util';
 import {unescape as qsUnescape} from 'querystring';
 import {join} from 'path';
 import {readFile, readdir} from 'fs';
 import mkdirp from 'mkdirp';
 import {Observable} from 'rxjs';
+import promisify from './promisify';
 
 const mkdirpP = promisify(mkdirp);
 const readFileP = promisify(readFile);
