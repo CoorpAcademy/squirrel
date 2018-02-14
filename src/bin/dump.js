@@ -13,4 +13,4 @@ const namespace = argz._[1] || '';
 const client = createEtcd(argz);
 const namespacedClient = client.namespace(namespace);
 
-dump(namespacedClient, outDir).catch(console.error); // eslint-disable-line no-console
+dump(namespacedClient, outDir).catch(console.error);

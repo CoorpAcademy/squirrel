@@ -67,7 +67,16 @@ test('should retry on error', async t => {
 
   const fetch$ = createFetch$(client);
 
-  await t.notThrows(fetch$.toPromise());
+  await t.deepEqual(await fetch$.toPromise(), {
+    type: 'fetch',
+    payload: [
+      {
+        key: 'bar',
+        value: 'bar',
+        version: '1'
+      }
+    ]
+  });
 
   client.unmock();
 });

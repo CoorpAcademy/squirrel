@@ -13,4 +13,5 @@ test('should accept fallback', t => {
     save: false
   });
   t.truthy(squirrel);
+  squirrel.close();
 });

@@ -16,11 +16,9 @@ const watch = async () => {
     .prefix('')
     .create();
 
-  // eslint-disable-next-line no-console
   const putHandler = kv => console.log(`PUT ${kv.key.toString()} = ${kv.value.toString()}`);
   watcher.on('put', putHandler);
 
-  // eslint-disable-next-line no-console
   const delHandler = kv => console.log(`DEL ${kv.key.toString()}`);
   watcher.on('del', delHandler);
 
@@ -35,4 +33,4 @@ const watch = async () => {
   return new Promise(resolve => watcher.once('end', resolve));
 };
 
-watch().catch(console.error); // eslint-disable-line no-console
+watch().catch(console.error);

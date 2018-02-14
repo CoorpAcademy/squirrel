@@ -12,9 +12,9 @@
     "test:dev": "npm run lint && npm run ava",
     "lint": "eslint src/ *.js *.json --ext .js,.json",
     "lint:fix": "npm run lint -- --fix",
-    "ava": "NODE_ENV=test ava",
+    "ava": "ava",
     "ava:watch": "npm run ava -- --watch",
-    "nyc": "NODE_ENV=test nyc npm run test:dev",
+    "nyc": "nyc npm run test:dev",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
