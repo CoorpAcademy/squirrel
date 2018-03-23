@@ -2,16 +2,14 @@ import {readFileSync} from 'fs';
 import {resolve} from 'path';
 import {Etcd3} from '@coorpacademy/etcd3';
 
-const createEtcd = (
-  {
-    hosts,
-    username,
-    password,
-    rootCertificate,
+const createEtcd = ({
+  hosts,
+  username,
+  password,
+  rootCertificate,
 
-    namespace = ''
-  } = {}
-) => {
+  namespace = ''
+} = {}) => {
   const auth =
     !!username || !!password
       ? {
