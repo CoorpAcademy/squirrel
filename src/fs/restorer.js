@@ -15,14 +15,18 @@ const parseToEvent = store => ({
 });
 
 const createRestorer$ = (filePath, preloadedStore) => {
-  debug(`Read saveState ${filePath}`);
-
   return readFile$(filePath, {
     encoding: 'UTF8'
   })
     .map(JSON.parse)
     .filter(identity)
-    .catch(() => (preloadedStore ? restorePreloadedStore(preloadedStore) : Observable.empty()))
+    .do(() => debug(`Restore from file: ${filePath}`))
+    .catch(
+      () =>
+        preloadedStore
+          ? restorePreloadedStore(preloadedStore).do(() => debug('Restore from preloadedStore'))
+          : Observable.empty()
+    )
     .map(parseToEvent);
 };
 
