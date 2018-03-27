@@ -20,7 +20,7 @@ test('should create watcher observable', async t => {
     watch_id: '1',
     events: [
       {
-        type: 'Put',
+        type: 'PUT',
         kv: {
           key: Buffer.from('foo'),
           mod_revision: '1',
@@ -37,7 +37,7 @@ test('should create watcher observable', async t => {
     watch_id: '1',
     events: [
       {
-        type: 'Put',
+        type: 'DELETE',
         kv: {
           key: Buffer.from('foo'),
           create_revision: '0',
