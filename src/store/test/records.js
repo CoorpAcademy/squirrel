@@ -3,7 +3,7 @@ import {join} from 'path';
 import {Duplex} from 'stream';
 import {readFile, exists} from 'fs';
 import test from 'ava';
-import {Etcd3} from 'etcd3';
+import {Etcd3} from '@coorpacademy/etcd3';
 import {Observable} from 'rxjs';
 import createRecords$ from '../records';
 

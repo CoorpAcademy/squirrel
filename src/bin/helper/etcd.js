@@ -1,6 +1,6 @@
 import {readFileSync} from 'fs';
 import {resolve} from 'path';
-import {Etcd3} from 'etcd3';
+import {Etcd3} from '@coorpacademy/etcd3';
 
 const createEtcd = (
   {

@@ -37,8 +37,8 @@
   },
   "homepage": "https://github.com/coorpacademy/squirrel#readme",
   "dependencies": {
+    "@coorpacademy/etcd3": "^0.2.10",
     "debug": "^3.1.0",
-    "etcd3": "^0.2.7",
     "lodash": "^4.17.5",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",

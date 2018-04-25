@@ -2,7 +2,7 @@ import {tmpdir} from 'os';
 import {join} from 'path';
 import {readFile, readdir} from 'fs';
 import test from 'ava';
-import {Etcd3} from 'etcd3';
+import {Etcd3} from '@coorpacademy/etcd3';
 import dump from '../dump';
 import promisify from '../promisify';
 

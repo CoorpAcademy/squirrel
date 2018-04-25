@@ -1,5 +1,5 @@
 import test from 'ava';
-import {Etcd3} from 'etcd3';
+import {Etcd3} from '@coorpacademy/etcd3';
 import createFetch$ from '../fetch';
 
 test('should fetch namespace and watch updates', async t => {

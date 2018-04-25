@@ -1,6 +1,6 @@
 import {join} from 'path';
 import test from 'ava';
-import {Etcd3} from 'etcd3';
+import {Etcd3} from '@coorpacademy/etcd3';
 import restore from '../restore';
 
 test('should restore dump dir', async t => {

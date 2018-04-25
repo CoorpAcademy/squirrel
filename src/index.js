@@ -1,4 +1,4 @@
-import {Etcd3} from 'etcd3';
+import {Etcd3} from '@coorpacademy/etcd3';
 import createDebug from 'debug';
 import createRecords$ from './store/records';
 import createStore from './store';

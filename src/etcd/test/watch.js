@@ -1,6 +1,6 @@
 import {Duplex} from 'stream';
 import test from 'ava';
-import {Etcd3} from 'etcd3';
+import {Etcd3} from '@coorpacademy/etcd3';
 import createWatcher$ from '../watch';
 
 test('should create watcher observable', async t => {
@@ -60,8 +60,8 @@ test('should create watcher observable', async t => {
   const events = [updated, deleted];
   const errors = [new Error()];
 
-  const createStream = () =>
-    new Duplex({
+  const createStream = () => {
+    const stream = new Duplex({
       objectMode: true,
       write(chunk, encoding, cb) {
         if (chunk.create_request) this.push(created);
@@ -75,6 +75,11 @@ test('should create watcher observable', async t => {
         }, 0);
       }
     });
+    stream.cancel = () => {
+      stream.end();
+    };
+    return stream;
+  };
 
   client.mock({
     exec: (...argv) => {
