@@ -59,8 +59,8 @@ test('should combine data sources', async t => {
   const watchEvents = [updated];
   const errors = [new Error()];
 
-  const createStream = () =>
-    new Duplex({
+  const createStream = () => {
+    const stream = new Duplex({
       objectMode: true,
       write(chunk, encoding, cb) {
         if (chunk.create_request) this.push(created);
@@ -74,6 +74,11 @@ test('should combine data sources', async t => {
         }, 0);
       }
     });
+    stream.cancel = () => {
+      stream.end();
+    };
+    return stream;
+  };
 
   const fetchEvents = [
     {
