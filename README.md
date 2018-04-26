@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/CoorpAcademy/squirrel.svg?branch=master)](https://travis-ci.com/CoorpAcademy/squirrel)
+[![Build Status](https://travis-ci.org/CoorpAcademy/squirrel.svg?branch=master)](https://travis-ci.org/CoorpAcademy/squirrel)
 [![Coverage Status](https://coveralls.io/repos/github/CoorpAcademy/squirrel/badge.svg?branch=master)](https://coveralls.io/github/CoorpAcademy/squirrel?branch=master)
 
 Keep a replication of ETCD folder locally for low latency querying.
