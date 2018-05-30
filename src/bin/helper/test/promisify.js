@@ -17,7 +17,7 @@ test('should return a rejected promise', async t => {
   await t.throws(promisify(callbackFunction)());
 
   const throwFunction = function(cb) {
-    throw new Error();
+    throw new Error('error');
   };
 
   return t.throws(promisify(throwFunction)());
