@@ -15,7 +15,7 @@ test('should create Etcd3 client with options', t => {
   const hosts = 'https://localhost:1,https://localhost:2';
   const username = 'root';
   const password = 'admin';
-  const rootCertificate = join(__dirname, 'fixtures/etcd.ca');
+  const rootCertificate = readFileSync(join(__dirname, 'fixtures/etcd.ca'));
 
   const client = createEtcd({
     hosts,
@@ -30,6 +30,6 @@ test('should create Etcd3 client with options', t => {
     password
   });
   t.deepEqual(client.pool.options.credentials, {
-    rootCertificate: readFileSync(rootCertificate)
+    rootCertificate: Buffer.from(rootCertificate)
   });
 });

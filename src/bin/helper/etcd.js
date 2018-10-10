@@ -1,5 +1,3 @@
-import {readFileSync} from 'fs';
-import {resolve} from 'path';
 import {Etcd3} from '@coorpacademy/etcd3';
 
 const createEtcd = ({
@@ -20,7 +18,7 @@ const createEtcd = ({
 
   const credentials = rootCertificate
     ? {
-        rootCertificate: readFileSync(resolve(process.cwd(), rootCertificate))
+        rootCertificate: Buffer.from(rootCertificate)
       }
     : null;
 
