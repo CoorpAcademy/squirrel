@@ -1,6 +1,6 @@
 {
   "name": "@coorpacademy/squirrel",
-  "version": "4.4.0",
+  "version": "5.0.0-alpha.0",
   "description": "High level client for Coorpacademy's squirrel service",
   "main": "lib/index.js",
   "scripts": {
