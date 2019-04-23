@@ -1,6 +1,4 @@
-'use strict';
-
-const cluster = require('cluster');
+import cluster from 'cluster';
 
 // check if is master or is worker aka process in cluster
 function isWorker() {
@@ -17,7 +15,4 @@ function workerId() {
   return process.env.WORKER_ID || cluster.worker.id;
 }
 
-module.exports.isWorker = isWorker;
-module.exports.workerId = workerId;
-// only for test
-module.exports.cluster = cluster;
+export {isWorker, workerId, cluster};

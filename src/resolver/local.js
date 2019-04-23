@@ -1,10 +1,9 @@
-'use strict';
+import * as _ from 'lodash';
+import Debug from 'debug';
 
-const _ = require('lodash');
-const debug = require('debug')('core:squirrel:local');
+const debug = Debug('core:squirrel:local');
 
 let store = {};
-const Promise = require('bluebird');
 
 function resetStore() {
   store = {};
@@ -139,41 +138,27 @@ function initStore(options = {}) {
 }
 
 function matchHost(brands, host) {
-  return Promise.resolve(_.find(brands, brand => _.get(brand, 'host') === host)).then(function(
-    node
-  ) {
-    return node;
-  });
+  return Promise.resolve(_.find(brands, brand => _.get(brand, 'host') === host)).then(_.identity);
 }
 
 function matchWS(brands, ws) {
-  return Promise.resolve(_.find(brands, brand => _.get(brand, 'ws') === ws)).then(function(node) {
-    return node;
-  });
+  return Promise.resolve(_.find(brands, brand => _.get(brand, 'ws') === ws)).then(_.identity);
 }
 
 function matchAlias(brands, alias) {
-  return Promise.resolve(_.find(brands, brand => _.get(brand, 'alias') === alias)).then(function(
-    node
-  ) {
-    return node;
-  });
+  return Promise.resolve(_.find(brands, brand => _.get(brand, 'alias') === alias)).then(_.identity);
 }
 
 function matchName(brands, name) {
   return Promise.resolve(_.find(brands, brand => _.get(brand, 'payload.name') === name)).then(
-    function(node) {
-      return node;
-    }
+    _.identity
   );
 }
 
 function matchDbName(brands, dbName) {
   return Promise.resolve(
     _.find(brands, brand => _.get(brand, 'payload.mongodb.dbName') === dbName)
-  ).then(function(node) {
-    return node;
-  });
+  ).then(_.identity);
 }
 
 function getBy(type, value) {
@@ -204,7 +189,7 @@ function set(brand, value) {
   return Promise.resolve(value);
 }
 
-function del(brand) {
+function delBrand(brand) {
   const hasBrand = _.has(store, brand);
   delete store[brand];
   return Promise.resolve(hasBrand);
@@ -216,13 +201,8 @@ function createSquirrel(options = {}) {
     getBy,
     getAll,
     set,
-    del
+    del: delBrand
   };
 }
 
-module.exports.createSquirrel = createSquirrel;
-module.exports.resetStore = resetStore;
-module.exports.setStore = setStore;
-module.exports.getBy = getBy;
-module.exports.createBrand = createBrand;
-module.exports.delBrand = del;
+export {createSquirrel, resetStore, setStore, getBy, createBrand, delBrand};
