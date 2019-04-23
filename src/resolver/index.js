@@ -1,5 +1,5 @@
 import path from 'path';
-import * as _ from 'lodash'; // FIXME FP
+import * as _ from 'lodash/fp';
 import Debug from 'debug';
 import Squirrel from '..';
 import * as cluster from './cluster';
@@ -16,7 +16,7 @@ export function BrandNotFound(message, brand) {
 }
 
 function squirrelFactory(options = {}) {
-  const hosts = _.get(options, 'etcd.hosts');
+  const hosts = _.get('etcd.hosts', options);
   if (hosts) {
     // allow clustered workers to have their own temp file
     return Squirrel;
@@ -80,8 +80,6 @@ function squirrelResolver(_options = {}, squirrel) {
     throw err;
   };
   const resolver = function(hostname = '') {
-    // eslint-disable-next-line promise/valid-params
-
     return Promise.resolve(matchHost(hostname))
       .catch(ifBrandNotFound(() => matchWS(hostname)))
       .catch(
@@ -110,30 +108,31 @@ function squirrelResolver(_options = {}, squirrel) {
   };
 
   resolver.setBrand = function(hostname, value) {
-    // eslint-disable-next-line promise/valid-params
     return resolver(hostname)
       .catch(ifBrandNotFound(_.constant(null)))
       .then(node => {
-        const brand = _.get(node, 'payload.brand') || hostname;
+        const brand = _.get('payload.brand', node) || hostname;
         return squirrel.set(brand, value);
       });
   };
 
   resolver.patchBrand = function(hostname, patch) {
     return resolver(hostname).then(node => {
-      const mergedValue = _.mergeWith({}, node, patch, (nodeValue, patchValue, key) => {
-        if (_.isArray(patchValue) || key === 'dashboardSections') return patchValue;
-      });
+      const mergedValue = _.mergeAllWith(
+        (patchValue, nodeValue, key) => {
+          if (_.isArray(patchValue) || key === 'dashboardSections') return patchValue;
+        },
+        [node, patch]
+      );
       return resolver.setBrand(hostname, mergedValue);
     });
   };
 
   resolver.delBrand = function(hostname) {
-    // eslint-disable-next-line promise/valid-params
     return resolver(hostname)
       .catch(ifBrandNotFound(_.constant(null)))
       .then(node => {
-        const brand = _.get(node, 'id') || hostname;
+        const brand = _.get('id', node) || hostname;
         return squirrel.del(brand);
       });
   };
@@ -142,11 +141,14 @@ function squirrelResolver(_options = {}, squirrel) {
 }
 
 function createResolver(_options = {}) {
-  const options = _.defaultsDeep({}, _options, {
-    etcd: {
-      indexes: ['host', 'ws', 'alias', 'payload.name', 'payload.mongodb.dbName']
-    }
-  });
+  const options = _.defaultsDeep(
+    {
+      etcd: {
+        indexes: ['host', 'ws', 'alias', 'payload.name', 'payload.mongodb.dbName']
+      }
+    },
+    _options
+  );
   const squirrel = squirrelFactory(options)(options.etcd);
   return squirrelResolver(options, squirrel);
 }

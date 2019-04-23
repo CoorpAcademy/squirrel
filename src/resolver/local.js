@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import * as _ from 'lodash/fp';
 import Debug from 'debug';
 
 const debug = Debug('core:squirrel:local');
@@ -138,26 +138,26 @@ function initStore(options = {}) {
 }
 
 function matchHost(brands, host) {
-  return Promise.resolve(_.find(brands, brand => _.get(brand, 'host') === host)).then(_.identity);
+  return Promise.resolve(_.find(brand => _.get('host', brand) === host, brands)).then(_.identity);
 }
 
 function matchWS(brands, ws) {
-  return Promise.resolve(_.find(brands, brand => _.get(brand, 'ws') === ws)).then(_.identity);
+  return Promise.resolve(_.find(brand => _.get('ws', brand) === ws, brands)).then(_.identity);
 }
 
 function matchAlias(brands, alias) {
-  return Promise.resolve(_.find(brands, brand => _.get(brand, 'alias') === alias)).then(_.identity);
+  return Promise.resolve(_.find(brand => _.get('alias', brand) === alias, brands)).then(_.identity);
 }
 
 function matchName(brands, name) {
-  return Promise.resolve(_.find(brands, brand => _.get(brand, 'payload.name') === name)).then(
+  return Promise.resolve(_.find(brand => _.get('payload.name', brand) === name, brands)).then(
     _.identity
   );
 }
 
 function matchDbName(brands, dbName) {
   return Promise.resolve(
-    _.find(brands, brand => _.get(brand, 'payload.mongodb.dbName') === dbName)
+    _.find(brand => _.get('payload.mongodb.dbName', brand) === dbName, brands)
   ).then(_.identity);
 }
 
@@ -181,7 +181,7 @@ function getBy(type, value) {
 
 function getAll() {
   const storeArray = _.values(store);
-  return Promise.resolve(_.map(storeArray, brand => _.get(brand, 'payload.name')));
+  return Promise.resolve(_.map(_.get('payload.name'), storeArray));
 }
 
 function set(brand, value) {
@@ -190,7 +190,7 @@ function set(brand, value) {
 }
 
 function delBrand(brand) {
-  const hasBrand = _.has(store, brand);
+  const hasBrand = _.has(brand, store);
   delete store[brand];
   return Promise.resolve(hasBrand);
 }

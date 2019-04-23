@@ -1,13 +1,13 @@
 /* eslint-disable ava/prefer-async-await */
 import test from 'ava';
-import * as _ from 'lodash';
+import * as _ from 'lodash/fp';
 import CoorpacademySquirrel from '../..';
 import squirrel, {createSquirrel, BrandNotFound} from '..';
 import * as localSquirrel from '../local';
 
 const setupSquirrelMock = (_store, _squirrelOptions) => {
   localSquirrel.setStore(_store);
-  return squirrel(_.defaultsDeep({}, _squirrelOptions, {}));
+  return squirrel(_.cloneDeep(_squirrelOptions));
 };
 
 const defaultLanguage = {
@@ -209,7 +209,7 @@ test.serial('should patch brand by name', t => {
 });
 
 test.serial('should replace and not merge dashboardSections when patching brand', t => {
-  const dashboardSections = _.omit(payloadFixture.dashboardSections, 'them_123');
+  const dashboardSections = _.omit(['them_123'], payloadFixture.dashboardSections);
   const payload = {
     language: defaultLanguage,
     subscriptionPlan: 'lite',
@@ -229,7 +229,7 @@ test.serial('should replace and not merge dashboardSections when patching brand'
     .patchBrand('chanel-name', {a: 'chanel3', payload})
     .then(res => {
       t.deepEqual(res.payload.dashboardSections, payloadFixture.dashboardSections);
-      const payload2 = _.assign({}, payload, {dashboardSections});
+      const payload2 = _.assign(payload, {dashboardSections});
       return resolver.patchBrand('chanel-name', {a: 'chanel3', payload: payload2});
     })
     .then(res => {
