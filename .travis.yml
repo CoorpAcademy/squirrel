@@ -1,11 +1,7 @@
-sudo: false
 language: node_js
 node_js:
-- '6'
 - '8'
-cache:
-  directories:
-  - node_modules
+- '10'
 after_success: npm run coveralls
 deploy:
   provider: npm
@@ -14,11 +10,3 @@ deploy:
     secure: KqoDV6MDjP4G9L+m9gfBYHjTkrC6P8oy4EbTtSlQWo2kpXe2tSx9l/DFbAjTBVANuOpVbN4lppbi2sqjwRf8itVbvhRZ8u6n1DO+hRq+E1NT2ypaafiwez1XkmN9cXkkaB6TjKOeLYsWblJZiBC3IkqFesYDvhHzGwM44HtRbsAe3eCzfOy9BON84gZtQXThWe1wXiY/11CT+cZhFQpgN1eeswKJrAD/Bwzhxsi9tmmQ9hFcHlICvL8fLAAEsf5mp5zbc28v/OgWtEVeAIl7rlAGBnpRpCCzcvAiuzopeP+tzo/W2KXrhXE1qPv2GNxn32TMCuBGNEA7BM+msjlADT9/LBf81lHzDqjF0FtW/zKzyOb+bVNJjTvchp3fBBUWTn5AA2qXCYfxonfARbAmikZLSbEbB0YBUekpB3EJcsbaYZwgzOQTSVBtqe4RJmuH7qNLQoP94/5/K+oGSZ6O0PdRoaS1uTNVYtPnYasQjsYXUy0N+vM/2mM/Oic0/n6TScAuWUdYmI9RWUTfRKcGV2MlA0pakvQSh9f/SSNYXGtHYv8Ez66wswYdwwBkHWXwlFQOd17ze001RpWcoz2kFcBmLwqYdWSV7sDksrN/J4aufaHwT+kStl4/lrHBdzMz6iRpX64NRS/UtJtBvUUHpw+f4DpHcdzYdZb2SU6IqKY=
   on:
     tags: true
-env:
-- CXX=g++-4.8
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - g++-4.8
