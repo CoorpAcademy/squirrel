@@ -23,9 +23,7 @@ const createSquirrel = ({
 
   // GRPC
   retry = true,
-  grpcOptions = {
-    'grpc.http2.max_ping_strikes': 1
-  }
+  grpcOptions = {}
 } = {}) => {
   debug('Init');
 
