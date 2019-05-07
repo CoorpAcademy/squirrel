@@ -4,6 +4,7 @@ import createFetch$ from './fetch';
 import {createWatchCommand} from './command';
 
 const debug = createDebug('squirrel:etcd:watch');
+const error = debug.extend('error');
 
 const createWatcher$ = client => {
   return Observable.create(observer => {
@@ -25,13 +26,22 @@ const createWatcher$ = client => {
         debug(`Watcher is reconnected`)
       );
       const disconnected$ = Observable.fromEvent(watcher, 'disconnected')
-        .do(() => debug(`Watcher is disconnected`))
+        .do(err => {
+          debug(`Watcher is disconnected`);
+          error(err.message);
+        })
+        .ignoreElements();
+      const error$ = Observable.fromEvent(watcher, 'error')
+        .do(err => {
+          debug(`Watcher throws an error`);
+          error(err.message);
+        })
         .ignoreElements();
       const connecting$ = Observable.fromEvent(watcher, 'connecting')
         .do(() => debug(`Watcher is connecting`))
         .ignoreElements();
-      const resync$ = Observable.merge(connected$, disconnected$, connecting$).concatMap(() =>
-        createFetch$(client)
+      const resync$ = Observable.merge(connected$, disconnected$, error$, connecting$).concatMap(
+        () => createFetch$(client)
       );
 
       const put$ = Observable.fromEvent(watcher, 'put').do(record =>
