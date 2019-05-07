@@ -19,16 +19,7 @@ const createSquirrel = ({
   save = true,
 
   // index
-  indexes = [],
-
-  // ETCD3 lib options
-  // see https://github.com/mixer/etcd3/blob/master/src/options.ts
-  retry = false,
-  dialTimeout = 30 * 1000,
-  // grpc options
-  // see https://grpc.io/grpc/cpp/group__grpc__arg__keys.html for available config keys
-  // and https://github.com/mixer/etcd3/blob/master/src/types/grpc.d.ts for default values
-  grpcOptions = {}
+  indexes = []
 } = {}) => {
   debug('Init');
 
@@ -36,9 +27,10 @@ const createSquirrel = ({
     hosts,
     auth,
     credentials,
-    retry,
-    dialTimeout,
-    grpcOptions
+    retry: true,
+    grpcOptions: {
+      'grpc.http2.max_ping_strikes': 1
+    }
   });
 
   const namespacedClient = namespace ? client.namespace(namespace) : client;
