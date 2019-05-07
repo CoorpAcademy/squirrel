@@ -31,17 +31,11 @@ const createWatcher$ = client => {
           error(err.message);
         })
         .ignoreElements();
-      const error$ = Observable.fromEvent(watcher, 'error')
-        .do(err => {
-          debug(`Watcher throws an error`);
-          error(err.message);
-        })
-        .ignoreElements();
       const connecting$ = Observable.fromEvent(watcher, 'connecting')
         .do(() => debug(`Watcher is connecting`))
         .ignoreElements();
-      const resync$ = Observable.merge(connected$, disconnected$, error$, connecting$).concatMap(
-        () => createFetch$(client)
+      const resync$ = Observable.merge(connected$, disconnected$, connecting$).concatMap(() =>
+        createFetch$(client)
       );
 
       const put$ = Observable.fromEvent(watcher, 'put').do(record =>
