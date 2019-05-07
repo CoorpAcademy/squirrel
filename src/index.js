@@ -19,7 +19,13 @@ const createSquirrel = ({
   save = true,
 
   // index
-  indexes = []
+  indexes = [],
+
+  // GRPC
+  retry = true,
+  grpcOptions = {
+    'grpc.http2.max_ping_strikes': 1
+  }
 } = {}) => {
   debug('Init');
 
@@ -27,10 +33,8 @@ const createSquirrel = ({
     hosts,
     auth,
     credentials,
-    retry: true,
-    grpcOptions: {
-      'grpc.http2.max_ping_strikes': 1
-    }
+    retry,
+    grpcOptions
   });
 
   const namespacedClient = namespace ? client.namespace(namespace) : client;
