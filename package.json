@@ -38,8 +38,8 @@
   "homepage": "https://github.com/coorpacademy/squirrel#readme",
   "dependencies": {
     "@coorpacademy/etcd3": "^0.2.12",
-    "debug": "^3.1.0",
-    "lodash": "^4.17.5",
+    "debug": "^4.1.1",
+    "lodash": "^4.17.15",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "node-etcd": "^5.0.1",
@@ -47,17 +47,17 @@
   },
   "devDependencies": {
     "@coorpacademy/eslint-plugin-coorpacademy": "^9.0.1",
-    "ava": "^0.25.0",
-    "babel-cli": "^6.18.0",
-    "babel-core": "^6.18.2",
+    "ava": "^2.4.0",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
     "babel-eslint": "^10.0.3",
-    "babel-plugin-istanbul": "^4.1.5",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-stage-1": "^6.16.0",
-    "babel-register": "^6.18.0",
-    "coveralls": "^3.0.0",
+    "babel-plugin-istanbul": "^5.2.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-1": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "coveralls": "^3.0.7",
     "eslint": "^6.6.0",
-    "nyc": "^11.4.1"
+    "nyc": "^14.1.1"
   },
   "ava": {
     "files": [
