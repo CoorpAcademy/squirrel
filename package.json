@@ -15,7 +15,7 @@
     "ava": "ava",
     "ava:watch": "npm run ava -- --watch",
     "nyc": "nyc npm run test:dev",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls"
+    "publish-coverage": "codecov"
   },
   "repository": {
     "type": "git",
@@ -26,6 +26,9 @@
   ],
   "author": "dev@coorpacademy.com",
   "license": "MIT",
+  "engines": {
+    "node": ">=8"
+  },
   "bugs": {
     "url": "https://github.com/coorpacademy/squirrel/issues"
   },
@@ -55,7 +58,7 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-stage-1": "^6.24.1",
     "babel-register": "^6.26.0",
-    "coveralls": "^3.0.7",
+    "codecov": "^3.6.1",
     "eslint": "^6.6.0",
     "nyc": "^14.1.1"
   },
@@ -68,28 +71,5 @@
       "babel-polyfill"
     ],
     "babel": "inherit"
-  },
-  "nyc": {
-    "reporter": [
-      "lcov",
-      "text-summary"
-    ],
-    "all": true,
-    "include": [
-      "src/**/*"
-    ],
-    "exclude": [
-      "**/test/**/*",
-      "**/bin/*.js"
-    ],
-    "cache": true,
-    "sourceMap": false,
-    "instrument": false,
-    "require": [
-      "babel-register"
-    ]
-  },
-  "engines": {
-    "node": ">=8"
   }
 }
