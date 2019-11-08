@@ -42,12 +42,12 @@ test('should get records and indexes', async t => {
   subscription.unsubscribe();
 });
 
-test('should wait first event', t => {
+test('should wait first event', async t => {
   const records$ = new Subject();
 
   const {store} = createStore(records$, []);
 
-  return t.throws(Promise.race([store('records'), Promise.reject(new Error())]));
+  await t.throwsAsync(Promise.race([store('records'), Promise.reject(new Error())]));
 });
 
 test('should return subscription', t => {
