@@ -1,13 +1,6 @@
 import {Etcd3} from '@coorpacademy/etcd3';
 
-const createEtcd = ({
-  hosts,
-  username,
-  password,
-  rootCertificate,
-
-  namespace = ''
-} = {}) => {
+const createEtcd = ({hosts, username, password, rootCertificate} = {}) => {
   const auth =
     !!username || !!password
       ? {
