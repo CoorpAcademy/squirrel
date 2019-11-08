@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "clean": "rm -rf .nyc_output coverage lib",
-    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build",
     "build": "babel src --out-dir lib -s --copy-files",
     "build:watch": "npm run build -- --watch",
     "test": "npm run nyc",
@@ -67,9 +67,7 @@
       "src/**/test/**/*.js"
     ],
     "require": [
-      "@babel/register",
-      "@babel/polyfill"
-    ],
-    "babel": "inherit"
+      "@babel/register"
+    ]
   }
 }
