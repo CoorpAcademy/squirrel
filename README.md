@@ -1,6 +1,6 @@
 # Squirrel
 
-[![Build Status](https://travis-ci.org/CoorpAcademy/squirrel.svg?branch=master)](https://travis-ci.org/CoorpAcademy/squirrel)
+[![Build Status](https://travis-ci.co/CoorpAcademy/squirrel.svg?branch=master)](https://travis-ci.com/CoorpAcademy/squirrel)
 [![codecov](https://codecov.io/gh/CoorpAcademy/squirrel/branch/master/graph/badge.svg)](https://codecov.io/gh/CoorpAcademy/squirrel)
 
 Keep a replication of ETCD folder locally for low latency querying.
