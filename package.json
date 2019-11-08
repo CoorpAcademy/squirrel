@@ -10,7 +10,7 @@
     "build:watch": "npm run build -- --watch",
     "test": "npm run nyc",
     "test:dev": "npm run lint && npm run ava",
-    "lint": "eslint src/ *.js *.json --ext .js,.json",
+    "lint": "eslint . --ext .js,.json",
     "lint:fix": "npm run lint -- --fix",
     "ava": "ava",
     "ava:watch": "npm run ava -- --watch",
@@ -46,17 +46,17 @@
     "rxjs": "^5.5.6"
   },
   "devDependencies": {
-    "@coorpacademy/eslint-plugin-coorpacademy": "^8.1.1",
+    "@coorpacademy/eslint-plugin-coorpacademy": "^9.0.1",
     "ava": "^0.25.0",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.2",
-    "babel-eslint": "^8.2.1",
+    "babel-eslint": "^10.0.3",
     "babel-plugin-istanbul": "^4.1.5",
     "babel-preset-env": "^1.6.1",
     "babel-preset-stage-1": "^6.16.0",
     "babel-register": "^6.18.0",
     "coveralls": "^3.0.0",
-    "eslint": "^4.19.1",
+    "eslint": "^6.6.0",
     "nyc": "^11.4.1"
   },
   "ava": {

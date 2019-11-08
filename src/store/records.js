@@ -11,7 +11,10 @@ const createRecords$ = (client, {fallback, preloadedStore, save} = {}) => {
     .concatAll()
     .concat(createWatcher$(client));
 
-  const records$ = command$.pipe(createReducer$, save ? createSaver$(fallback) : identity);
+  const records$ = command$.pipe(
+    createReducer$,
+    save ? createSaver$(fallback) : identity
+  );
 
   return records$;
 };
