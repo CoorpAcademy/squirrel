@@ -36,6 +36,7 @@
     "url": "https://github.com/coorpacademy/squirrel/issues"
   },
   "bin": {
+    "squirrel": "lib/bin/squirrel.js",
     "squirrel-dump": "lib/bin/dump.js",
     "squirrel-restore": "lib/bin/restore.js",
     "squirrel-save": "lib/bin/save.js",
