@@ -22,7 +22,10 @@
     "url": "git+https://github.com/coorpacademy/squirrel.git"
   },
   "keywords": [
-    "squirrel"
+    "squirrel",
+    "etcd",
+    "watch",
+    "sync"
   ],
   "author": "dev@coorpacademy.com",
   "license": "MIT",
