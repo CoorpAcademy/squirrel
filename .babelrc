@@ -1,8 +1,8 @@
 {
+  "plugins": ["@babel/plugin-syntax-object-rest-spread"],
   "presets": [
-    "stage-1",
     [
-      "env",
+      "@babel/preset-env",
       {
         "targets": {
           "node": true
