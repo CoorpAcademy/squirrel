@@ -23,7 +23,7 @@
     "overrides": [
         {
             "files": [
-                "src/bin/*.js"
+                "src/bin/**/*.js"
             ],
             "rules": {
                 "no-console": "off"
