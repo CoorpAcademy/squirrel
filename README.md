@@ -1,7 +1,8 @@
 # Squirrel
 
-[![Build Status](https://travis-ci.co/CoorpAcademy/squirrel.svg?branch=master)](https://travis-ci.com/CoorpAcademy/squirrel)
-[![codecov](https://codecov.io/gh/CoorpAcademy/squirrel/branch/master/graph/badge.svg)](https://codecov.io/gh/CoorpAcademy/squirrel)
+[![npm](https://img.shields.io/npm/v/@coorpacademy/squirrel.svg)](https://www.npmjs.com/package/@coorpacademy/squirrel)
+[![Build Status](https://travis-ci.com/CoorpAcademy/squirrel.svg?branch=master)](https://travis-ci.com/CoorpAcademy/squirrel)
+[![codecov](https://codecov.io/gh/CoorpAcademy/squirrel/branch/master/graph/badge.svg?token=DhW7y61ov7)](https://codecov.io/gh/CoorpAcademy/squirrel)
 
 Keep a replication of ETCD folder locally for low latency querying.
 Provide an index system to access a file without scanning all nodes.
