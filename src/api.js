@@ -6,7 +6,12 @@ const debug = createDebug('squirrel');
 const createAPI = (store, client) => {
   const getAll = index => {
     debug(`getAll => ${index}`);
-    return store('indexes').then(pipe(getOr({}, index), keys));
+    return store('indexes').then(
+      pipe(
+        getOr({}, index),
+        keys
+      )
+    );
   };
 
   const getByRaw = (index, key) => {

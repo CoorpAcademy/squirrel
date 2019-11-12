@@ -21,11 +21,10 @@ const createRestorer$ = (filePath, preloadedStore) => {
     .map(JSON.parse)
     .filter(identity)
     .do(() => debug(`Restore from file: ${filePath}`))
-    .catch(
-      () =>
-        preloadedStore
-          ? restorePreloadedStore(preloadedStore).do(() => debug('Restore from preloadedStore'))
-          : Observable.empty()
+    .catch(() =>
+      preloadedStore
+        ? restorePreloadedStore(preloadedStore).do(() => debug('Restore from preloadedStore'))
+        : Observable.empty()
     )
     .map(parseToEvent);
 };

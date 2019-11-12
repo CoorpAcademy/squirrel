@@ -20,7 +20,10 @@ export const parseKeyValue = kv => {
   };
 };
 
-export const parseRangeResponse = pipe(get('kvs'), map(parseKeyValue));
+export const parseRangeResponse = pipe(
+  get('kvs'),
+  map(parseKeyValue)
+);
 
 export const createFetchCommand = rangeResponse => ({
   type: 'fetch',

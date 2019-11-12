@@ -234,7 +234,7 @@ test('set should write to etcd', async t => {
     })
   };
   const api = createAPI(getStore, client);
-  await t.notThrows(api.set('foo', {foo: 'foo'}));
+  await t.notThrowsAsync(api.set('foo', {foo: 'foo'}));
 });
 
 test('set should throw', async t => {
@@ -244,7 +244,7 @@ test('set should throw', async t => {
     })
   };
   const api = createAPI(getStore, client);
-  await t.throws(api.set('foo', {foo: 'foo'}), 'boom');
+  await t.throwsAsync(api.set('foo', {foo: 'foo'}), 'boom');
 });
 
 test('del should write to etcd', async t => {
@@ -257,7 +257,7 @@ test('del should write to etcd', async t => {
     })
   };
   const api = createAPI(getStore, client);
-  await t.notThrows(api.del('foo'));
+  await t.notThrowsAsync(api.del('foo'));
 });
 
 test('del should throw', async t => {
@@ -267,5 +267,5 @@ test('del should throw', async t => {
     })
   };
   const api = createAPI(getStore, client);
-  await t.throws(api.del('foo'), 'boom');
+  await t.throwsAsync(api.del('foo'), 'boom');
 });

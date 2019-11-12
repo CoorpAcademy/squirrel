@@ -4,3 +4,4 @@ docker-compose.yml
 coverage
 .travis.yml
 src
+.nycrc

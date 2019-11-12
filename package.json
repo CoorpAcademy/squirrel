@@ -5,27 +5,33 @@
   "main": "lib/index.js",
   "scripts": {
     "clean": "rm -rf .nyc_output coverage lib",
-    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build",
     "build": "babel src --out-dir lib -s --copy-files",
     "build:watch": "npm run build -- --watch",
     "test": "npm run nyc",
     "test:dev": "npm run lint && npm run ava",
-    "lint": "eslint src/ *.js *.json --ext .js,.json",
+    "lint": "eslint . --ext .js,.json",
     "lint:fix": "npm run lint -- --fix",
     "ava": "ava",
     "ava:watch": "npm run ava -- --watch",
     "nyc": "nyc npm run test:dev",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls"
+    "publish-coverage": "codecov"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/coorpacademy/squirrel.git"
   },
   "keywords": [
-    "squirrel"
+    "squirrel",
+    "etcd",
+    "watch",
+    "sync"
   ],
   "author": "dev@coorpacademy.com",
   "license": "MIT",
+  "engines": {
+    "node": ">=8"
+  },
   "bugs": {
     "url": "https://github.com/coorpacademy/squirrel/issues"
   },
@@ -38,58 +44,33 @@
   "homepage": "https://github.com/coorpacademy/squirrel#readme",
   "dependencies": {
     "@coorpacademy/etcd3": "^0.2.12",
-    "debug": "^3.1.0",
-    "lodash": "^4.17.5",
+    "debug": "^4.1.1",
+    "lodash": "^4.17.15",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
-    "node-etcd": "^5.0.1",
+    "node-etcd": "^7.0.0",
     "rxjs": "^5.5.6"
   },
   "devDependencies": {
-    "@coorpacademy/eslint-plugin-coorpacademy": "^8.1.1",
-    "ava": "^0.25.0",
-    "babel-cli": "^6.18.0",
-    "babel-core": "^6.18.2",
-    "babel-eslint": "^8.2.1",
-    "babel-plugin-istanbul": "^4.1.5",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-stage-1": "^6.16.0",
-    "babel-register": "^6.18.0",
-    "coveralls": "^3.0.0",
-    "eslint": "^4.19.1",
-    "nyc": "^11.4.1"
+    "@babel/cli": "^7.7.0",
+    "@babel/core": "^7.7.2",
+    "@babel/plugin-syntax-object-rest-spread": "^7.2.0",
+    "@babel/preset-env": "^7.7.1",
+    "@babel/register": "^7.7.0",
+    "@coorpacademy/eslint-plugin-coorpacademy": "^9.0.1",
+    "ava": "^2.4.0",
+    "babel-eslint": "^10.0.3",
+    "babel-plugin-istanbul": "^5.2.0",
+    "codecov": "^3.6.1",
+    "eslint": "^6.6.0",
+    "nyc": "^14.1.1"
   },
   "ava": {
     "files": [
       "src/**/test/**/*.js"
     ],
     "require": [
-      "babel-register",
-      "babel-polyfill"
-    ],
-    "babel": "inherit"
-  },
-  "nyc": {
-    "reporter": [
-      "lcov",
-      "text-summary"
-    ],
-    "all": true,
-    "include": [
-      "src/**/*"
-    ],
-    "exclude": [
-      "**/test/**/*",
-      "**/bin/*.js"
-    ],
-    "cache": true,
-    "sourceMap": false,
-    "instrument": false,
-    "require": [
-      "babel-register"
+      "@babel/register"
     ]
-  },
-  "engines": {
-    "node": ">=8"
   }
 }
