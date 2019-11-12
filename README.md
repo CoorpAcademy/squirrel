@@ -1,5 +1,7 @@
 # Squirrel
 
+> Local mirror mecanism for ETCD
+
 [![npm](https://img.shields.io/npm/v/@coorpacademy/squirrel.svg)](https://www.npmjs.com/package/@coorpacademy/squirrel)
 [![Build Status](https://travis-ci.com/CoorpAcademy/squirrel.svg?branch=master)](https://travis-ci.com/CoorpAcademy/squirrel)
 [![codecov](https://codecov.io/gh/CoorpAcademy/squirrel/branch/master/graph/badge.svg?token=DhW7y61ov7)](https://codecov.io/gh/CoorpAcademy/squirrel)

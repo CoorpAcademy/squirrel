@@ -1,7 +1,7 @@
 {
   "name": "@coorpacademy/squirrel",
   "version": "5.0.4",
-  "description": "High level client for Coorpacademy's squirrel service",
+  "description": "Local mirror mecanism for ETCD",
   "main": "lib/index.js",
   "scripts": {
     "clean": "rm -rf .nyc_output coverage lib",
